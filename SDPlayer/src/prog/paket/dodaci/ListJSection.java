@@ -1,0 +1,51 @@
+package prog.paket.dodaci;
+
+import prog.paket.playlist.generator.struct.ProgSectionType;
+
+/**
+ * Nadgradnja klase ListJItem koja opisuje početak termina.
+ * 
+ * @author Strahinja Dobrijević
+ *
+ */
+public class ListJSection extends ListJItem {
+
+	/*
+	 * fullPath - sadrzi ime kategorije
+	 */
+	public long startTime;
+	public long scheduledTime;
+	public String catName;
+	public boolean startToon = false;
+	public boolean endToon = false;
+	public boolean popunitiDoKraja = false;
+	public byte prioritet = 6;
+	public ProgSectionType sectionType = ProgSectionType.TERMIN;
+
+	/*
+	 * Snima se po sledecem redu:
+	 * duration
+	 * fullPath
+	 * fileName
+	 * crossfade
+	 * startTimeInMins
+	 * catName
+	 * popunitiDoKraja
+	 */
+	public ListJSection(){
+		duration = -1;
+		fullPath = null;
+		fileName = null;
+		crossfade = false;
+		startTime = -1;
+		scheduledTime = -1;
+		catName = null;
+		popunitiDoKraja = false;
+	}
+
+	@Override
+	public String toString() {
+		return fileName;
+	}
+
+}

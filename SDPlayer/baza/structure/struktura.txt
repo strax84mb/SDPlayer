@@ -1,0 +1,5 @@
+Struktura sloga datoteke "baza/structure/kat_list.dat":
+  - id
+  - naziv
+  - skracenica
+  - id roditeljskog sloga
