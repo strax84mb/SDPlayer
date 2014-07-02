@@ -184,7 +184,8 @@ public class PlayerWin extends JFrame {
 		lblTimePassed.setText(String.valueOf(minutes) + ":" + 
 				((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);
 		progressBar.setValue(((minutes * 60) + seconds) * 250 / ((int)durr));
-		if(autoPlayOn && (nextFirstCatSec != null) && (secondsToEnd() > 15)){
+		if(autoPlayOn && (nextFirstCatSec != null) && (secondsToEnd() > 15) && 
+				(System.currentTimeMillis() > nextFirstCatSec.scheduledTime)){
 			PLTableModel model = getPlayListModel();
 			int i = 0;
 			ListJItem item = model.getItemAt(0);

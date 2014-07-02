@@ -54,13 +54,14 @@ public class ProgSection {
 		ListJSection ret = new ListJSection();
 		ret.catName = catName;
 		ret.startTime = startTime;
-		ret.scheduledTime = startTime;
+		ret.scheduledTime = scheduledTime;
 		ret.duration = duration;
 		ret.startToon = startToon;
 		ret.endToon = endToon;
 		ret.crossfade = crossfade;
 		ret.popunitiDoKraja = popunitiDoKraja;
 		ret.fileName = ">> " + catName + " <<";
+		ret.prioritet = prioritet;
 		return ret;
 	}
 
