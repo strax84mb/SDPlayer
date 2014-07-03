@@ -48,4 +48,19 @@ public class ListJSection extends ListJItem {
 		return fileName;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if((obj == null) || !(obj instanceof ListJSection))
+			return false;
+		ListJSection sec = (ListJSection)obj;
+		return (startTime == sec.startTime) && (scheduledTime == sec.scheduledTime) && 
+				(catName.equals(sec.catName));
+	}
+
+	public boolean equals(ListJSection sec) {
+		if(sec == null) return false;
+		return (startTime == sec.startTime) && (scheduledTime == sec.scheduledTime) && 
+				(catName.equals(sec.catName));
+	}
+
 }
