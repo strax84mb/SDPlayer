@@ -189,12 +189,15 @@ public class PlayerWin extends JFrame {
 			PLTableModel model = getPlayListModel();
 			int i = 0;
 			ListJItem item = model.getItemAt(0);
-			while(!(item instanceof ListJSection) && (item != nextFirstCatSec))
+			while(!(item instanceof ListJSection) && (item != nextFirstCatSec) 
+					&& (i < model.getRowCount()))
 				i++;
-			i--;
-			for(;i>0;i--)
-				model.removeRow(0);
-			btnNext.doClick();
+			if(i < model.getRowCount()){
+				i--;
+				for(;i>0;i--)
+					model.removeRow(0);
+				btnNext.doClick();
+			}
 		}
 	}
 
