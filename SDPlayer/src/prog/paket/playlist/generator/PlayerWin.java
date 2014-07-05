@@ -185,17 +185,18 @@ public class PlayerWin extends JFrame {
 				((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);
 		progressBar.setValue(((minutes * 60) + seconds) * 250 / ((int)durr));
 		if(autoPlayOn && (nextFirstCatSec != null) && (secondsToEnd() > 15) && 
-				(System.currentTimeMillis() > nextFirstCatSec.scheduledTime)){
+				(System.currentTimeMillis() > nextFirstCatSec.startTime)){
 			PLTableModel model = getPlayListModel();
 			int i = 0;
 			ListJItem item = model.getItemAt(0);
-			while(!(item instanceof ListJSection) && (item != nextFirstCatSec) 
+			while(item.isItem() && (item != nextFirstCatSec) 
 					&& (i < model.getRowCount()))
 				i++;
 			if(i < model.getRowCount()){
 				i--;
 				for(;i>0;i--)
 					model.removeRow(0);
+				
 				btnNext.doClick();
 			}
 		}

@@ -22,22 +22,24 @@ public class PlaylistDialog extends JDialog {
 			}
 			ListJItem item = playListPane.getPlayList().getListItemAt(0);
 			playListPane.getPlayList().getTableModel().removeRow(0);
-			while(item instanceof ListJSection){
+			while(!item.isItem()){
 				PlayerWin.getInstance().currSection = (ListJSection)item;
 				item = playListPane.getPlayList().getListItemAt(0);
-				if((item instanceof ListJSection) && (PlayerWin.getInstance().nextFirstCatSec != null) && 
-						(PlayerWin.getInstance().nextFirstCatSec.equals((ListJSection)item)))
+				if(!item.isItem() && (PlayerWin.getInstance().nextFirstCatSec != null) && 
+						(PlayerWin.getInstance().nextFirstCatSec.equals((ListJSection)item))){
 					PlayerWin.getInstance().nextFirstCatSec = null;
-				playListPane.getPlayList().getTableModel().removeRow(0);
-				for(int i=0,len=playListPane.getPlayList().getTableModel().getRowCount();i<len;i++){
-					item = playListPane.getPlayList().getListItemAt(i);
-					if(item instanceof ListJSection){
-						if(((ListJSection)item).prioritet == 1){
-							PlayerWin.getInstance().nextFirstCatSec = (ListJSection)item;
-							break;
+				}else{
+					for(int i=0,len=playListPane.getPlayList().getTableModel().getRowCount();i<len;i++){
+						item = playListPane.getPlayList().getListItemAt(i);
+						if(!item.isItem()){
+							if(((ListJSection)item).prioritet == 1){
+								PlayerWin.getInstance().nextFirstCatSec = (ListJSection)item;
+								break;
+							}
 						}
 					}
 				}
+				playListPane.getPlayList().getTableModel().removeRow(0);
 			}
 			/*
 			int secInd = playListPane.getModel().getNextSectionIndex(0);

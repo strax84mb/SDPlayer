@@ -328,4 +328,8 @@ public class ListJItem {
 		return ret;
 	}
 
+	public boolean isItem(){
+		return true;
+	}
+
 }

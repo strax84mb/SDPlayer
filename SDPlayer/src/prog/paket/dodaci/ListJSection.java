@@ -63,4 +63,9 @@ public class ListJSection extends ListJItem {
 				(catName.equals(sec.catName));
 	}
 
+	@Override
+	public boolean isItem() {
+		return false;
+	}
+
 }
