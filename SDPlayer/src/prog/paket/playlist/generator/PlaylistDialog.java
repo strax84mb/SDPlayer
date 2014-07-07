@@ -29,11 +29,12 @@ public class PlaylistDialog extends JDialog {
 						(PlayerWin.getInstance().nextFirstCatSec.equals((ListJSection)item))){
 					PlayerWin.getInstance().nextFirstCatSec = null;
 				}else{
+					ListJItem item1 = null;
 					for(int i=0,len=playListPane.getPlayList().getTableModel().getRowCount();i<len;i++){
-						item = playListPane.getPlayList().getListItemAt(i);
-						if(!item.isItem()){
-							if(((ListJSection)item).prioritet == 1){
-								PlayerWin.getInstance().nextFirstCatSec = (ListJSection)item;
+						item1 = playListPane.getPlayList().getListItemAt(i);
+						if(!item1.isItem()){
+							if(((ListJSection)item1).prioritet == 1){
+								PlayerWin.getInstance().nextFirstCatSec = (ListJSection)item1;
 								break;
 							}
 						}

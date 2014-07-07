@@ -562,7 +562,7 @@ public class PLGeneratorWindow extends JDialog{
 						if(model.getElementAt(j).equals(item))
 							found = true;
 					}
-					if(found) node.removeSong(item);
+					if(!found) node.removeSong(item);
 				}
 			}
 		}
