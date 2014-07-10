@@ -153,12 +153,12 @@ public class AutoPlayThread extends Thread {
 					hasJob.awaitNanos(2000000000);
 					break;
 				case 1:
+					command = 0;
 					adjustPLStartTimes();
 					adjustSection(0);
 					addSectionsToPL(null, null);
 					adjustPLStartTimes();
-					generateMore();
-					command = 0;
+					//generateMore();
 				case 2:
 					PLTableModel model = PlayerWin.getInstance().playList.getModel();
 					if(leaveLast) pos--;

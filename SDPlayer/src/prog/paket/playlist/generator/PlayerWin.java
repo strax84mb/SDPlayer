@@ -42,7 +42,9 @@ import java.awt.Component;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 
 import prog.paket.dodaci.WuMetar;
@@ -186,6 +188,17 @@ public class PlayerWin extends JFrame {
 		progressBar.setValue(((minutes * 60) + seconds) * 250 / ((int)durr));
 		if(autoPlayOn && (nextFirstCatSec != null) && (secondsToEnd() > 15) && 
 				(System.currentTimeMillis() > nextFirstCatSec.startTime)){
+			try{
+				PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
+				Date date = new Date();
+				writer.println("LOG: Time is " + date.toString());
+				writer.println("\tMoving onto first category section: " + nextFirstCatSec.catName);
+				date.setTime(nextFirstCatSec.startTime);
+				writer.println("\tstarting in " + date.toString());
+				writer.close();
+			}catch(Exception e){
+				e.printStackTrace();
+			}
 			PLTableModel model = getPlayListModel();
 			int i = 0;
 			ListJItem item = model.getItemAt(0);

@@ -202,7 +202,9 @@ public class PLGenerator {
 		sect.pomeriti = cwl.cat.cuvajSadrzaj;
 		sect.popunitiDoKraja = cwl.cat.trajanje > 0;
 		sect.crossfade = cwl.cat.crossfade;
-		sect.scheduledTime = startTime;
+		if(cwl.cat.prioritet != 1){
+			sect.scheduledTime = startTime;
+		}
 		sect.sectionType = ProgSectionType.TERMIN;
 		sect.prioritet = (byte)cwl.cat.prioritet;
 		sect.pisiUIzvestaj = cwl.cat.pisiUIzvestaj;
