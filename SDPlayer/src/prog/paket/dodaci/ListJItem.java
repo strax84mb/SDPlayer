@@ -332,4 +332,8 @@ public class ListJItem {
 		return true;
 	}
 
+	public boolean isSection(){
+		return false;
+	}
+
 }

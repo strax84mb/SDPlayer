@@ -130,7 +130,7 @@ public class AutoPlayThread extends Thread {
 	 */
 	private int getSectionEndIndex(PLTableModel model, int startIndex){
 		for(int i=startIndex,len=model.getRowCount();i<len;i++){
-			if(model.getItemAt(i) instanceof ListJSection){
+			if(model.getItemAt(i).isSection()){
 				return i - 1;
 			}
 		}
@@ -270,7 +270,7 @@ public class AutoPlayThread extends Thread {
 		int nextSecIndex = -1;
 		for(int i=0,len=model.getRowCount();i<len;i++){
 			item = model.getItemAt(i);
-			if(item instanceof ListJSection){
+			if(item.isSection()){
 				sec = (ListJSection)item;
 				sec.startTime = time;
 				continue;
@@ -278,7 +278,7 @@ public class AutoPlayThread extends Thread {
 			if(nextSecIndex == -1){
 				
 			}else nextSecIndex = getSectionEndIndex(model, i);
-			if(!(model.getItemAt(i) instanceof ListJSection)){
+			if(model.getItemAt(i).isItem()){
 				StartTime st = model.getStartTimeAt(i);
 				st.time = time;
 				st.time2Text(cal);
@@ -432,7 +432,7 @@ public class AutoPlayThread extends Thread {
 		if(model.getRowCount() > 25) return;
 		ListJSection last = null;
 		for(int i=model.getRowCount()-1;i>=0;i--){
-			if(model.getItemAt(i) instanceof ListJSection){
+			if(model.getItemAt(i).isSection()){
 				last = (ListJSection)model.getItemAt(i);
 				break;
 			}

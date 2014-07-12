@@ -68,4 +68,9 @@ public class ListJSection extends ListJItem {
 		return false;
 	}
 
+	@Override
+	public boolean isSection() {
+		return true;
+	}
+
 }

@@ -1,31 +1,32 @@
 package prog.paket.recstreamer.main;
 
 import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.Mixer;
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.border.EmptyBorder;
-import javax.swing.BoxLayout;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
 import java.awt.Component;
 import java.awt.Dimension;
-import javax.swing.Box;
-import javax.swing.JComboBox;
-import java.awt.event.ActionListener;
+import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.RandomAccessFile;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Mixer;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JDialog;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+@SuppressWarnings("serial")
 public class PortSelectorDlg extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 	public JTextField tfURL;
-	public JComboBox cbInput;
+	public JComboBox<Mixer.Info> cbInput;
 
 	/**
 	 * Launch the application.
@@ -84,7 +85,7 @@ public class PortSelectorDlg extends JDialog {
 			contentPanel.add(lblInput);
 		}
 		{
-			cbInput = new JComboBox();
+			cbInput = new JComboBox<Mixer.Info>();
 			cbInput.setMaximumSize(new Dimension(32767, 25));
 			cbInput.setAlignmentX(Component.LEFT_ALIGNMENT);
 			contentPanel.add(cbInput);
@@ -136,6 +137,8 @@ public class PortSelectorDlg extends JDialog {
 	}
 	private class BtnOkActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent e) {
+			saveSettings();
+			closeThis();
 		}
 	}
 }

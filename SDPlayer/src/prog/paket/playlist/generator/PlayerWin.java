@@ -186,7 +186,7 @@ public class PlayerWin extends JFrame {
 		lblTimePassed.setText(String.valueOf(minutes) + ":" + 
 				((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);
 		progressBar.setValue(((minutes * 60) + seconds) * 250 / ((int)durr));
-		if(autoPlayOn && (nextFirstCatSec != null) && (secondsToEnd() > 15) && 
+		/*if(autoPlayOn && (nextFirstCatSec != null) && (secondsToEnd() > 15) && 
 				(System.currentTimeMillis() > nextFirstCatSec.startTime)){
 			try{
 				PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
@@ -197,7 +197,7 @@ public class PlayerWin extends JFrame {
 				writer.println("\tstarting in " + date.toString());
 				writer.close();
 			}catch(Exception e){
-				e.printStackTrace();
+				e.printStackTrace(System.out);
 			}
 			PLTableModel model = getPlayListModel();
 			int i = 0;
@@ -212,7 +212,7 @@ public class PlayerWin extends JFrame {
 				
 				btnNext.doClick();
 			}
-		}
+		}*/
 	}
 
 	public void setMicActiveIcon(){

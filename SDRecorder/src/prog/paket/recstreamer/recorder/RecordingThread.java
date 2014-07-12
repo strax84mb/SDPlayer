@@ -15,6 +15,7 @@ import javax.sound.sampled.TargetDataLine;
 
 import org.jma.encoder.audio.IAudioEncoder;
 
+import com.sswf.rtmp.ClientManager;
 import com.sswf.rtmp.Consumer;
 
 public class RecordingThread extends Thread {
@@ -40,7 +41,9 @@ public class RecordingThread extends Thread {
 		DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat, 4096);
 		line = (TargetDataLine)AudioSystem.getMixer(AudioSystem.getMixerInfo()[targetIndex]).getLine(info);
 		line.open(audioFormat);
+		consumer = new ClientManager();
 		encoder = consumer.getEncoder().getAudioEncoder();
+		encoder.setSourceFormat(audioFormat);
 		input = new byte[encoder.getInputBufferSize()];
 		output = new byte[encoder.getOutputBufferSize()];
 	}
@@ -49,15 +52,30 @@ public class RecordingThread extends Thread {
 		running = false;
 	}
 
+	private String createFilename(){
+		Calendar cal = new GregorianCalendar();
+		tempString = String.valueOf(cal.get(Calendar.YEAR));
+		i = cal.get(Calendar.MONTH);
+		tempString += "-" + ((i < 10)? "0" + String.valueOf(i) : String.valueOf(i));
+		i = cal.get(Calendar.DAY_OF_MONTH);
+		tempString += "-" + ((i < 10)? "0" + String.valueOf(i) : String.valueOf(i));
+		i = cal.get(Calendar.HOUR_OF_DAY);
+		tempString += "-----" + ((i < 10)? "0" + String.valueOf(i) : String.valueOf(i));
+		i = cal.get(Calendar.MINUTE);
+		tempString += "-" + ((i < 10)? "0" + String.valueOf(i) : String.valueOf(i));
+		i = cal.get(Calendar.SECOND);
+		tempString += "-" + ((i < 10)? "0" + String.valueOf(i) : String.valueOf(i));
+		return tempString;
+	}
+
 	@Override
 	public void run() {
 		try{
 			line.start();
 			lock.lock();
 			int inSize = encoder.getInputBufferSize();
-			Calendar cal = new GregorianCalendar();
-			tempString = 
-			File file = ;
+			File file = new File("snimci/" + createFilename() + ".mp3");
+			file.createNewFile();
 			stream = new FileOutputStream(file, true);
 			while(running){
 				try{
@@ -70,12 +88,22 @@ public class RecordingThread extends Thread {
 					}
 					while(outputCount > 0){
 						stream.write(output);
+						outputCount = 0;
+						if(file.length() > 314572800L){
+							outputCount = encoder.encodeFinish(output);
+							stream.write(output);
+							stream.close();
+							file = new File("snimci/" + createFilename() + ".mp3");
+							file.createNewFile();
+							stream = new FileOutputStream(file, true);
+						}
 					}
 				}catch(Exception e){
 					e.printStackTrace();
 				}
 			}
 			outputCount = encoder.encodeFinish(output);
+			stream.write(output);
 			if(stream != null)
 				stream.close();
 			lock.unlock();
