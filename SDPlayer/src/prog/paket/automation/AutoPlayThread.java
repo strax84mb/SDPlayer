@@ -5,7 +5,9 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -36,6 +38,7 @@ public class AutoPlayThread extends Thread {
 	private int pos, cutOffPriority = 3;
 	private ListJItem item;
 	private Random rand = new Random();
+	private Map<String, ListJItem> itemsMap;
 
 	private Lock lock = new ReentrantLock();
 	private Condition hasJob = lock.newCondition();
@@ -145,6 +148,14 @@ public class AutoPlayThread extends Thread {
 
 	@Override
 	public void run() {
+		itemsMap = new HashMap<String, ListJItem>();
+		
+		
+		
+		
+		
+		
+		
 		lock.lock();
 		while(keepRunning){
 			try{

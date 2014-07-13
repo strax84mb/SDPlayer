@@ -117,6 +117,18 @@ public class ListJItem {
 		rang = 1;
 	}
 
+	public ListJItem(String fullPath, int frameCount, long duration){
+		crossfade = true;
+		rang = 1;
+		this.duration = duration;
+		this.frameCount = frameCount;
+		this.fullPath = fullPath;
+		int i = fullPath.indexOf('\\'), j = fullPath.indexOf('/');
+		if(i < j) i = j;
+		j = fullPath.lastIndexOf('.');
+		fileName = fileName.substring(i + 1, j);
+	}
+
 	public ListJItem(SongEntry entry) throws UnsupportedAudioFileException, IOException{
 		AudioFileFormat baseFormat = PlayerWin.getInstance().mp3fr.getAudioFileFormat(
 				new File(entry.getFullPath()));
