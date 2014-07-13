@@ -13,8 +13,13 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
+import org.jma.MetaData;
+import org.jma.encoder.IEncoder;
 import org.jma.encoder.audio.IAudioEncoder;
+import org.jma.encoder.video.IVideoEncoder;
+import org.red5.server.stream.codec.AudioCodec;
 
+import com.sswf.io.encoder.Encoder;
 import com.sswf.rtmp.ClientManager;
 import com.sswf.rtmp.Consumer;
 
@@ -41,9 +46,12 @@ public class RecordingThread extends Thread {
 		DataLine.Info info = new DataLine.Info(TargetDataLine.class, audioFormat, 4096);
 		line = (TargetDataLine)AudioSystem.getMixer(AudioSystem.getMixerInfo()[targetIndex]).getLine(info);
 		line.open(audioFormat);
+		Encoder enc = new Encoder();
+		enc.add(AudioCodec.MP3, audioFormat);
 		consumer = new ClientManager();
-		encoder = consumer.getEncoder().getAudioEncoder();
-		encoder.setSourceFormat(audioFormat);
+		consumer.setEncoder(enc);
+		//encoder = consumer.getEncoder().getAudioEncoder();
+		//encoder.setSourceFormat(audioFormat);
 		input = new byte[encoder.getInputBufferSize()];
 		output = new byte[encoder.getOutputBufferSize()];
 	}

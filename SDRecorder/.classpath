@@ -11,5 +11,10 @@
 	<classpathentry kind="lib" path="lib/mina-core-2.0.0-M6.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.4.3.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-log4j12-1.4.3.jar"/>
+	<classpathentry kind="lib" path="lib/rtmp-client-0.9.jar"/>
+	<classpathentry kind="lib" path="lib/log4j-1.2.13.jar"/>
+	<classpathentry kind="lib" path="lib/jma-api-0.0.1-SNAPSHOT.jar"/>
+	<classpathentry kind="lib" path="lib/jna.jar"/>
+	<classpathentry kind="lib" path="lib/lamejb.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
