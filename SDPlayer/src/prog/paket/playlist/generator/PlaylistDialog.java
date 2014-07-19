@@ -20,14 +20,14 @@ public class PlaylistDialog extends JDialog {
 			if(playListPane.getPlayList().getRowCount() == 0){
 				PlayerWin.getInstance().autoPlay.initiatePlaylist();
 			}
-			ListJItem item = playListPane.getPlayList().getListItemAt(0);
+			ListJItem item = playListPane.getPlayList().getTableModel().getItemAt(0);
 			playListPane.getPlayList().getTableModel().removeRow(0);
 			while(item.isSection()){
 				PlayerWin.getInstance().currSection = (ListJSection)item;
 				PlayerWin.getInstance().nextFirstCatSec = null;
 				ListJItem item1 = null;
 				for(int i=0,len=playListPane.getPlayList().getTableModel().getRowCount();i<len;i++){
-					item1 = playListPane.getPlayList().getListItemAt(i);
+					item1 = playListPane.getPlayList().getTableModel().getItemAt(i);
 					if(!item1.isItem()){
 						if(((ListJSection)item1).prioritet == 1){
 							PlayerWin.getInstance().nextFirstCatSec = (ListJSection)item1;
