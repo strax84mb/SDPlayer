@@ -13,6 +13,8 @@ public class PlaylistDialog extends JDialog {
 
 	private static final long serialVersionUID = 8123145940650640499L;
 	public PlayListPane playListPane;
+	public ListJItem walker;
+	public ListJSection sec;
 
 	public ListJItem getNext(){
 		if(PlayerWin.getInstance().autoPlayOn){
@@ -22,20 +24,35 @@ public class PlaylistDialog extends JDialog {
 			}
 			ListJItem item = playListPane.getPlayList().getTableModel().getItemAt(0);
 			playListPane.getPlayList().getTableModel().removeRow(0);
+			if(item.isSection() && ((ListJSection)item).prioritet != 1){
+				PlayerWin.getInstance().nextFirstCatSec = null;
+				walker = null;
+			}
 			while(item.isSection()){
 				PlayerWin.getInstance().currSection = (ListJSection)item;
-				PlayerWin.getInstance().nextFirstCatSec = null;
-				ListJItem item1 = null;
-				for(int i=0,len=playListPane.getPlayList().getTableModel().getRowCount();i<len;i++){
-					item1 = playListPane.getPlayList().getTableModel().getItemAt(i);
-					if(!item1.isItem()){
-						if(((ListJSection)item1).prioritet == 1){
-							PlayerWin.getInstance().nextFirstCatSec = (ListJSection)item1;
-							break;
+				System.out.println("Section : " + ((ListJSection)item).catName);
+				if(PlayerWin.getInstance().nextFirstCatSec == null){
+					walker = null;
+					for(int i=0,len=playListPane.getPlayList().getTableModel().getRowCount();i<len;i++){
+						walker = playListPane.getPlayList().getTableModel().getItemAt(i);
+						if(!walker.isItem()){
+							if(((ListJSection)walker).prioritet == 1){
+								PlayerWin.getInstance().nextFirstCatSec = (ListJSection)walker;
+								playListPane.getPlayList().getTableModel().removeRow(0);
+								break;
+							}
 						}
 					}
+				}else{
+					sec = (ListJSection)item;
+					if(sec.prioritet == 1 && 
+							sec.scheduledTime == PlayerWin.getInstance().nextFirstCatSec.scheduledTime){
+						PlayerWin.getInstance().nextFirstCatSec = null;
+						playListPane.getPlayList().getTableModel().removeRow(0);
+						break;
+					}
 				}
-				item = playListPane.getPlayList().getListItemAt(0);
+				item = playListPane.getPlayList().getTableModel().getItemAt(0);
 				playListPane.getPlayList().getTableModel().removeRow(0);
 			}
 			/*

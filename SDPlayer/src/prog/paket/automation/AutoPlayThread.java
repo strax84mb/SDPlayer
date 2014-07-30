@@ -149,13 +149,6 @@ public class AutoPlayThread extends Thread {
 	@Override
 	public void run() {
 		itemsMap = new HashMap<String, ListJItem>();
-		
-		
-		
-		
-		
-		
-		
 		lock.lock();
 		while(keepRunning){
 			try{
@@ -173,15 +166,14 @@ public class AutoPlayThread extends Thread {
 				case 2:
 					PLTableModel model = PlayerWin.getInstance().playList.getModel();
 					if(leaveLast) pos--;
+					command = 0;
 					if(pos < 1){
-						command = 0;
 						break;
 					}
 					int rows[] = new int[pos];
 					for(int i=0;i<pos;i++)
 						rows[i] = i;
 					model.removeRows(rows);
-					command = 0;
 					break;
 				case 9:
 					keepRunning = false;

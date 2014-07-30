@@ -1,5 +1,5 @@
 *.class
-SDPlayer/bin/**/*.*
+SDPlayer/bin
 *.sec
 *.pes
 *.rek
