@@ -175,6 +175,8 @@ public class AutoPlayThread extends Thread {
 						rows[i] = i;
 					model.removeRows(rows);
 					break;
+				case 3:
+					break;
 				case 9:
 					keepRunning = false;
 					break;
@@ -182,6 +184,10 @@ public class AutoPlayThread extends Thread {
 			}catch(Exception e){e.printStackTrace(System.out);}
 		}
 		lock.unlock();
+	}
+
+	private void jumpToFirstCat(){
+		
 	}
 
 	public boolean readSection(List<ListJItem> list, String month, int day, int start){

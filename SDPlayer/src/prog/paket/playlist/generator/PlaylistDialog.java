@@ -49,6 +49,8 @@ public class PlaylistDialog extends JDialog {
 							sec.scheduledTime == PlayerWin.getInstance().nextFirstCatSec.scheduledTime){
 						PlayerWin.getInstance().nextFirstCatSec = null;
 						playListPane.getPlayList().getTableModel().removeRow(0);
+						item = playListPane.getPlayList().getTableModel().getItemAt(0);
+						playListPane.getPlayList().getTableModel().removeRow(0);
 						break;
 					}
 				}
