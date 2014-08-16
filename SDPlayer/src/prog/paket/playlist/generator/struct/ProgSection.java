@@ -149,7 +149,7 @@ public class ProgSection {
 
 	static public void save(ProgSection sec) throws IOException{
 		FileOutputStream fos = new FileOutputStream("plists/" + 
-				String.valueOf(sec.startTime) + "-" + String.valueOf(sec.prioritet) + ".sec");
+				String.valueOf(sec.scheduledTime) + "-" + String.valueOf(sec.prioritet) + ".sec");
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		oos.writeLong(sec.startTime);
 		oos.writeLong(sec.duration);
