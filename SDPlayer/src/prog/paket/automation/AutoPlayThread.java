@@ -265,7 +265,7 @@ public class AutoPlayThread extends Thread {
 		while(model.getRowCount() < 50){
 			sec = findNextSection(startTime, files);
 			addSection(model, sec);
-			startTime = sec.startTime;
+			startTime = sec.scheduledTime;
 		}
 	}
 
