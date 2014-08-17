@@ -702,6 +702,7 @@ public class PLGenerator {
 				time = calculateTime(sec, time);
 				next.startTime = time;
 			}
+			sec.scheduledTime = sec.startTime;
 		}
 	}
 
