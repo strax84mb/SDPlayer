@@ -116,12 +116,19 @@ public class ProgSection {
 				if((map != null) && (count > 0) && (count < songLen - 1)){
 					item = map.get(path);
 					if(item == null){
-						item = new ListJItem(path);
+						item = new ListJItem();
+						item.fullPath = path;
 						map.put(path, item);
 					}
 				}else{
-					item = new ListJItem(path);
+					item = new ListJItem();
+					item.fullPath = path;
+					
 				}
+				item.fileName = ois.readUTF();
+				item.duration = ois.readLong();
+				item.frameCount = ois.readLong();
+				item.rang = ois.readByte();
 				if(item.duration > 30000000L)
 					item.crossfade = sec.crossfade;
 				else item.crossfade = false;
@@ -178,6 +185,10 @@ public class ProgSection {
 		for(int j=0,jLen=sec.songs.size();j<jLen;j++){
 			item = sec.songs.get(j);
 			oos.writeUTF(item.fullPath);
+			oos.writeUTF(item.fileName);
+			oos.writeLong(item.duration);
+			oos.writeLong(item.frameCount);
+			oos.writeByte(item.rang);
 			oos.writeInt(item.cats.size());
 			for(int i=0,iLen=item.cats.size();i<iLen;i++)
 				oos.writeInt(item.cats.get(i));
