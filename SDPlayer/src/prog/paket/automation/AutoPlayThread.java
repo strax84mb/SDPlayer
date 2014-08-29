@@ -296,6 +296,8 @@ public class AutoPlayThread extends Thread {
 		if(sec.sectionType != ProgSectionType.TERMIN) return;
 		if(!sec.popunitiDoKraja) return;
 		PLTableModel model = PlayerWin.getPlayListModel();
+		if(model.getItemAt(0).isSection())
+			return;
 		int endIndex = getSectionEndIndex(model, startIndex);
 		if(endIndex == -1) endIndex = model.getRowCount() - 1;
 		if(!sec.endToon && (endIndex < 1)) return;
@@ -309,7 +311,8 @@ public class AutoPlayThread extends Thread {
 			if(endIndex < startIndex) return;
 			item = model.getItemAt(endIndex);
 		}
-		if(nextSec.scheduledTime - nextSec.startTime > 120000L){
+		long curr = System.currentTimeMillis();
+		if(nextSec.scheduledTime - curr < 300000L && nextSec.scheduledTime - nextSec.startTime > 120000L){
 			System.out.println("PL PROBLEM: Lack of songs.");
 			// Ako ima manjka pesama
 			try {
@@ -351,7 +354,7 @@ public class AutoPlayThread extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace(System.out);
 			}
-		}else if(nextSec.startTime - nextSec.scheduledTime > 120000L){
+		}else if(nextSec.scheduledTime - curr < 300000L && nextSec.startTime - nextSec.scheduledTime > 120000L){
 			System.out.println("PL PROBLEM: Too many songs.");
 			// Ako ima viska pesama
 			long diffTime = nextSec.startTime - nextSec.scheduledTime;
