@@ -190,31 +190,6 @@ public class AutoPlayThread extends Thread {
 		
 	}
 
-	public boolean readSection(List<ListJItem> list, String month, int day, int start){
-		try{
-			FileInputStream fis = new FileInputStream("plists/" + month + "/" + String.valueOf(day) + 
-					"-" + String.valueOf(start) + ".sect");
-			ObjectInputStream ois = new ObjectInputStream(fis);
-			ois.readInt();
-			// EndTime
-			ois.readInt();
-			ois.readUTF();
-			ois.readBoolean();
-			ois.readBoolean();
-			ois.readBoolean();
-			ois.readBoolean();
-			int len = ois.readInt(), i = 0;
-			for(;i<len;i++)
-				list.add(new ListJItem(ois.readUTF()));
-			ois.close();
-			fis.close();
-			return true;
-		}catch(Exception e){
-			e.printStackTrace(System.out);
-			return false;
-		}
-	}
-
 	/**
 	 * Dodaje termin na kraj plej liste.
 	 * @param model - Model podataka plej liste.
@@ -318,7 +293,7 @@ public class AutoPlayThread extends Thread {
 			item = model.getItemAt(endIndex);
 		}
 		long curr = System.currentTimeMillis();
-		if(nextSec.scheduledTime - curr < 300000L && nextSec.scheduledTime - nextSec.startTime > 120000L){
+		if(nextSec.scheduledTime - curr > 300000L && nextSec.scheduledTime - nextSec.startTime > 120000L){
 			System.out.println("PL PROBLEM: Lack of songs.");
 			// Ako ima manjka pesama
 			try {
@@ -338,7 +313,8 @@ public class AutoPlayThread extends Thread {
 							if(model.getItemAt(i).fullPath.equals(item.fullPath))
 								found = true;
 						}
-						if((Math.abs(diffTime - (item.duration / 1000)) < diffTime)){
+						if((diffTime > 30000L && nextSec.prioritet == 1) || 
+								(nextSec.prioritet != 1 && Math.abs(diffTime - (item.duration / 1000)) < diffTime)){
 							// Ako nije nadjen onda dodaj
 							if(!found){
 								endIndex++;
@@ -360,7 +336,7 @@ public class AutoPlayThread extends Thread {
 			} catch (IOException e) {
 				e.printStackTrace(System.out);
 			}
-		}else if(nextSec.scheduledTime - curr < 300000L && nextSec.startTime - nextSec.scheduledTime > 120000L){
+		}else if(nextSec.scheduledTime - curr > 300000L && nextSec.startTime - nextSec.scheduledTime > 120000L){
 			System.out.println("PL PROBLEM: Too many songs.");
 			// Ako ima viska pesama
 			long diffTime = nextSec.startTime - nextSec.scheduledTime;
@@ -374,7 +350,8 @@ public class AutoPlayThread extends Thread {
 					}
 					item = model.getItemAt(endIndex);
 				}
-				if(Math.abs(diffTime - (item.duration / 1000)) < diffTime){
+				if((nextSec.prioritet == 1 && diffTime > item.duration / 1000) || 
+						(nextSec.prioritet != 1 && Math.abs(diffTime - (item.duration / 1000)) > item.duration / 1000)){
 					model.removeRow(endIndex);
 					System.out.println("PL ACTION: One song removed.");
 					endIndex--;
