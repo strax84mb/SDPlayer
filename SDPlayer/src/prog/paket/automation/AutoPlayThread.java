@@ -1,12 +1,11 @@
 package prog.paket.automation;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
+import java.io.PrintWriter;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
@@ -186,7 +185,36 @@ public class AutoPlayThread extends Thread {
 		lock.unlock();
 	}
 
-	private void jumpToFirstCat(){
+	public void jumpToFirstCat(){
+		ListJSection nextFirstCatSec = PlayerWin.getInstance().nextFirstCatSec;
+		try{
+			PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
+			Date date = new Date();
+			writer.println("LOG: Time is " + date.toString());
+			writer.println("\tMoving onto first category section: " + nextFirstCatSec.catName);
+			date.setTime(nextFirstCatSec.startTime);
+			writer.println("\tstarting in " + date.toString());
+			writer.close();
+		}catch(Exception e){
+			e.printStackTrace(System.out);
+		}
+		PLTableModel model = PlayerWin.getPlayListModel();
+		int i = 0;
+		ListJItem item = model.getItemAt(0);
+		while(item.isItem() && (item != nextFirstCatSec) 
+				&& (i < model.getRowCount()))
+			i++;
+		if(i < model.getRowCount()){
+			i--;
+			
+			for(;i>0;i--)
+				model.removeRow(0);
+			
+			PlayerWin.getInstance().btnNext.doClick();
+		}
+	}
+
+	private void respectDroppedToPLSongs(int upperIndex, PLTableModel model){
 		
 	}
 
