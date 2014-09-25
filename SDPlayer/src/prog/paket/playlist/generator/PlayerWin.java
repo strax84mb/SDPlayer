@@ -187,7 +187,7 @@ public class PlayerWin extends JFrame {
 				((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);
 		progressBar.setValue(((minutes * 60) + seconds) * 250 / ((int)durr));
 		if(autoPlayOn && (nextFirstCatSec != null) && (secondsToEnd() > 15) && 
-				(System.currentTimeMillis() > nextFirstCatSec.startTime)){
+				(System.currentTimeMillis() > nextFirstCatSec.scheduledTime)){
 			try{
 				PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
 				Date date = new Date();
