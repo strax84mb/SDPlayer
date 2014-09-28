@@ -697,10 +697,12 @@ public class PLGenerator {
 			next = sections.get(i + 1);
 			if(sec.popunitiDoKraja){
 				time = correctSection(sec, time, next.startTime);
-				next.startTime = time;
+				if(next.prioritet > 1)
+					next.startTime = time;
 			}else{
 				time = calculateTime(sec, time);
-				next.startTime = time;
+				if(next.prioritet > 1)
+					next.startTime = time;
 			}
 			sec.scheduledTime = sec.startTime;
 		}
