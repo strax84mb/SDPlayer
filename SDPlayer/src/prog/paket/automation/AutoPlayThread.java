@@ -309,8 +309,8 @@ public class AutoPlayThread extends Thread {
 			return;
 		int endIndex = getSectionEndIndex(model, startIndex);
 		if(endIndex == -1) endIndex = model.getRowCount() - 1;
-		if(!sec.endToon && (endIndex < 1)) return;
-		if(sec.endToon && (endIndex < 2)) return;
+		if(!sec.endToon && (endIndex < 0)) return;
+		if(sec.endToon && (endIndex < 1)) return;
 		if(model.getRowCount() == endIndex + 1) return;
 		ListJSection nextSec = (ListJSection)model.getItemAt(endIndex + 1);
 		if(sec.endToon) endIndex--;

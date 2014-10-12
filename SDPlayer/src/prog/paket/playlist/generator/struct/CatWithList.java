@@ -154,6 +154,7 @@ public class CatWithList {
 					jLen = ois.readInt();
 					for(int j=0;j<jLen;j++)
 						item.cats.add(new Integer(ois.readInt()));
+					item.crossfade = (cat.crossfade)? ((item.duration < 9000000L)? false : true) : false;
 					list.add(item);
 				}catch(Exception ex){
 					ex.printStackTrace(System.out);
