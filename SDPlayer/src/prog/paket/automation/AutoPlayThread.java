@@ -199,17 +199,27 @@ public class AutoPlayThread extends Thread {
 			e.printStackTrace(System.out);
 		}
 		PLTableModel model = PlayerWin.getPlayListModel();
-		int i = 0;
+		int i = 0, afterSecIndex = 0;
 		ListJItem item = model.getItemAt(0);
-		while(item.isItem() && (item != nextFirstCatSec) 
+		while(item.isItem() && !nextFirstCatSec.equals(item) 
 				&& (i < model.getRowCount()))
 			i++;
 		if(i < model.getRowCount()){
+			afterSecIndex = i + 1;
+			while((afterSecIndex < model.getRowCount()) && ((item = model.getItemAt(afterSecIndex))).isItem()){
+				afterSecIndex++;
+			}
+		}else{
+			afterSecIndex = i;
+		}
+		if(i < model.getRowCount()){
 			i--;
-			
-			for(;i>0;i--)
+			for(;i>0;i--){
+				item = model.getItemAt(0);
+				if(item.isItem() && item.droppedToPL)
+					model.insertRow(afterSecIndex, item);
 				model.removeRow(0);
-			
+			}
 			PlayerWin.getInstance().btnNext.doClick();
 		}
 	}

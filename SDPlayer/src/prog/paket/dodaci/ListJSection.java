@@ -53,14 +53,12 @@ public class ListJSection extends ListJItem {
 		if((obj == null) || !(obj instanceof ListJSection))
 			return false;
 		ListJSection sec = (ListJSection)obj;
-		return (startTime == sec.startTime) && (scheduledTime == sec.scheduledTime) && 
-				(catName.equals(sec.catName));
+		return (scheduledTime == sec.scheduledTime) && (catName.equals(sec.catName));
 	}
 
 	public boolean equals(ListJSection sec) {
 		if(sec == null) return false;
-		return (startTime == sec.startTime) && (scheduledTime == sec.scheduledTime) && 
-				(catName.equals(sec.catName));
+		return (scheduledTime == sec.scheduledTime) && (catName.equals(sec.catName));
 	}
 
 	@Override

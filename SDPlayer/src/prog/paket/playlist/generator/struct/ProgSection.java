@@ -143,6 +143,7 @@ public class ProgSection {
 					item.pisiUIzvestaj = sec.pisiUIzvestaj;
 				}
 				len = ois.readInt();
+				item.crossfade = (sec.crossfade)? ((item.duration > 9000000L)? true : false) : false;
 				for(int i=0;i<len;i++)
 					item.cats.add(new Integer(ois.readInt()));
 			}catch(Exception e){

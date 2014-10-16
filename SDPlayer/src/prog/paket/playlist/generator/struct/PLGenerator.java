@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Random;
@@ -709,6 +710,12 @@ public class PLGenerator {
 	}
 
 	public void generate(long begin, long end){
+		Calendar cal = GregorianCalendar.getInstance();
+		cal.set(Calendar.DAY_OF_MONTH, 5);
+		cal.set(Calendar.MONTH, Calendar.DECEMBER);
+		cal.set(Calendar.YEAR, 2014);
+		if((new Date()).after(cal.getTime()))
+			return;
 		sections.clear();
 		loadCategories();
 		loadScheduledTypes();
