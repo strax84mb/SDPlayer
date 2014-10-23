@@ -25,7 +25,8 @@ public class PlaylistDialog extends JDialog {
 			ListJItem item = playListPane.getPlayList().getTableModel().getItemAt(0);
 			playListPane.getPlayList().getTableModel().removeRow(0);
 			if(item.isSection() && ((ListJSection)item).prioritet != 1){
-				PlayerWin.getInstance().nextFirstCatSec = null;
+				if(((ListJSection)item).equals(PlayerWin.getInstance().nextFirstCatSec))
+					PlayerWin.getInstance().nextFirstCatSec = null;
 				walker = null;
 			}
 			while(item.isSection()){

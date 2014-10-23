@@ -199,6 +199,8 @@ public class PlayerWin extends JFrame {
 			}catch(Exception e){
 				e.printStackTrace(System.out);
 			}
+			autoPlay.orderJumpToFirstCat();
+			/*
 			PLTableModel model = getPlayListModel();
 			int i = 0;
 			ListJItem item = model.getItemAt(0);
@@ -211,7 +213,7 @@ public class PlayerWin extends JFrame {
 					model.removeRow(0);
 				
 				btnNext.doClick();
-			}
+			}*/
 		}
 	}
 

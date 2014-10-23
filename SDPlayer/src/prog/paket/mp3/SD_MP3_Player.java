@@ -579,6 +579,12 @@ public class SD_MP3_Player extends Thread {
 		}
 		//line.start();
 		//line.drain();
+		count = line.write(output, 0, outLength);
+		if(count > -1) outLength -= count;
+		while(outLength > 2048){
+			count = line.write(output, 0, outLength);
+			if(count > -1) outLength -= count;
+		}
 		outLength -= line.write(output, 0, outLength);
 		//line.stop();
 		// Shifting input streams to begining

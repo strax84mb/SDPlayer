@@ -50,6 +50,10 @@ public class AutoPlayThread extends Thread {
 		command = 1;
 	}
 
+	public void orderJumpToFirstCat(){
+		command = 3;
+	}
+
 	/**
 	 * Vraća listu termina sortiranu po vremenu početka emitovanja u rastućem nizu.
 	 * @return Lista termina.
@@ -175,6 +179,11 @@ public class AutoPlayThread extends Thread {
 					model.removeRows(rows);
 					break;
 				case 3:
+					jumpToFirstCat();
+					adjustPLStartTimes();
+					ListJItem item = PlayerWin.getInstance().playList.getNext();
+					PlayerWin.getInstance().player.setCommand(4, item);
+					command = 0;
 					break;
 				case 9:
 					keepRunning = false;
