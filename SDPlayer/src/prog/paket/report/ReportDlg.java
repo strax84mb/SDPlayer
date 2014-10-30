@@ -27,6 +27,7 @@ import java.io.PrintWriter;
 import java.io.RandomAccessFile;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -333,8 +334,8 @@ public class ReportDlg extends JDialog {
 						name = song.toString();
 						dashPos = name.indexOf('-');
 						line += timeFormat.format(cal.getTime()) + "\t" + 
-								name.substring(0, dashPos - 1) + "\t" + 
-								name.substring(dashPos + 2) + "\t" + 
+								(String)model.getValueAt(i, 3) + "\t" + 
+								(String)model.getValueAt(i, 4) + "\t" + 
 								parseTime(song.getDurationInSeconds());
 						writer.println(line);
 					}
@@ -377,10 +378,10 @@ public class ReportDlg extends JDialog {
 				DateTime dateCell, timeCell, durationCell;
 				DefaultTableModel model = table.getTableModel();
 				String name;
-				int dashPos;
 				Boolean reportIt;
 				Song song;
 				Calendar cal = new GregorianCalendar();
+				Date time = null;
 				int row = 1, hrs, mins, secs;
 				for(int i=0,len=model.getRowCount();i<len;i++){
 					reportIt = (Boolean)model.getValueAt(i, 2);
@@ -388,16 +389,19 @@ public class ReportDlg extends JDialog {
 						song = (Song)model.getValueAt(i, 1);
 						cal.setTimeInMillis(song.getStartTime());
 						cal.set(Calendar.MILLISECOND, 0);
+						time = cal.getTime();
+						cal.set(Calendar.HOUR_OF_DAY, 0);
+						cal.set(Calendar.MINUTE, 0);
+						cal.set(Calendar.SECOND, 0);
 						dateCell = new DateTime(0, row, cal.getTime());
 						dateCell.setCellFormat(dateFormat);
 						sheet.addCell(dateCell);
-						timeCell = new DateTime(1, row, cal.getTime(), timeFormat, true);
+						timeCell = new DateTime(1, row, time, timeFormat, true);
 						sheet.addCell(timeCell);
 						name = song.toString();
-						dashPos = name.indexOf(" - ");
-						artistCell = new Label(2, row, name.substring(0, dashPos));
+						artistCell = new Label(2, row, (String)model.getValueAt(i, 3));
 						sheet.addCell(artistCell);
-						songCell = new Label(3, row, name.substring(dashPos + 3));
+						songCell = new Label(3, row, (String)model.getValueAt(i, 4));
 						sheet.addCell(songCell);
 						secs = song.getDurationInSeconds();
 						hrs = secs / 3600;
