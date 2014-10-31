@@ -180,6 +180,8 @@ public class PlayerWin extends JFrame {
 	}
 
 	public void adjustTimePassed(int minutes, int seconds){
+		mins = minutes;
+		secs = seconds;
 		timePassed = (minutes * 60) + seconds;
 		String temp = lblTimePassed.getText();
 		temp = temp.substring(temp.indexOf('/'));
