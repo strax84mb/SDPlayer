@@ -1,6 +1,7 @@
 package prog.paket.automation;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Date;
@@ -18,6 +19,7 @@ import prog.paket.dodaci.PLTableModel;
 import prog.paket.playlist.generator.PlayerWin;
 import prog.paket.playlist.generator.struct.CatWithList;
 import prog.paket.playlist.generator.struct.Duration;
+import prog.paket.playlist.generator.struct.FirstCatFilter;
 import prog.paket.playlist.generator.struct.PLGenerator;
 import prog.paket.playlist.generator.struct.ProgSection;
 import prog.paket.playlist.generator.struct.ProgSectionType;
@@ -58,9 +60,9 @@ public class AutoPlayThread extends Thread {
 	 * Vraća listu termina sortiranu po vremenu početka emitovanja u rastućem nizu.
 	 * @return Lista termina.
 	 */
-	private File[] getSortedFileList(){
+	private File[] getSortedFileList(FileFilter filter){
 		File dir = new File("plists");
-		File files[] = dir.listFiles(new SecFileFilter());
+		File files[] = dir.listFiles(filter);
 		for(int i=0,iLen=files.length-1;i<iLen;i++){
 			for(int j=i+1;j<iLen;j++){
 				if((files[i].getName().length() > files[j].getName().length()) || 
@@ -84,7 +86,7 @@ public class AutoPlayThread extends Thread {
 	private ProgSection findCurrentSection(long currentTime, File files[]){
 		try{
 			if(files == null)
-				files = getSortedFileList();
+				files = getSortedFileList(new SecFileFilter());
 			String str;
 			long time;
 			// Krece od nazad da bi naslo prvo vreme koje je manje ili jednako prosledjenom vremenu
@@ -111,7 +113,7 @@ public class AutoPlayThread extends Thread {
 	private ProgSection findNextSection(long time, File files[]){
 		try{
 			if(files == null)
-				files = getSortedFileList();
+				files = getSortedFileList(new SecFileFilter());
 			String str;
 			long temp;
 			for(int i=0,len=files.length;i<len;i++){
@@ -165,6 +167,7 @@ public class AutoPlayThread extends Thread {
 					adjustSection(0);
 					addSectionsToPL(null, null);
 					adjustPLStartTimes();
+					getNextFirstCat();
 					//generateMore();
 				case 2:
 					PLTableModel model = PlayerWin.getInstance().playList.getModel();
@@ -180,9 +183,6 @@ public class AutoPlayThread extends Thread {
 					break;
 				case 3:
 					jumpToFirstCat();
-					adjustPLStartTimes();
-					ListJItem item = PlayerWin.getInstance().playList.getNext();
-					PlayerWin.getInstance().player.setCommand(4, item);
 					command = 0;
 					break;
 				case 9:
@@ -195,7 +195,8 @@ public class AutoPlayThread extends Thread {
 	}
 
 	public void jumpToFirstCat(){
-		ListJSection nextFirstCatSec = PlayerWin.getInstance().nextFirstCatSec;
+		ProgSection nextFirstCatSec = PlayerWin.getInstance().nextFirstCatSec;
+		PlayerWin.getInstance().nextFirstCatSec = null;
 		try{
 			PrintWriter writer = new PrintWriter("log.txt", "UTF-8");
 			Date date = new Date();
@@ -207,30 +208,20 @@ public class AutoPlayThread extends Thread {
 		}catch(Exception e){
 			e.printStackTrace(System.out);
 		}
+		PlayerWin.getInstance().btnAutoPlay.doClick();
+		PlayerWin.getInstance().btnStop.doClick();
 		PLTableModel model = PlayerWin.getPlayListModel();
-		int i = 0, afterSecIndex = 0;
-		ListJItem item = model.getItemAt(0);
-		while(item.isItem() && !nextFirstCatSec.equals(item) 
-				&& (i < model.getRowCount()))
-			i++;
-		if(i < model.getRowCount()){
-			afterSecIndex = i + 1;
-			while((afterSecIndex < model.getRowCount()) && ((item = model.getItemAt(afterSecIndex))).isItem()){
-				afterSecIndex++;
-			}
-		}else{
-			afterSecIndex = i;
-		}
-		if(i < model.getRowCount()){
-			i--;
-			for(;i>0;i--){
-				item = model.getItemAt(0);
-				if(item.isItem() && item.droppedToPL)
-					model.insertRow(afterSecIndex, item);
-				model.removeRow(0);
-			}
-			PlayerWin.getInstance().btnNext.doClick();
-		}
+		model.setRowCount(0);
+		PlayerWin.getInstance().btnAutoPlay.doClick();
+	}
+
+	private void getNextFirstCat() {
+		if(PlayerWin.getInstance().currSection == null) return;
+		if(PlayerWin.getInstance().currSection.prioritet == 1) return;
+		if(PlayerWin.getInstance().secondsToEnd() < 30) return;
+		File files[] = getSortedFileList(new FirstCatFilter());
+		ProgSection firstCatSec = findNextSection(System.currentTimeMillis() + 120000L, files);
+		PlayerWin.getInstance().nextFirstCatSec = firstCatSec;
 	}
 
 	private void respectDroppedToPLSongs(int upperIndex, PLTableModel model){
@@ -252,7 +243,7 @@ public class AutoPlayThread extends Thread {
 	private void loadCurrentSection(PLTableModel model, long currentTime, File files[]){
 		try{
 			if(files == null)
-				files = getSortedFileList();
+				files = getSortedFileList(new SecFileFilter());
 			ProgSection sec = findCurrentSection(currentTime, files);
 			model.addRow(new Object[]{new StartTime(), sec.generateListJSection(), null});
 			long time = sec.startTime, nextTime;
@@ -280,7 +271,7 @@ public class AutoPlayThread extends Thread {
 	public void initiatePlaylist(){
 		long startTime = System.currentTimeMillis();
 		PLTableModel model = PlayerWin.getPlayListModel();
-		File files[] = getSortedFileList();
+		File files[] = getSortedFileList(new SecFileFilter());
 		loadCurrentSection(model, startTime, files);
 		if(model.getRowCount() >= 50) return;
 		ProgSection sec;
@@ -432,7 +423,7 @@ public class AutoPlayThread extends Thread {
 	private void insertOrRemoveSections(PLTableModel model){
 		File files[] = null;
 		try{
-			files = getSortedFileList();
+			files = getSortedFileList(new SecFileFilter());
 		}catch(Exception e){
 			e.printStackTrace(System.out);
 			return;
@@ -475,7 +466,7 @@ public class AutoPlayThread extends Thread {
 		}
 		if(last == null) last = PlayerWin.getInstance().currSection;
 		if(files == null)
-			files = getSortedFileList();
+			files = getSortedFileList(new SecFileFilter());
 		long startTime = last.scheduledTime;
 		ProgSection sec;
 		while(model.getRowCount() < 50){

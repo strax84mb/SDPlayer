@@ -28,6 +28,7 @@ import prog.paket.dodaci.ListJItem;
 import prog.paket.dodaci.ListJSection;
 import prog.paket.dodaci.PLTableModel;
 import prog.paket.mp3.SD_MP3_Player;
+import prog.paket.playlist.generator.struct.ProgSection;
 import prog.paket.report.ReportDlg;
 
 import java.awt.event.ActionListener;
@@ -115,7 +116,7 @@ public class PlayerWin extends JFrame {
 	// Automatski plejbek
 	public ListJSection currSection = null;
 	public ListJSection nextSection = null;
-	public ListJSection nextFirstCatSec = null;
+	public ProgSection nextFirstCatSec = null;
 
 	private static PlayerWin singleton;
 	public JButton btnPregledGenerisanePL;
