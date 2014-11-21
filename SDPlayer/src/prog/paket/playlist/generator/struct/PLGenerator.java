@@ -254,7 +254,7 @@ public class PLGenerator {
 	}
 	*/
 
-	private int addSectionToPL(ProgSection sec){
+	private int addSectionToPL(ProgSection sec, boolean moveToLeft, boolean keepOrder, boolean hasMoreAfter){
 		int i, len = sections.size();
 		ProgSection temp;
 		long endTime = sec.startTime + sec.duration;
@@ -299,7 +299,7 @@ public class PLGenerator {
 			if((sec.startTime < temp.startTime) && (endTime > temp.startTime + temp.duration)){
 				if(sec.pomeriti){
 					sec.startTime = temp.startTime + temp.duration;
-					state = addSectionToPL(sec);
+					state = addSectionToPL(sec, moveToLeft, keepOrder, hasMoreAfter);
 					break;
 				}else{
 					if(sec.popunitiDoKraja){
@@ -309,13 +309,12 @@ public class PLGenerator {
 						nextSec.startToon = false;
 						sec.endToon = false;
 						sec.duration = temp.startTime - sec.startTime;
-						state = addSectionToPL(sec);
-						state = addSectionToPL(nextSec);
+						state = addSectionToPL(sec, moveToLeft, keepOrder, hasMoreAfter);
+						state = addSectionToPL(nextSec, moveToLeft, keepOrder, hasMoreAfter);
 						break;
 					}else{
 						// Rasparcati sadrzaj
 						ProgSection nextSec = sec.clone();
-						nextSec.startTime = temp.startTime + temp.duration;
 						nextSec.duration = 0;
 						ListJItem item;
 						while(sec.duration > temp.startTime - sec.startTime){
@@ -324,12 +323,26 @@ public class PLGenerator {
 							nextSec.duration += item.duration / 1000;
 							sec.duration -= item.duration / 1000;
 						}
-						sec.startTime = temp.startTime - sec.duration;
+						if(keepOrder){
+							if(moveToLeft){
+								ProgSection prevTemp = sections.get(i-1);
+								sec.startTime = prevTemp.startTime + prevTemp.duration;
+								temp.startTime = sec.startTime + sec.duration;
+								nextSec.startTime = temp.startTime + temp.duration;
+							}else{
+								sec.startTime = temp.startTime - sec.duration;
+								sec.duration = temp.startTime - sec.startTime;
+								nextSec.startTime = temp.startTime + temp.duration;
+							}
+						}else{
+							sec.startTime = temp.startTime - sec.duration;
+							sec.duration = temp.startTime - sec.startTime;
+							nextSec.startTime = temp.startTime + temp.duration;
+						}
 						nextSec.startToon = false;
 						sec.endToon = false;
-						sec.duration = temp.startTime - sec.startTime;
-						state = addSectionToPL(sec);
-						state = addSectionToPL(nextSec);
+						state = addSectionToPL(sec, false, keepOrder, true);
+						state = addSectionToPL(nextSec, true, keepOrder, false);
 						break;
 					}
 				}
@@ -368,6 +381,10 @@ public class PLGenerator {
 				if(sec.startTime < temp.startTime) break;
 			}
 			sections.add(i, sec);
+			if(keepOrder && hasMoreAfter && sections.size() > i + 1){
+				temp = sections.get(i + 1);
+				temp.startTime = sec.startTime + sec.duration;
+			}
 			return INSERTED;
 		}else return REJECTED;
 	}
@@ -393,43 +410,43 @@ public class PLGenerator {
 					case Calendar.MONDAY:
 						if(cwl.cat.ponedeljak){
 							sect = makeNewSection(cal.getTimeInMillis(), cwl);
-							addSectionToPL(sect);
+							addSectionToPL(sect, false, cwl.cat.postujRedosled, false);
 						}
 						break;
 					case Calendar.TUESDAY:
 						if(cwl.cat.utorak){
 							sect = makeNewSection(cal.getTimeInMillis(), cwl);
-							addSectionToPL(sect);
+							addSectionToPL(sect, false, cwl.cat.postujRedosled, false);
 						}
 						break;
 					case Calendar.WEDNESDAY:
 						if(cwl.cat.sreda){
 							sect = makeNewSection(cal.getTimeInMillis(), cwl);
-							addSectionToPL(sect);
+							addSectionToPL(sect, false, cwl.cat.postujRedosled, false);
 						}
 						break;
 					case Calendar.THURSDAY:
 						if(cwl.cat.cetvrtak){
 							sect = makeNewSection(cal.getTimeInMillis(), cwl);
-							addSectionToPL(sect);
+							addSectionToPL(sect, false, cwl.cat.postujRedosled, false);
 						}
 						break;
 					case Calendar.FRIDAY:
 						if(cwl.cat.petak){
 							sect = makeNewSection(cal.getTimeInMillis(), cwl);
-							addSectionToPL(sect);
+							addSectionToPL(sect, false, cwl.cat.postujRedosled, false);
 						}
 						break;
 					case Calendar.SATURDAY:
 						if(cwl.cat.subota){
 							sect = makeNewSection(cal.getTimeInMillis(), cwl);
-							addSectionToPL(sect);
+							addSectionToPL(sect, false, cwl.cat.postujRedosled, false);
 						}
 						break;
 					default:
 						if(cwl.cat.nedelja){
 							sect = makeNewSection(cal.getTimeInMillis(), cwl);
-							addSectionToPL(sect);
+							addSectionToPL(sect, false, cwl.cat.postujRedosled, false);
 						}
 					}
 				}
@@ -486,7 +503,7 @@ public class PLGenerator {
 							sect.songs.add(block.get(j));
 						if(sect.endToon)
 							sect.songs.add(type.odjava);
-						addSectionToPL(sect);
+						addSectionToPL(sect, false, false, false);
 					}
 				}
 				currTime += 86400000L;

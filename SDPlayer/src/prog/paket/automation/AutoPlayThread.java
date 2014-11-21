@@ -194,6 +194,22 @@ public class AutoPlayThread extends Thread {
 		lock.unlock();
 	}
 
+	private void autoGenerateMore() throws IOException{
+		File[] files = getSortedFileList(new SecFileFilter());
+		PLGenerator generator = new PLGenerator();
+		Date now = new Date();
+		generator.generate(now.getTime(), now.getTime() + 189200000L);
+		// Delete all previos sections
+		for (int i = 0; i < files.length; i++) {
+			files[i].delete();
+		}
+		ProgSection sec;
+		for(int i=0,len=generator.sections.size();i<len;i++){
+			sec = generator.sections.get(i);
+			ProgSection.save(sec);
+		}
+	}
+
 	public void jumpToFirstCat(){
 		ProgSection nextFirstCatSec = PlayerWin.getInstance().nextFirstCatSec;
 		PlayerWin.getInstance().nextFirstCatSec = null;
@@ -215,11 +231,18 @@ public class AutoPlayThread extends Thread {
 		PlayerWin.getInstance().btnAutoPlay.doClick();
 	}
 
-	private void getNextFirstCat() {
+	private void getNextFirstCat() throws IOException {
 		if(PlayerWin.getInstance().currSection == null) return;
 		if(PlayerWin.getInstance().currSection.prioritet == 1) return;
 		if(PlayerWin.getInstance().secondsToEnd() < 30) return;
 		File files[] = getSortedFileList(new FirstCatFilter());
+		String max = files[files.length-1].getName();
+		max = max.substring(0, max.length() - 6);
+		if(Long.valueOf(max) - System.currentTimeMillis() < 7200000L){
+			autoGenerateMore();
+			command = 0;
+			return;
+		}
 		ProgSection firstCatSec = findNextSection(System.currentTimeMillis() + 120000L, files);
 		PlayerWin.getInstance().nextFirstCatSec = firstCatSec;
 	}
