@@ -63,6 +63,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import javax.swing.Box;
 import java.awt.event.WindowFocusListener;
+import java.awt.Cursor;
 
 public class PlayerWin extends JFrame {
 
@@ -107,6 +108,7 @@ public class PlayerWin extends JFrame {
 	public JButton btnPause;
 
 	public long mins, secs, durr, timePassed;
+	public boolean showDecreasingTime = true;
 	// Sluzi kao zadrska padanja
 	//private int wmHoldOffFall = 0;
 	public JButton btnMic;
@@ -186,8 +188,16 @@ public class PlayerWin extends JFrame {
 		timePassed = (minutes * 60) + seconds;
 		String temp = lblTimePassed.getText();
 		temp = temp.substring(temp.indexOf('/'));
-		lblTimePassed.setText(String.valueOf(minutes) + ":" + 
-				((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);
+		if (showDecreasingTime) {
+			seconds = secondsToEnd();
+			minutes = seconds / 60;
+			seconds = seconds % 60;
+			lblTimePassed.setText("- " + String.valueOf(minutes) + ":" + 
+					((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);
+		} else {
+			lblTimePassed.setText(String.valueOf(minutes) + ":" + 
+					((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);
+		}
 		progressBar.setValue(((minutes * 60) + seconds) * 250 / ((int)durr));
 		if(autoPlayOn && (nextFirstCatSec != null) && (secondsToEnd() > 15) && 
 				(System.currentTimeMillis() > nextFirstCatSec.scheduledTime)){
@@ -257,6 +267,8 @@ public class PlayerWin extends JFrame {
 		songNameField.setColumns(10);
 		
 		lblTimePassed = new JLabel("00:00 / 00:00");
+		lblTimePassed.setCursor(Cursor.getPredefinedCursor(Cursor.HAND_CURSOR));
+		lblTimePassed.addMouseListener(new LblTimePassedMouseListener());
 		lblTimePassed.setFont(new Font("Tahoma", Font.PLAIN, 14));
 		
 		panel_1 = new JPanel();
@@ -666,6 +678,12 @@ public class PlayerWin extends JFrame {
 		public void actionPerformed(ActionEvent event) {
 			ReportDlg dlg = new ReportDlg();
 			dlg.setVisible(true);
+		}
+	}
+	private class LblTimePassedMouseListener extends MouseAdapter {
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			showDecreasingTime = !showDecreasingTime;
 		}
 	}
 }
