@@ -91,7 +91,7 @@ public class ListJItem {
 		fullPath = null;
 		duration = -1;
 		//crossfade = false;
-		crossfade = true;
+		crossfade = false;
 		rang = 1;
 	}
 
@@ -113,12 +113,12 @@ public class ListJItem {
 		fullPath = file.getAbsolutePath();
 		fileName = fileName.substring(0, fileName.lastIndexOf("."));
 		//crossfade = false;
-		crossfade = true;
+		crossfade = false;
 		rang = 1;
 	}
 
 	public ListJItem(String fullPath, int frameCount, long duration){
-		crossfade = true;
+		crossfade = false;
 		rang = 1;
 		this.duration = duration;
 		this.frameCount = frameCount;
@@ -137,7 +137,7 @@ public class ListJItem {
 		fileName = entry.getFileName();
 		fullPath = entry.getFullPath();
 		fileName = fileName.substring(0, fileName.lastIndexOf("."));
-		crossfade = true;
+		crossfade = false;
 		rang = 1;
 		cats = entry.getCats();
 	}

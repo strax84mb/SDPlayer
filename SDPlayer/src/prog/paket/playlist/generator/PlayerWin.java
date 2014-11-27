@@ -28,6 +28,7 @@ import prog.paket.dodaci.ListJItem;
 import prog.paket.dodaci.ListJSection;
 import prog.paket.dodaci.PLTableModel;
 import prog.paket.mp3.SD_MP3_Player;
+import prog.paket.playlist.generator.struct.PlayerModule;
 import prog.paket.playlist.generator.struct.ProgSection;
 import prog.paket.report.ReportDlg;
 
@@ -109,6 +110,8 @@ public class PlayerWin extends JFrame {
 
 	public long mins, secs, durr, timePassed;
 	public boolean showDecreasingTime = true;
+	public boolean playListIsFree = true;
+	public PlayerModule currentModule = PlayerModule.NONE;
 	// Sluzi kao zadrska padanja
 	//private int wmHoldOffFall = 0;
 	public JButton btnMic;
@@ -130,6 +133,14 @@ public class PlayerWin extends JFrame {
 	public JButton btnBazaPesama;
 	public Component verticalStrut;
 	public JButton btnReklame;
+
+	public synchronized boolean claimPlayList(PlayerModule module) {
+		if (playListIsFree) {
+			playListIsFree = false;
+			currentModule = module;
+			return true;
+		} else return false;
+	}
 
 	public static PlayerWin getInstance(){
 		return singleton;
@@ -194,6 +205,8 @@ public class PlayerWin extends JFrame {
 			seconds = seconds % 60;
 			lblTimePassed.setText("- " + String.valueOf(minutes) + ":" + 
 					((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);
+			minutes = (int)mins;
+			seconds = (int)secs;
 		} else {
 			lblTimePassed.setText(String.valueOf(minutes) + ":" + 
 					((seconds < 10)?"0" + String.valueOf(seconds):String.valueOf(seconds)) + " " + temp);

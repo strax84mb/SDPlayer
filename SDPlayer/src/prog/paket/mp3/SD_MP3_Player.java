@@ -20,6 +20,7 @@ import javax.sound.sampled.SourceDataLine;
 import prog.paket.automation.ReaderLoader;
 import prog.paket.dodaci.ListJItem;
 import prog.paket.playlist.generator.PlayerWin;
+import prog.paket.playlist.generator.struct.PlayerModule;
 
 public class SD_MP3_Player extends Thread {
 
@@ -197,7 +198,13 @@ public class SD_MP3_Player extends Thread {
 		try {
 			while(!reader.isLoaded()){
 				if(!reader.isLoading()){
+					while (!PlayerWin.getInstance().claimPlayList(PlayerModule.PLAYER)) {
+						waitUp.awaitNanos(20000);
+					}
 					item = mainWin.playList.getNext();
+					PlayerWin.getInstance().playListIsFree = true;
+					if (!mainWin.autoPlayOn)
+						mainWin.autoPlay.orderStartTimesCorrection();
 					reader.markLoading();
 					loader.orderLoading(reader, -1, item, false);
 					System.out.println("Late order to load on: " + reader.name);
@@ -232,8 +239,10 @@ public class SD_MP3_Player extends Thread {
 			}
 			if(fadePos_1 == 144000){
 				fade_1 = FadeMode.FADE_NORMAL;
+				/*
 				for(;pos<inLen_1;pos++)
 					resampled_1[pos] *= main_Gain;
+					*/
 			}
 			break;
 		case FADE_NORMAL:
@@ -563,12 +572,24 @@ public class SD_MP3_Player extends Thread {
 				adjustPlayTime();
 				if(!orderedNext && (durationInSeconds - passedInSeconds < 10)){
 					if(playReader_1){
+						while (!PlayerWin.getInstance().claimPlayList(PlayerModule.PLAYER)) {
+							waitUp.awaitNanos(20000);
+						}
 						item = mainWin.playList.getNext();
+						PlayerWin.getInstance().playListIsFree = true;
+						if (!mainWin.autoPlayOn)
+							mainWin.autoPlay.orderStartTimesCorrection();
 						loader.orderLoading(reader_2, -1, item, false);
 						System.out.println(reader_2.name + " is ordered to load.");
 						reader_1.startTrailCutoff();
 					}else{
+						while (!PlayerWin.getInstance().claimPlayList(PlayerModule.PLAYER)) {
+							waitUp.awaitNanos(20000);
+						}
 						item = mainWin.playList.getNext();
+						PlayerWin.getInstance().playListIsFree = true;
+						if (!mainWin.autoPlayOn)
+							mainWin.autoPlay.orderStartTimesCorrection();
 						loader.orderLoading(reader_1, -1, item, false);
 						System.out.println(reader_1.name + " is ordered to load.");
 						reader_2.startTrailCutoff();
@@ -710,7 +731,13 @@ public class SD_MP3_Player extends Thread {
 					if(!reader_1.isLoaded()){
 						if(!reader_1.isLoading()){
 							System.out.println("Out of turn loading of Reader 1.");
+							while (!PlayerWin.getInstance().claimPlayList(PlayerModule.PLAYER)) {
+								waitUp.awaitNanos(20000);
+							}
 							item = mainWin.playList.getNext();
+							PlayerWin.getInstance().playListIsFree = true;
+							if (!mainWin.autoPlayOn)
+								mainWin.autoPlay.orderStartTimesCorrection();
 							reader_1.markLoading();
 							loader.orderLoading(reader_1, -1, item, true);
 							//playReader_1 = false;
@@ -730,7 +757,13 @@ public class SD_MP3_Player extends Thread {
 					if(!reader_2.isLoaded()){
 						if(!reader_2.isLoading()){
 							System.out.println("Out of turn loading of Reader 2.");
+							while (!PlayerWin.getInstance().claimPlayList(PlayerModule.PLAYER)) {
+								waitUp.awaitNanos(20000);
+							}
 							item = mainWin.playList.getNext();
+							PlayerWin.getInstance().playListIsFree = true;
+							if (!mainWin.autoPlayOn)
+								mainWin.autoPlay.orderStartTimesCorrection();
 							reader_2.markLoading();
 							loader.orderLoading(reader_2, -1, item, true);
 							//playReader_1 = true;
@@ -980,6 +1013,9 @@ public class SD_MP3_Player extends Thread {
 					break;
 				}
 			}catch(Exception e){
+				if (!mainWin.playListIsFree && mainWin.currentModule == PlayerModule.PLAYER) {
+					mainWin.playListIsFree = true;
+				}
 				try {
 					e.printStackTrace(System.out);
 					FileOutputStream fos = new FileOutputStream("greske.txt", true);

@@ -21,6 +21,7 @@ import prog.paket.playlist.generator.struct.CatWithList;
 import prog.paket.playlist.generator.struct.Duration;
 import prog.paket.playlist.generator.struct.FirstCatFilter;
 import prog.paket.playlist.generator.struct.PLGenerator;
+import prog.paket.playlist.generator.struct.PlayerModule;
 import prog.paket.playlist.generator.struct.ProgSection;
 import prog.paket.playlist.generator.struct.ProgSectionType;
 import prog.paket.playlist.generator.struct.SecFileFilter;
@@ -54,6 +55,10 @@ public class AutoPlayThread extends Thread {
 
 	public void orderJumpToFirstCat(){
 		command = 3;
+	}
+
+	public void orderStartTimesCorrection(){
+		command = 4;
 	}
 
 	/**
@@ -162,14 +167,22 @@ public class AutoPlayThread extends Thread {
 					hasJob.awaitNanos(2000000000);
 					break;
 				case 1:
-					command = 0;
+					while (!PlayerWin.getInstance().claimPlayList(PlayerModule.AUTOMATION)) {
+						hasJob.awaitNanos(20000);
+					}
 					adjustPLStartTimes();
 					adjustSection(0);
 					addSectionsToPL(null, null);
 					adjustPLStartTimes();
 					getNextFirstCat();
+					command = 0;
+					PlayerWin.getInstance().playListIsFree = true;
 					//generateMore();
+					break;
 				case 2:
+					while (!PlayerWin.getInstance().claimPlayList(PlayerModule.AUTOMATION)) {
+						hasJob.awaitNanos(20000);
+					}
 					PLTableModel model = PlayerWin.getInstance().playList.getModel();
 					if(leaveLast) pos--;
 					command = 0;
@@ -180,16 +193,34 @@ public class AutoPlayThread extends Thread {
 					for(int i=0;i<pos;i++)
 						rows[i] = i;
 					model.removeRows(rows);
+					PlayerWin.getInstance().playListIsFree = true;
 					break;
 				case 3:
+					while (!PlayerWin.getInstance().claimPlayList(PlayerModule.AUTOMATION)) {
+						hasJob.awaitNanos(20000);
+					}
 					jumpToFirstCat();
 					command = 0;
+					PlayerWin.getInstance().playListIsFree = true;
 					break;
+				case 4:
+					while (!PlayerWin.getInstance().claimPlayList(PlayerModule.AUTOMATION)) {
+						hasJob.awaitNanos(20000);
+					}
+					adjustPLStartTimes();
+					PlayerWin.getInstance().playListIsFree = true;
+					command = 0;
 				case 9:
 					keepRunning = false;
 					break;
 				}
-			}catch(Exception e){e.printStackTrace(System.out);}
+			}catch(Exception e){
+				if (!PlayerWin.getInstance().playListIsFree && 
+						PlayerWin.getInstance().currentModule == PlayerModule.AUTOMATION) {
+					PlayerWin.getInstance().playListIsFree = true;
+				}
+				e.printStackTrace(System.out);
+			}
 		}
 		lock.unlock();
 	}
