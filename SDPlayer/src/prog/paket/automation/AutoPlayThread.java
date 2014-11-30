@@ -176,7 +176,7 @@ public class AutoPlayThread extends Thread {
 					adjustPLStartTimes();
 					getNextFirstCat();
 					command = 0;
-					PlayerWin.getInstance().playListIsFree = true;
+					PlayerWin.getInstance().releasePlayList();
 					//generateMore();
 					break;
 				case 2:
@@ -193,7 +193,7 @@ public class AutoPlayThread extends Thread {
 					for(int i=0;i<pos;i++)
 						rows[i] = i;
 					model.removeRows(rows);
-					PlayerWin.getInstance().playListIsFree = true;
+					PlayerWin.getInstance().releasePlayList();
 					break;
 				case 3:
 					while (!PlayerWin.getInstance().claimPlayList(PlayerModule.AUTOMATION)) {
@@ -201,14 +201,14 @@ public class AutoPlayThread extends Thread {
 					}
 					jumpToFirstCat();
 					command = 0;
-					PlayerWin.getInstance().playListIsFree = true;
+					PlayerWin.getInstance().releasePlayList();
 					break;
 				case 4:
 					while (!PlayerWin.getInstance().claimPlayList(PlayerModule.AUTOMATION)) {
 						hasJob.awaitNanos(20000);
 					}
 					adjustPLStartTimes();
-					PlayerWin.getInstance().playListIsFree = true;
+					PlayerWin.getInstance().releasePlayList();
 					command = 0;
 				case 9:
 					keepRunning = false;
@@ -217,7 +217,7 @@ public class AutoPlayThread extends Thread {
 			}catch(Exception e){
 				if (!PlayerWin.getInstance().playListIsFree && 
 						PlayerWin.getInstance().currentModule == PlayerModule.AUTOMATION) {
-					PlayerWin.getInstance().playListIsFree = true;
+					PlayerWin.getInstance().releasePlayList();
 				}
 				e.printStackTrace(System.out);
 			}

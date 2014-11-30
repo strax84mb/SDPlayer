@@ -780,6 +780,8 @@ public class SD_MP3_Reader {
 					break;
 				}
 				inLen += count;
+			} catch (ArithmeticException e) {
+				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -796,6 +798,9 @@ public class SD_MP3_Reader {
 			if(count == -1) reachedEnd = true;
 			else inLen += count;
 			return count;
+		} catch (ArithmeticException e) {
+			e.printStackTrace();
+			return 0;
 		} catch (IOException e) {
 			e.printStackTrace();
 			return -1;

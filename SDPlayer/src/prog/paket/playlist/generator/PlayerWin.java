@@ -142,6 +142,11 @@ public class PlayerWin extends JFrame {
 		} else return false;
 	}
 
+	public void releasePlayList() {
+		playListIsFree = true;
+		currentModule = PlayerModule.NONE;
+	}
+
 	public static PlayerWin getInstance(){
 		return singleton;
 	}

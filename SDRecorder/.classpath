@@ -16,5 +16,6 @@
 	<classpathentry kind="lib" path="lib/jma-api-0.0.1-SNAPSHOT.jar"/>
 	<classpathentry kind="lib" path="lib/jna.jar"/>
 	<classpathentry kind="lib" path="lib/lamejb.jar"/>
+	<classpathentry kind="lib" path="lib/tritonus_mp3-0.3.6.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

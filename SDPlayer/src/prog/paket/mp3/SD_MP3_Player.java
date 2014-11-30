@@ -202,7 +202,7 @@ public class SD_MP3_Player extends Thread {
 						waitUp.awaitNanos(20000);
 					}
 					item = mainWin.playList.getNext();
-					PlayerWin.getInstance().playListIsFree = true;
+					PlayerWin.getInstance().releasePlayList();
 					if (!mainWin.autoPlayOn)
 						mainWin.autoPlay.orderStartTimesCorrection();
 					reader.markLoading();
@@ -576,7 +576,7 @@ public class SD_MP3_Player extends Thread {
 							waitUp.awaitNanos(20000);
 						}
 						item = mainWin.playList.getNext();
-						PlayerWin.getInstance().playListIsFree = true;
+						PlayerWin.getInstance().releasePlayList();
 						if (!mainWin.autoPlayOn)
 							mainWin.autoPlay.orderStartTimesCorrection();
 						loader.orderLoading(reader_2, -1, item, false);
@@ -587,7 +587,7 @@ public class SD_MP3_Player extends Thread {
 							waitUp.awaitNanos(20000);
 						}
 						item = mainWin.playList.getNext();
-						PlayerWin.getInstance().playListIsFree = true;
+						PlayerWin.getInstance().releasePlayList();
 						if (!mainWin.autoPlayOn)
 							mainWin.autoPlay.orderStartTimesCorrection();
 						loader.orderLoading(reader_1, -1, item, false);
@@ -735,7 +735,7 @@ public class SD_MP3_Player extends Thread {
 								waitUp.awaitNanos(20000);
 							}
 							item = mainWin.playList.getNext();
-							PlayerWin.getInstance().playListIsFree = true;
+							PlayerWin.getInstance().releasePlayList();
 							if (!mainWin.autoPlayOn)
 								mainWin.autoPlay.orderStartTimesCorrection();
 							reader_1.markLoading();
@@ -761,7 +761,7 @@ public class SD_MP3_Player extends Thread {
 								waitUp.awaitNanos(20000);
 							}
 							item = mainWin.playList.getNext();
-							PlayerWin.getInstance().playListIsFree = true;
+							PlayerWin.getInstance().releasePlayList();
 							if (!mainWin.autoPlayOn)
 								mainWin.autoPlay.orderStartTimesCorrection();
 							reader_2.markLoading();
@@ -1014,7 +1014,7 @@ public class SD_MP3_Player extends Thread {
 				}
 			}catch(Exception e){
 				if (!mainWin.playListIsFree && mainWin.currentModule == PlayerModule.PLAYER) {
-					mainWin.playListIsFree = true;
+					mainWin.releasePlayList();
 				}
 				try {
 					e.printStackTrace(System.out);
