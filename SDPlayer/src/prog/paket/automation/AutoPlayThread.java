@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileFilter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.locks.Condition;
@@ -255,11 +257,22 @@ public class AutoPlayThread extends Thread {
 		}catch(Exception e){
 			e.printStackTrace(System.out);
 		}
-		PlayerWin.getInstance().btnAutoPlay.doClick();
-		PlayerWin.getInstance().btnStop.doClick();
 		PLTableModel model = PlayerWin.getPlayListModel();
+		List<ListJItem> items = new ArrayList<ListJItem>();
+		ListJItem temp;
+		for(int i=0;i<model.getRowCount();i++){
+			temp = model.getItemAt(i);
+			if(temp.droppedToPL)
+				items.add(temp);
+		}
 		model.setRowCount(0);
-		PlayerWin.getInstance().btnAutoPlay.doClick();
+		File[] files = getSortedFileList(new FirstCatFilter());
+		ProgSection section = findNextSection(System.currentTimeMillis() - 90000, files);
+		model.addRow(section.generateListJSection());
+		for(int i=0;i<section.songs.size();i++)
+			model.addRow(section.songs.get(i));
+		for(int i=0;i<items.size();i++)
+			model.addRow(items.get(i));
 	}
 
 	private void getNextFirstCat() throws IOException {

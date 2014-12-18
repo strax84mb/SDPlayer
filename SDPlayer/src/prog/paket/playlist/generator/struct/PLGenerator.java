@@ -731,8 +731,10 @@ public class PLGenerator {
 		cal.set(Calendar.DAY_OF_MONTH, 5);
 		cal.set(Calendar.MONTH, Calendar.MARCH);
 		cal.set(Calendar.YEAR, 2015);
+		/*
 		if((new Date()).after(cal.getTime()))
 			return;
+			*/
 		sections.clear();
 		loadCategories();
 		loadScheduledTypes();
