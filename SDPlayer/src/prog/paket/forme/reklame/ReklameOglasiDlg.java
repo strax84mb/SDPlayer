@@ -181,9 +181,17 @@ public class ReklameOglasiDlg extends JFrame {
 					ObjectInputStream ois = new ObjectInputStream(fis);
 					type.name = ois.readUTF();
 					pathStr = ois.readUTF();
-					type.najava = (pathStr.equals("null"))?null:new ListJItem(pathStr);
+					try {
+						type.najava = (pathStr.equals("null"))?null:new ListJItem(pathStr);
+					} catch(IOException e){
+						type.najava = null;
+					}
 					pathStr = ois.readUTF();
-					type.odjava = (pathStr.equals("null"))?null:new ListJItem(pathStr);
+					try {
+						type.odjava = (pathStr.equals("null"))?null:new ListJItem(pathStr);
+					} catch(IOException e){
+						type.odjava = null;
+					}
 					type.prioritet = ois.readByte();
 					count_len = ois.readInt();
 					for(count=0;count<count_len;count++){
