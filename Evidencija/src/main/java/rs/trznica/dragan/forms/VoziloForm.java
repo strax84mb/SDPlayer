@@ -10,14 +10,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.beans.PropertyVetoException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -33,11 +32,12 @@ import org.springframework.validation.DataBinder;
 import rs.trznica.dragan.dao.PotrosacDao;
 import rs.trznica.dragan.dto.tankovanje.PotrosacDto;
 import rs.trznica.dragan.entities.support.GorivoType;
+import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.validator.tankovanje.PotrosacValidator;
 
 @org.springframework.stereotype.Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class VoziloForm extends JInternalFrame {
+public class VoziloForm extends JDialog {
 
 	/** Serial version UID */
 	private static final long serialVersionUID = -7441354109420247986L;
@@ -53,20 +53,25 @@ public class VoziloForm extends JInternalFrame {
 
 	private Long entityId;
 
+	private ModalResult modalResult = ModalResult.CANCEL;
+
 	@Autowired
 	private PotrosacDao potrosacDao;
 
-	private JInternalFrame getThisForm() {
-		return this;
+	public ModalResult getModalResult() {
+		return modalResult;
+	}
+
+	private void setModalResult(ModalResult modalResult) {
+		this.modalResult = modalResult;
 	}
 
 	/**
 	 * Create the frame.
 	 */
 	public VoziloForm() {
+		setModal(true);
 		setTitle("Potro\u0161a\u010D");
-		setClosable(true);
-		setIconifiable(true);
 		getContentPane().setFont(defaultFont);
 		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 450, 313);
@@ -233,11 +238,8 @@ public class VoziloForm extends JInternalFrame {
 	}
 	private class BtnCancelActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent ev) {
-			try {
-				getThisForm().setClosed(true);
-			} catch (PropertyVetoException e) {
-				e.printStackTrace();
-			}
+			setModalResult(ModalResult.CANCEL);
+			setVisible(false);
 		}
 	}
 	private class BtnOkActionListener implements ActionListener {
@@ -248,12 +250,10 @@ public class VoziloForm extends JInternalFrame {
 			new PotrosacValidator().validate(dto, result);
 			if (result.getErrorCount() == 0) {
 				potrosacDao.save(dto.createNewEntity());
-				try {
-					getThisForm().setClosed(true);
-				} catch (PropertyVetoException e) {
-					e.printStackTrace();
-				}
+				setModalResult(ModalResult.OK);
+				setVisible(false);
 			} else {
+				setModalResult(ModalResult.CANCEL);
 				ErrorDialog dialog = new ErrorDialog();
 				dialog.showErrors(result);
 			}
