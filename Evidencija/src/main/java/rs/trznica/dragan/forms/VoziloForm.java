@@ -1,0 +1,262 @@
+package rs.trznica.dragan.forms;
+
+import java.awt.BorderLayout;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.beans.PropertyVetoException;
+
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JCheckBox;
+import javax.swing.JComboBox;
+import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTextField;
+import javax.swing.border.EmptyBorder;
+
+import org.eclipse.wb.swing.FocusTraversalOnArray;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.annotation.Scope;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
+
+import rs.trznica.dragan.dao.PotrosacDao;
+import rs.trznica.dragan.dto.tankovanje.PotrosacDto;
+import rs.trznica.dragan.entities.support.GorivoType;
+import rs.trznica.dragan.validator.tankovanje.PotrosacValidator;
+
+@org.springframework.stereotype.Component
+@Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
+public class VoziloForm extends JInternalFrame {
+
+	/** Serial version UID */
+	private static final long serialVersionUID = -7441354109420247986L;
+
+	private Font defaultFont = new Font("Times New Roman", Font.PLAIN, 18);
+
+	private JCheckBox cbxVozilo;
+	private JCheckBox cbxTeretnjak;
+	private JTextField tfTip;
+	private JTextField tfMarka;
+	private JTextField tfRegOznaka;
+	private JComboBox<GorivoType> cbGorivo;
+
+	private Long entityId;
+
+	@Autowired
+	private PotrosacDao potrosacDao;
+
+	private JInternalFrame getThisForm() {
+		return this;
+	}
+
+	/**
+	 * Create the frame.
+	 */
+	public VoziloForm() {
+		setTitle("Potro\u0161a\u010D");
+		setClosable(true);
+		setIconifiable(true);
+		getContentPane().setFont(defaultFont);
+		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setBounds(100, 100, 450, 313);
+		
+		JPanel panelTop = new JPanel();
+		getContentPane().add(panelTop, BorderLayout.NORTH);
+		
+		JLabel lblTitle = new JLabel("Potro\u0161a\u010D");
+		lblTitle.setFont(new Font("Times New Roman", Font.PLAIN, 20));
+		panelTop.add(lblTitle);
+		
+		JPanel panelBottom = new JPanel();
+		panelBottom.setBorder(new EmptyBorder(0, 0, 5, 0));
+		getContentPane().add(panelBottom, BorderLayout.SOUTH);
+		panelBottom.setLayout(new BoxLayout(panelBottom, BoxLayout.X_AXIS));
+		
+		Component horizontalGlue = Box.createHorizontalGlue();
+		panelBottom.add(horizontalGlue);
+		
+		JButton btnOk = new JButton("Snimi");
+		btnOk.addActionListener(new BtnOkActionListener());
+		btnOk.setFont(defaultFont);
+		btnOk.setAlignmentX(Component.CENTER_ALIGNMENT);
+		panelBottom.add(btnOk);
+		
+		Component horizontalStrut = Box.createHorizontalStrut(20);
+		panelBottom.add(horizontalStrut);
+		
+		JButton btnCancel = new JButton("Otka\u017Ei");
+		btnCancel.addActionListener(new BtnCancelActionListener());
+		btnCancel.setFont(defaultFont);
+		panelBottom.add(btnCancel);
+		
+		Component horizontalGlue_1 = Box.createHorizontalGlue();
+		panelBottom.add(horizontalGlue_1);
+		
+		JPanel panelCenter = new JPanel();
+		panelCenter.setBorder(new EmptyBorder(0, 10, 0, 10));
+		getContentPane().add(panelCenter, BorderLayout.CENTER);
+		GridBagLayout gbl_panelCenter = new GridBagLayout();
+		gbl_panelCenter.columnWidths = new int[] {173, 251};
+		gbl_panelCenter.rowHeights = new int[] {0, 0, 0, 0, 0};
+		gbl_panelCenter.columnWeights = new double[]{0.0, 1.0};
+		gbl_panelCenter.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0};
+		panelCenter.setLayout(gbl_panelCenter);
+		
+		cbxVozilo = new JCheckBox("Potro\u0161a\u010D je vozilo");
+		cbxVozilo.addItemListener(new CbxVoziloItemListener());
+		cbxVozilo.setFont(defaultFont);
+		GridBagConstraints gbc_cbxVozilo = new GridBagConstraints();
+		gbc_cbxVozilo.anchor = GridBagConstraints.WEST;
+		gbc_cbxVozilo.insets = new Insets(0, 0, 5, 5);
+		gbc_cbxVozilo.gridx = 0;
+		gbc_cbxVozilo.gridy = 0;
+		panelCenter.add(cbxVozilo, gbc_cbxVozilo);
+		
+		cbxTeretnjak = new JCheckBox("Vozilo je teretnjak");
+		cbxTeretnjak.setFont(defaultFont);
+		cbxTeretnjak.setEnabled(false);
+		GridBagConstraints gbc_cbxTeretnjak = new GridBagConstraints();
+		gbc_cbxTeretnjak.insets = new Insets(0, 0, 5, 0);
+		gbc_cbxTeretnjak.anchor = GridBagConstraints.WEST;
+		gbc_cbxTeretnjak.gridx = 1;
+		gbc_cbxTeretnjak.gridy = 0;
+		panelCenter.add(cbxTeretnjak, gbc_cbxTeretnjak);
+		
+		JLabel lblGorivo = new JLabel("Gorivo:");
+		lblGorivo.setFont(defaultFont);
+		GridBagConstraints gbc_lblGorivo = new GridBagConstraints();
+		gbc_lblGorivo.anchor = GridBagConstraints.WEST;
+		gbc_lblGorivo.insets = new Insets(0, 0, 5, 5);
+		gbc_lblGorivo.gridx = 0;
+		gbc_lblGorivo.gridy = 1;
+		panelCenter.add(lblGorivo, gbc_lblGorivo);
+		
+		cbGorivo = new JComboBox<GorivoType>();
+		cbGorivo.setFont(defaultFont);
+		GridBagConstraints gbc_cbGorivo = new GridBagConstraints();
+		gbc_cbGorivo.insets = new Insets(0, 0, 5, 0);
+		gbc_cbGorivo.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cbGorivo.gridx = 1;
+		gbc_cbGorivo.gridy = 1;
+		panelCenter.add(cbGorivo, gbc_cbGorivo);
+		
+		JLabel lblTip = new JLabel("Tip:");
+		lblTip.setFont(defaultFont);
+		GridBagConstraints gbc_lblTip = new GridBagConstraints();
+		gbc_lblTip.anchor = GridBagConstraints.WEST;
+		gbc_lblTip.insets = new Insets(0, 0, 5, 5);
+		gbc_lblTip.gridx = 0;
+		gbc_lblTip.gridy = 2;
+		panelCenter.add(lblTip, gbc_lblTip);
+		
+		tfTip = new JTextField();
+		tfTip.setFont(defaultFont);
+		GridBagConstraints gbc_tfTip = new GridBagConstraints();
+		gbc_tfTip.fill = GridBagConstraints.HORIZONTAL;
+		gbc_tfTip.insets = new Insets(0, 0, 5, 0);
+		gbc_tfTip.gridx = 1;
+		gbc_tfTip.gridy = 2;
+		panelCenter.add(tfTip, gbc_tfTip);
+		tfTip.setColumns(10);
+		
+		JLabel lblMarka = new JLabel("Marka:");
+		lblMarka.setFont(defaultFont);
+		GridBagConstraints gbc_lblMarka = new GridBagConstraints();
+		gbc_lblMarka.anchor = GridBagConstraints.WEST;
+		gbc_lblMarka.insets = new Insets(0, 0, 5, 5);
+		gbc_lblMarka.gridx = 0;
+		gbc_lblMarka.gridy = 3;
+		panelCenter.add(lblMarka, gbc_lblMarka);
+		
+		tfMarka = new JTextField();
+		tfMarka.setEnabled(false);
+		tfMarka.setFont(defaultFont);
+		GridBagConstraints gbc_tfMarka = new GridBagConstraints();
+		gbc_tfMarka.insets = new Insets(0, 0, 5, 0);
+		gbc_tfMarka.fill = GridBagConstraints.HORIZONTAL;
+		gbc_tfMarka.gridx = 1;
+		gbc_tfMarka.gridy = 3;
+		panelCenter.add(tfMarka, gbc_tfMarka);
+		tfMarka.setColumns(10);
+		
+		JLabel lblRegOznaka = new JLabel("Reg. oznaka:");
+		lblRegOznaka.setFont(defaultFont);
+		GridBagConstraints gbc_lblRegOznaka = new GridBagConstraints();
+		gbc_lblRegOznaka.anchor = GridBagConstraints.WEST;
+		gbc_lblRegOznaka.insets = new Insets(0, 0, 5, 5);
+		gbc_lblRegOznaka.gridx = 0;
+		gbc_lblRegOznaka.gridy = 4;
+		panelCenter.add(lblRegOznaka, gbc_lblRegOznaka);
+		
+		tfRegOznaka = new JTextField();
+		tfRegOznaka.setEnabled(false);
+		tfRegOznaka.setFont(defaultFont);
+		GridBagConstraints gbc_tfRegOznaka = new GridBagConstraints();
+		gbc_tfRegOznaka.insets = new Insets(0, 0, 5, 0);
+		gbc_tfRegOznaka.fill = GridBagConstraints.HORIZONTAL;
+		gbc_tfRegOznaka.gridx = 1;
+		gbc_tfRegOznaka.gridy = 4;
+		panelCenter.add(tfRegOznaka, gbc_tfRegOznaka);
+		tfRegOznaka.setColumns(10);
+
+		for (GorivoType gorivo : GorivoType.values()) {
+			cbGorivo.addItem(gorivo);
+		}
+		cbGorivo.setSelectedIndex(0);
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{cbxVozilo, cbxTeretnjak, cbGorivo, tfTip, tfMarka, tfRegOznaka, btnOk, btnCancel}));
+	}
+
+	private class CbxVoziloItemListener implements ItemListener {
+		public void itemStateChanged(ItemEvent ev) {
+			if (ev.getStateChange() == ItemEvent.SELECTED) {
+				cbxTeretnjak.setEnabled(true);
+				tfMarka.setEnabled(true);
+				tfRegOznaka.setEnabled(true);
+			} else if (ev.getStateChange() == ItemEvent.DESELECTED) {
+				cbxTeretnjak.setEnabled(false);
+				cbxTeretnjak.setSelected(false);
+				tfMarka.setEnabled(false);
+				tfRegOznaka.setEnabled(false);
+			}
+		}
+	}
+	private class BtnCancelActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ev) {
+			try {
+				getThisForm().setClosed(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+	private class BtnOkActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ev) {
+			PotrosacDto dto = new PotrosacDto(entityId, tfRegOznaka.getText(), tfMarka.getText(), tfTip.getText(), 
+					cbxVozilo.isSelected(), cbxTeretnjak.isSelected(), cbGorivo.getItemAt(cbGorivo.getSelectedIndex()));
+			BindingResult result = new DataBinder(dto).getBindingResult();
+			new PotrosacValidator().validate(dto, result);
+			if (result.getErrorCount() == 0) {
+				potrosacDao.save(dto.createNewEntity());
+				try {
+					getThisForm().setClosed(true);
+				} catch (PropertyVetoException e) {
+					e.printStackTrace();
+				}
+			} else {
+				ErrorDialog dialog = new ErrorDialog();
+				dialog.showErrors(result);
+			}
+		}
+	}
+}
