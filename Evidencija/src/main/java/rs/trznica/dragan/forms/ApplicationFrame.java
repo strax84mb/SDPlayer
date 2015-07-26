@@ -34,7 +34,8 @@ public class ApplicationFrame extends JFrame {
 
 	@Autowired
 	private ApplicationContext ctx;
-	private final NewConsumerAction newConsumerAction = new NewConsumerAction();
+	private final Action newConsumerAction = new NewConsumerAction();
+	private final Action newFillupAction = new NewFillupAction();
 
 	/**
 	 * Create the frame.
@@ -68,6 +69,15 @@ public class ApplicationFrame extends JFrame {
 		JMenu mnFillups = new JMenu("Tankovanja");
 		mnFillups.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		menuBar.add(mnFillups);
+		
+		JMenuItem mntmNewFillup = new JMenuItem("Unesi tankovanje");
+		mntmNewFillup.setAction(newFillupAction);
+		mntmNewFillup.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		mnFillups.add(mntmNewFillup);
+		
+		JMenuItem mntmListFillups = new JMenuItem("Lista tankovanja");
+		mntmListFillups.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		mnFillups.add(mntmListFillups);
 		
 		java.awt.Component horizontalGlue = Box.createHorizontalGlue();
 		menuBar.add(horizontalGlue);
@@ -110,6 +120,17 @@ public class ApplicationFrame extends JFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			VoziloForm form = ctx.getBean(VoziloForm.class);
+			form.setVisible(true);
+			form.dispose();
+		}
+	}
+	private class NewFillupAction extends AbstractAction {
+		private static final long serialVersionUID = 5087940145405045218L;
+		public NewFillupAction() {
+			putValue(NAME, "Unesi tankovanje");
+		}
+		public void actionPerformed(ActionEvent e) {
+			TankovanjeDialog form = ctx.getBean(TankovanjeDialog.class);
 			form.setVisible(true);
 			form.dispose();
 		}

@@ -25,6 +25,7 @@ import javax.swing.border.EmptyBorder;
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
@@ -55,7 +56,6 @@ public class VoziloForm extends JDialog {
 
 	private ModalResult modalResult = ModalResult.CANCEL;
 
-	@Autowired
 	private PotrosacDao potrosacDao;
 
 	public ModalResult getModalResult() {
@@ -69,11 +69,13 @@ public class VoziloForm extends JDialog {
 	/**
 	 * Create the frame.
 	 */
-	public VoziloForm() {
+	@Autowired
+	public VoziloForm(ApplicationContext ctx) {
+		potrosacDao = ctx.getBean(PotrosacDao.class);
 		setModal(true);
 		setTitle("Potro\u0161a\u010D");
 		getContentPane().setFont(defaultFont);
-		setDefaultCloseOperation(DISPOSE_ON_CLOSE);
+		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 313);
 		
 		JPanel panelTop = new JPanel();

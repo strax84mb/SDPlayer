@@ -5,12 +5,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 
 import rs.trznica.dragan.forms.ApplicationFrame;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@ComponentScan(basePackages={"rs.trznica.dragan.forms"}, basePackageClasses={AppConfig.class})
+@Import(AppConfig.class)
+@ComponentScan(basePackages={"rs.trznica.dragan.forms", "rs.trznica.dragan.dao"})
 public class ApplicationStarter {
 
 	/**
