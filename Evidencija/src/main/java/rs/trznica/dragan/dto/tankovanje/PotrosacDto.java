@@ -3,7 +3,7 @@ package rs.trznica.dragan.dto.tankovanje;
 import rs.trznica.dragan.entities.support.GorivoType;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
 
-public class PotrosacDto {
+public class PotrosacDto extends BaseDto {
 
 	private Long id;
 
@@ -87,6 +87,11 @@ public class PotrosacDto {
 	}
 
 	public Potrosac createNewEntity() {
+		return (Potrosac) createEntityFromData();
+	}
+
+	@Override
+	protected Object createEntityFromData() {
 		Potrosac entity = new Potrosac();
 		entity.setId(id);
 		entity.setRegOznaka(regOznaka);

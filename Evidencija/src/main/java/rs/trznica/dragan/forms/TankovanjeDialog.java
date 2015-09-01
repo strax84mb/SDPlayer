@@ -31,12 +31,17 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.DataBinder;
 
 import rs.trznica.dragan.dao.PotrosacDao;
 import rs.trznica.dragan.dao.TankovanjeDao;
+import rs.trznica.dragan.dto.tankovanje.TankovanjeDto;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
+import rs.trznica.dragan.entities.tankovanje.Tankovanje;
 import rs.trznica.dragan.forms.support.DecimalFormater;
 import rs.trznica.dragan.forms.support.ModalResult;
+import rs.trznica.dragan.validator.tankovanje.TankovanjeValidator;
 
 import com.toedter.calendar.JDateChooser;
 import java.awt.Dimension;
@@ -259,6 +264,7 @@ public class TankovanjeDialog extends GenericDialog {
 			}
 			{
 				btnSnimi = new JButton("Snimi");
+				btnSnimi.addActionListener(new BtnSnimiActionListener());
 				btnSnimi.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 				btnSnimi.setActionCommand("OK");
 				buttonPane.add(btnSnimi);
@@ -372,6 +378,37 @@ public class TankovanjeDialog extends GenericDialog {
 				getTfMesec().setText(sdf.format(date));
 			}
 		}
+	}
+	private class BtnSnimiActionListener implements ActionListener {
+
+		public void actionPerformed(ActionEvent ev) {
+			TankovanjeDto dto = new TankovanjeDto(
+					((cbPotrosac.getSelectedItem() != null) ? ((Potrosac)cbPotrosac.getSelectedItem()).getId() : null),
+					dpDatum.getDate(),
+					tfMesec.getText(),
+					tfKolicina.getText(),
+					tfJedCena.getText());
+			BindingResult bindingResult = new DataBinder(dto).getBindingResult();
+			new TankovanjeValidator().validate(dto, bindingResult);
+			if (bindingResult.getErrorCount() == 0) {
+				Tankovanje tankovanje = new Tankovanje();
+				tankovanje.setPotrosac((Potrosac)cbPotrosac.getSelectedItem());
+				tankovanje.setDatum(dpDatum.getDate());
+				tankovanje.setMesec(tfMesec.getText());
+				tankovanje.setKolicina(DecimalFormater.parseToLong(tfKolicina.getText(), 3));
+				tankovanje.setJedCena(DecimalFormater.parseToLong(tfJedCena.getText(), 2));
+				tankovanje = tankovanjeDao.save(tankovanje);
+				modalResult = ModalResult.OK;
+				setVisible(false);
+			} else {
+				modalResult = ModalResult.CANCEL;
+				ErrorDialog dialog = new ErrorDialog();
+				dialog.showErrors(bindingResult);
+			}
+			
+			
+		}
+		
 	}
 
 }
