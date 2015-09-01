@@ -5,6 +5,8 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,6 +29,7 @@ import org.springframework.context.annotation.Scope;
 
 import rs.trznica.dragan.dao.PotrosacDao;
 import rs.trznica.dragan.dao.TankovanjeDao;
+import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.forms.support.ConsumerCheckBox;
 
 @org.springframework.stereotype.Component
@@ -47,6 +50,8 @@ public class TankovanjeListaForm extends JInternalFrame {
 	private void populateAutowiredFields(ApplicationContext ctx) {
 		potrosacDao = ctx.getBean(PotrosacDao.class);
 		tankovanjeDao = ctx.getBean(TankovanjeDao.class);
+
+		potrosacDao.findAll().forEach(x -> consumers.add(new ConsumerCheckBox(x)));
 	}
 
 	/**
@@ -116,6 +121,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 		paramsPanel.add(verticalGlue);
 		
 		JCheckBox chckbxHideObsolete = new JCheckBox("Sakrij zastarele");
+		chckbxHideObsolete.addItemListener(new ChckbxHideObsoleteItemListener());
 		chckbxHideObsolete.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		paramsPanel.add(chckbxHideObsolete);
 		
@@ -132,4 +138,16 @@ public class TankovanjeListaForm extends JInternalFrame {
 		return chckbxAll;
 	}
 
+	private ConsumerCheckBox getCheckBoxById(Long id) {
+		return consumers.stream()
+				.filter(x -> x.getConsumer().getId().equals(id))
+				.findFirst()
+				.get();
+	}
+
+	private class ChckbxHideObsoleteItemListener implements ItemListener {
+		public void itemStateChanged(ItemEvent ev) {
+			// TODO dodaj sakivanje zastarelih vozila
+		}
+	}
 }
