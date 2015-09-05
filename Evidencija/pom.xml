@@ -4,6 +4,12 @@
 	<artifactId>Evidencija</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 
+	<properties>
+		<!-- maven-compiler-plugin configuration -->
+		<maven.compiler.source>1.5</maven.compiler.source>
+		<maven.compiler.target>1.5</maven.compiler.target>
+	</properties>
+
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework</groupId>
@@ -55,6 +61,13 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 			<version>4.12</version>
+		</dependency>
+
+		<!-- XLS editing -->
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>3.12</version>
 		</dependency>
 	</dependencies>
 </project>

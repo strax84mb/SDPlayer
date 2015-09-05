@@ -60,6 +60,7 @@ public class TankovanjeDialog extends GenericDialog {
 	private JTextField tfJedCena;
 	private JTextField tfUkupno;
 	private JTextField tfKolicina;
+	private JTextField tfKM;
 	private JLabel lblConsumer;
 	private JComboBox<Potrosac> cbPotrosac;
 	private JLabel lblGorivo;
@@ -70,6 +71,7 @@ public class TankovanjeDialog extends GenericDialog {
 	private JLabel lblKolicina;
 	private JLabel lblCenaLitre;
 	private JLabel lblUkupno;
+	private JLabel lblKM;
 	private JPanel buttonPane;
 	private java.awt.Component horizontalGlue_1;
 	private JButton btnSnimi;
@@ -93,7 +95,7 @@ public class TankovanjeDialog extends GenericDialog {
 		setModal(true);
 		setTitle("Tankovanje");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setBounds(100, 100, 396, 334);
+		setBounds(100, 100, 396, 375);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
@@ -162,7 +164,6 @@ public class TankovanjeDialog extends GenericDialog {
 			GridBagConstraints gbc_dpDatum = new GridBagConstraints();
 			gbc_dpDatum.anchor = GridBagConstraints.WEST;
 			gbc_dpDatum.insets = new Insets(0, 0, 5, 0);
-			gbc_dpDatum.fill = GridBagConstraints.VERTICAL;
 			gbc_dpDatum.gridx = 1;
 			gbc_dpDatum.gridy = 2;
 			contentPanel.add(dpDatum, gbc_dpDatum);
@@ -236,7 +237,7 @@ public class TankovanjeDialog extends GenericDialog {
 			lblUkupno = new JLabel("Ukupno:");
 			lblUkupno.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 			GridBagConstraints gbc_lblUkupno = new GridBagConstraints();
-			gbc_lblUkupno.insets = new Insets(0, 0, 0, 5);
+			gbc_lblUkupno.insets = new Insets(0, 0, 5, 5);
 			gbc_lblUkupno.anchor = GridBagConstraints.EAST;
 			gbc_lblUkupno.gridx = 0;
 			gbc_lblUkupno.gridy = 6;
@@ -248,10 +249,32 @@ public class TankovanjeDialog extends GenericDialog {
 			tfUkupno.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 			GridBagConstraints gbc_tfUkupno = new GridBagConstraints();
 			gbc_tfUkupno.anchor = GridBagConstraints.WEST;
+			gbc_tfUkupno.insets = new Insets(0, 0, 5, 0);
 			gbc_tfUkupno.gridx = 1;
 			gbc_tfUkupno.gridy = 6;
 			contentPanel.add(tfUkupno, gbc_tfUkupno);
 			tfUkupno.setColumns(10);
+		}
+		{
+			lblKM = new JLabel("KM:");
+			lblKM.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+			GridBagConstraints gbc_lblKM = new GridBagConstraints();
+			gbc_lblKM.anchor = GridBagConstraints.EAST;
+			gbc_lblKM.insets = new Insets(0, 0, 0, 5);
+			gbc_lblKM.gridx = 0;
+			gbc_lblKM.gridy = 7;
+			contentPanel.add(lblKM, gbc_lblKM);
+		}
+		{
+			tfKM = new JTextField();
+			tfKM.setColumns(10);
+			tfKM.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+			GridBagConstraints gbc_tfKM = new GridBagConstraints();
+			gbc_tfKM.anchor = GridBagConstraints.WEST;
+			gbc_tfKM.gridx = 1;
+			gbc_tfKM.gridy = 7;
+			contentPanel.add(tfKM, gbc_tfKM);
+			tfMesec.setColumns(10);
 		}
 		{
 			buttonPane = new JPanel();
@@ -286,7 +309,7 @@ public class TankovanjeDialog extends GenericDialog {
 				buttonPane.add(horizontalGlue);
 			}
 		}
-		setFocusTraversalPolicy(new FocusTraversalOnArray(new java.awt.Component[]{getContentPane(), contentPanel, lblConsumer, cbPotrosac, lblGorivo, lblIzabranoGorivo, lblDatum, dpDatum, lblMesec, tfMesec, lblKolicina, tfKolicina, lblCenaLitre, tfJedCena, lblUkupno, tfUkupno, buttonPane, horizontalGlue_1, btnSnimi, horizontalStrut, btnOtkazi, horizontalGlue}));
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new java.awt.Component[]{cbPotrosac, dpDatum, tfMesec, tfKolicina, tfJedCena, tfUkupno, btnSnimi, btnOtkazi}));
 		populateConsumers();
 	}
 
@@ -366,7 +389,7 @@ public class TankovanjeDialog extends GenericDialog {
 				getTfUkupno().setText(DecimalFormater.formatFromDouble(number * DecimalFormater.parseToDouble(getTfKolicina().getText()), 2));
 			} catch (Exception e) {
 				e.printStackTrace();
-				getTfKolicina().setText("");
+				getTfUkupno().setText("");
 			}
 		}
 	}
@@ -387,7 +410,8 @@ public class TankovanjeDialog extends GenericDialog {
 					dpDatum.getDate(),
 					tfMesec.getText(),
 					tfKolicina.getText(),
-					tfJedCena.getText());
+					tfJedCena.getText(),
+					tfKM.getText());
 			BindingResult bindingResult = new DataBinder(dto).getBindingResult();
 			new TankovanjeValidator().validate(dto, bindingResult);
 			if (bindingResult.getErrorCount() == 0) {
@@ -395,7 +419,7 @@ public class TankovanjeDialog extends GenericDialog {
 				tankovanje.setPotrosac((Potrosac)cbPotrosac.getSelectedItem());
 				tankovanje.setDatum(dpDatum.getDate());
 				tankovanje.setMesec(tfMesec.getText());
-				tankovanje.setKolicina(DecimalFormater.parseToLong(tfKolicina.getText(), 3));
+				tankovanje.setKolicina(DecimalFormater.parseToLong(tfKolicina.getText(), 2));
 				tankovanje.setJedCena(DecimalFormater.parseToLong(tfJedCena.getText(), 2));
 				tankovanje = tankovanjeDao.save(tankovanje);
 				modalResult = ModalResult.OK;

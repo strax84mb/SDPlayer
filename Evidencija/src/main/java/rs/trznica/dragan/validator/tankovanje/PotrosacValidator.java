@@ -13,7 +13,7 @@ public class PotrosacValidator implements Validator {
 	}
 
 	public void validate(Object obj, Errors errors) {
-		if (supports(obj.getClass())) {
+		if (!supports(obj.getClass())) {
 			errors.reject("Pogrešan objekat u kodu!");
 			return;
 		}

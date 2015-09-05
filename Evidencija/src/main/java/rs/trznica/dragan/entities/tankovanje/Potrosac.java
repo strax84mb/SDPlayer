@@ -2,6 +2,8 @@ package rs.trznica.dragan.entities.tankovanje;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -31,6 +33,7 @@ public class Potrosac {
 	private Boolean teretnjak = false;
 
 	@Column(nullable = false)
+	@Enumerated(EnumType.STRING)
 	private GorivoType gorivo = GorivoType.BMB;
 
 	public Long getId() {
@@ -91,7 +94,7 @@ public class Potrosac {
 
 	@Override
 	public String toString() {
-		return (regOznaka != null) ? regOznaka + " - " + marka + " " + tip : tip ;
+		return (Boolean.TRUE.equals(vozilo)) ? regOznaka + " - " + marka + " " + tip : tip ;
 	}
 
 }

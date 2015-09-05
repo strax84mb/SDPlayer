@@ -31,6 +31,9 @@ public class Tankovanje {
 	@Column(length = 10, nullable = false)
 	private String mesec = "";
 
+	@Column(nullable = false)
+	private Long kilometraza;
+
 	public Long getId() {
 		return id;
 	}
@@ -77,6 +80,14 @@ public class Tankovanje {
 
 	public void setMesec(String mesec) {
 		this.mesec = mesec;
+	}
+
+	public Long getKilometraza() {
+		return kilometraza;
+	}
+
+	public void setKilometraza(Long kilometraza) {
+		this.kilometraza = kilometraza;
 	}
 
 }

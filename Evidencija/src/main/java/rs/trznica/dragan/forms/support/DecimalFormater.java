@@ -18,7 +18,7 @@ public abstract class DecimalFormater {
 		} else if (str .length() == decimals) {
 			return new StringBuilder("0,").append(str).toString();
 		} else {
-			return new StringBuilder().insert(str.length() - decimals, ',').toString();
+			return new StringBuilder(str).insert(str.length() - decimals, ',').toString();
 		}
 	}
 

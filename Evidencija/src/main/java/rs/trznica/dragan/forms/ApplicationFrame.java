@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.WindowEvent;
+import java.beans.PropertyVetoException;
 
 import javax.swing.AbstractAction;
 import javax.swing.Action;
@@ -36,6 +37,9 @@ public class ApplicationFrame extends JFrame {
 	private ApplicationContext ctx;
 	private final Action newConsumerAction = new NewConsumerAction();
 	private final Action newFillupAction = new NewFillupAction();
+	private final Action listConsumersAction = new ListConsumersAction();
+	private JDesktopPane desktopPane;
+	private final Action listFillUpsAction = new ListFillUpsAction();
 
 	/**
 	 * Create the frame.
@@ -58,6 +62,7 @@ public class ApplicationFrame extends JFrame {
 		menuBar.add(mnConsumers);
 		
 		JMenuItem mntmListConsumers = new JMenuItem("Lista potro\u0161a\u010Da");
+		mntmListConsumers.setAction(listConsumersAction);
 		mntmListConsumers.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		mnConsumers.add(mntmListConsumers);
 		
@@ -76,6 +81,7 @@ public class ApplicationFrame extends JFrame {
 		mnFillups.add(mntmNewFillup);
 		
 		JMenuItem mntmListFillups = new JMenuItem("Lista tankovanja");
+		mntmListFillups.setAction(listFillUpsAction);
 		mntmListFillups.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		mnFillups.add(mntmListFillups);
 		
@@ -95,7 +101,7 @@ public class ApplicationFrame extends JFrame {
 		JScrollPane scrollPane = new JScrollPane();
 		contentPane.add(scrollPane);
 		
-		JDesktopPane desktopPane = new JDesktopPane();
+		desktopPane = new JDesktopPane();
 		scrollPane.setViewportView(desktopPane);
 	}
 
@@ -124,6 +130,22 @@ public class ApplicationFrame extends JFrame {
 			form.dispose();
 		}
 	}
+	private class ListConsumersAction extends AbstractAction {
+		private static final long serialVersionUID = 5106498141254209996L;
+		public ListConsumersAction() {
+			putValue(Action.NAME, "Lista potro\u0161a\u010Da");
+		}
+		public void actionPerformed(ActionEvent e) {
+			VoziloListaForm form = ctx.getBean(VoziloListaForm.class);
+			form.setVisible(true);
+			desktopPane.add(form);
+			try {
+				form.setMaximum(true);
+			} catch (PropertyVetoException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
 	private class NewFillupAction extends AbstractAction {
 		private static final long serialVersionUID = 5087940145405045218L;
 		public NewFillupAction() {
@@ -133,6 +155,25 @@ public class ApplicationFrame extends JFrame {
 			TankovanjeDialog form = ctx.getBean(TankovanjeDialog.class);
 			form.setVisible(true);
 			form.dispose();
+		}
+	}
+	public JDesktopPane getDesktopPane() {
+		return desktopPane;
+	}
+	private class ListFillUpsAction extends AbstractAction {
+		private static final long serialVersionUID = -135510350288315771L;
+		public ListFillUpsAction() {
+			putValue(NAME, "Lista tankovanja");
+		}
+		public void actionPerformed(ActionEvent e) {
+			TankovanjeListaForm form = ctx.getBean(TankovanjeListaForm.class);
+			form.setVisible(true);
+			desktopPane.add(form);
+			try {
+				form.setMaximum(true);
+			} catch (PropertyVetoException e1) {
+				e1.printStackTrace();
+			}
 		}
 	}
 }

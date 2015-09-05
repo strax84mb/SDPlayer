@@ -16,6 +16,7 @@ import javax.swing.SpringLayout;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
@@ -26,7 +27,9 @@ import rs.trznica.dragan.forms.support.ModalResult;
 import javax.swing.JScrollPane;
 import javax.swing.ListSelectionModel;
 import javax.swing.AbstractAction;
+
 import java.awt.event.ActionEvent;
+
 import javax.swing.Action;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.event.ListSelectionEvent;
@@ -43,7 +46,6 @@ public class VoziloListaForm extends JInternalFrame {
 	private JButton btnDelete;
 	private JButton btnClose;
 
-	@Autowired
 	private PotrosacDao potrosacDao;
 	private final Action closeAction = new CloseAction();
 	private final Action deleteAction = new DeleteAction();
@@ -51,7 +53,10 @@ public class VoziloListaForm extends JInternalFrame {
 	/**
 	 * Create the frame.
 	 */
-	public VoziloListaForm() {
+	@Autowired
+	public VoziloListaForm(ApplicationContext ctx) {
+		setMaximizable(true);
+		potrosacDao = ctx.getBean(PotrosacDao.class);
 		setClosable(true);
 		setIconifiable(true);
 		setBounds(100, 100, 765, 458);
@@ -64,7 +69,7 @@ public class VoziloListaForm extends JInternalFrame {
 		springLayout.putConstraint(SpringLayout.HORIZONTAL_CENTER, separator, 0, SpringLayout.HORIZONTAL_CENTER, getContentPane());
 		getContentPane().add(separator);
 
-		potrosaci = new JList<Potrosac>();
+		potrosaci = new JList<Potrosac>(new DefaultListModel<Potrosac>());
 		potrosaci.addListSelectionListener(new PotrosaciListSelectionListener());
 		potrosaci.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
@@ -165,7 +170,7 @@ public class VoziloListaForm extends JInternalFrame {
 	}
 
 	private void listajVozila() {
-		DefaultListModel<Potrosac> model = (DefaultListModel<Potrosac>)potrosaci.getModel();
+		DefaultListModel<Potrosac> model = (DefaultListModel<Potrosac>)(potrosaci.getModel());
 		Iterator<Potrosac> podaci = potrosacDao.findAll().iterator();
 		model.setSize(0);
 		while (podaci.hasNext()) {

@@ -14,6 +14,8 @@ public class TankovanjeDto {
 
 	private String jedCena;
 
+	private String kilometraza;
+
 	public Long getPotrosacId() {
 		return potrosacId;
 	}
@@ -54,15 +56,24 @@ public class TankovanjeDto {
 		this.jedCena = jedCena;
 	}
 
+	public String getKilometraza() {
+		return kilometraza;
+	}
+
+	public void setKilometraza(String kilometraza) {
+		this.kilometraza = kilometraza;
+	}
+
 	public TankovanjeDto() {}
 
 	public TankovanjeDto(Long potrosacId, Date datum, String mesec,
-			String kolicina, String jedCena) {
+			String kolicina, String jedCena, String kilometraza) {
 		this.potrosacId = potrosacId;
 		this.datum = datum;
 		this.mesec = mesec;
 		this.kolicina = kolicina;
 		this.jedCena = jedCena;
+		this.kilometraza = kilometraza;
 	}
 
 }

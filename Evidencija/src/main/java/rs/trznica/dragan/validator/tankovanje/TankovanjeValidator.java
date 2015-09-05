@@ -5,6 +5,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import rs.trznica.dragan.dto.tankovanje.TankovanjeDto;
+import rs.trznica.dragan.forms.support.DecimalFormater;
 
 public class TankovanjeValidator implements Validator {
 
@@ -13,7 +14,7 @@ public class TankovanjeValidator implements Validator {
 	}
 
 	public void validate(Object obj, Errors err) {
-		if (obj == null || supports(obj.getClass())) {
+		if (!supports(obj.getClass())) {
 			err.reject("Pogrešan objekat u kodu!");
 			return;
 		}
@@ -30,7 +31,7 @@ public class TankovanjeValidator implements Validator {
 			err.reject("Oznaka meseca mora biti u formatu godina-mesec (npr. 2015-08).");
 		}
 		try {
-			Double num = Double.valueOf(dto.getKolicina());
+			Double num = DecimalFormater.parseToDouble(dto.getKolicina());
 			if (num < 0) {
 				throw new NumberFormatException();
 			}
@@ -38,12 +39,20 @@ public class TankovanjeValidator implements Validator {
 			err.reject("Količina mora biti veća od nule.");
 		}
 		try {
-			Double num = Double.valueOf(dto.getJedCena());
+			Double num = DecimalFormater.parseToDouble(dto.getJedCena());
 			if (num < 0) {
 				throw new NumberFormatException();
 			}
 		} catch (Exception e) {
 			err.reject("Cena litre mora biti veća od nule.");
+		}
+		try {
+			Long num = Long.valueOf(dto.getKilometraza());
+			if (num <= 0) {
+				throw new NumberFormatException();
+			}
+		} catch (Exception e) {
+			err.reject("Kilometraža mora biti ceo pozitivan broj.");
 		}
 	}
 

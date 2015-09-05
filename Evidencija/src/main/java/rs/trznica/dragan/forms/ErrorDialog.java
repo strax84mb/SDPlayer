@@ -14,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 
 public class ErrorDialog extends JDialog {
 
@@ -34,9 +33,9 @@ public class ErrorDialog extends JDialog {
 
 	public void showErrors(BindingResult result) {
 		StringBuilder builder = new StringBuilder();
-		for (ObjectError error : result.getGlobalErrors()) {
-			builder.append(error.getCode()).append("\n");
-		}
+		result.getGlobalErrors().stream().forEach(x -> {
+			builder.append(x.getCode()).append("<br/>");
+		});
 		lblText.setText(builder.toString());
 		setVisible(true);
 	}
