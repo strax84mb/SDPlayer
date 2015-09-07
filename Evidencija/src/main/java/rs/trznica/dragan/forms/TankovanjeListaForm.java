@@ -44,6 +44,7 @@ import rs.trznica.dragan.forms.support.DecimalFormater;
 import rs.trznica.dragan.poi.ConsumerReporter;
 
 import javax.swing.border.EmptyBorder;
+import javax.swing.ListSelectionModel;
 
 @org.springframework.stereotype.Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -95,6 +96,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		
 		table = new JTable();
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		table.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		table.setModel(new DefaultTableModel(
 			new Object[][] {
@@ -332,15 +334,15 @@ public class TankovanjeListaForm extends JInternalFrame {
 				new ErrorDialog().showError("Moraš izabrati vozilo za koje će se ispisati izveštaj.");
 				return;
 			}
-			for (Long id : ids) {
-				try {
+			try {
+				for (Long id : ids) {
 					reporter.makeReport(getCheckBoxById(id).getConsumer(), tfStartFrom.getText(), tfEndsWith.getText());
-					new ErrorDialog().showError("Gotovo.");
-				} catch (IOException e) {
-					new ErrorDialog().showError("Desila se greška tokom čitanja/pisanja datoteka.");
-				} catch (ParseException e) {
-					new ErrorDialog().showError("Desila se greška prilikom obrade podataka.");
 				}
+				new ErrorDialog().showError("Gotovo.");
+			} catch (IOException e) {
+				new ErrorDialog().showError("Desila se greška tokom čitanja/pisanja datoteka.");
+			} catch (ParseException e) {
+				new ErrorDialog().showError("Desila se greška prilikom obrade podataka.");
 			}
 		}
 	}

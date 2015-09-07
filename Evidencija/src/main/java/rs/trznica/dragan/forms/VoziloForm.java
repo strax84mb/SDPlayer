@@ -33,6 +33,7 @@ import org.springframework.validation.DataBinder;
 import rs.trznica.dragan.dao.PotrosacDao;
 import rs.trznica.dragan.dto.tankovanje.PotrosacDto;
 import rs.trznica.dragan.entities.support.GorivoType;
+import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.validator.tankovanje.PotrosacValidator;
 
@@ -52,7 +53,7 @@ public class VoziloForm extends JDialog {
 	private JTextField tfRegOznaka;
 	private JComboBox<GorivoType> cbGorivo;
 
-	private Long entityId;
+	private Long entityId = null;
 
 	private ModalResult modalResult = ModalResult.CANCEL;
 
@@ -64,6 +65,38 @@ public class VoziloForm extends JDialog {
 
 	private void setModalResult(ModalResult modalResult) {
 		this.modalResult = modalResult;
+	}
+
+	public void editConsumer(Long consumerId) {
+		editConsumer(potrosacDao.findOne(consumerId));
+	}
+
+	public void editConsumer(Potrosac consumer) {
+		this.entityId = consumer.getId();
+		cbxVozilo.setSelected(consumer.getVozilo());
+		cbxTeretnjak.setSelected(consumer.getTeretnjak());
+		for (int i = 0; i < cbGorivo.getItemCount(); i++) {
+			if (consumer.getGorivo().equals(cbGorivo.getItemAt(i))) {
+				cbGorivo.setSelectedIndex(i);
+				break;
+			}
+		}
+		cbGorivo.setEnabled(false);
+		if (consumer.getMarka() != null) {
+			tfMarka.setText(consumer.getMarka());
+		} else {
+			tfMarka.setText("");
+		}
+		if (consumer.getTip() != null) {
+			tfTip.setText(consumer.getTip());
+		} else {
+			tfTip.setText("");
+		}
+		if (consumer.getRegOznaka() != null) {
+			tfRegOznaka.setText(consumer.getRegOznaka());
+		} else {
+			tfRegOznaka.setText("");
+		}
 	}
 
 	/**
@@ -251,7 +284,9 @@ public class VoziloForm extends JDialog {
 			BindingResult result = new DataBinder(dto).getBindingResult();
 			new PotrosacValidator().validate(dto, result);
 			if (result.getErrorCount() == 0) {
-				potrosacDao.save(dto.createNewEntity());
+				Potrosac consumer = dto.createNewEntity();
+				consumer.setId(entityId);
+				potrosacDao.save(consumer);
 				setModalResult(ModalResult.OK);
 				setVisible(false);
 			} else {

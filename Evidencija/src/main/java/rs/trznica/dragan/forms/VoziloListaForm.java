@@ -47,8 +47,16 @@ public class VoziloListaForm extends JInternalFrame {
 	private JButton btnClose;
 
 	private PotrosacDao potrosacDao;
+	private ApplicationContext ctx;
+
 	private final Action closeAction = new CloseAction();
 	private final Action deleteAction = new DeleteAction();
+	private final Action editAction = new EditAction();
+
+	private void autowireFields(ApplicationContext ctx) {
+		this.ctx = ctx;
+		potrosacDao = ctx.getBean(PotrosacDao.class);
+	}
 
 	/**
 	 * Create the frame.
@@ -56,7 +64,8 @@ public class VoziloListaForm extends JInternalFrame {
 	@Autowired
 	public VoziloListaForm(ApplicationContext ctx) {
 		setMaximizable(true);
-		potrosacDao = ctx.getBean(PotrosacDao.class);
+		autowireFields(ctx);
+		
 		setClosable(true);
 		setIconifiable(true);
 		setBounds(100, 100, 765, 458);
@@ -95,7 +104,7 @@ public class VoziloListaForm extends JInternalFrame {
 		panelUpper.setLayout(new BoxLayout(panelUpper, BoxLayout.X_AXIS));
 		
 		btnEdit = new JButton("Izmeni");
-		btnEdit.setEnabled(false);
+		btnEdit.setAction(editAction);
 		btnEdit.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		panelUpper.add(btnEdit);
 		
@@ -203,10 +212,29 @@ public class VoziloListaForm extends JInternalFrame {
 				YesNoDialog dialog = new YesNoDialog("Jeste li sigurni da želite obrisati potrošača?");
 				dialog.showDialogInCenter(getThisFrame());
 				if (dialog.getModalResult() == ModalResult.YES) {
+					potrosacDao.delete(potrosaci.getSelectedValue());
 					listajVozila();
 					showConsumerText(null);
 					potrosaci.clearSelection();
 				}
+			}
+		}
+	}
+	private class EditAction extends AbstractAction {
+		private static final long serialVersionUID = -5951179355927152537L;
+		public EditAction() {
+			putValue(NAME, "Izmeni");
+		}
+		public void actionPerformed(ActionEvent ev) {
+			if (potrosaci.getSelectedValue() != null) {
+				VoziloForm form = ctx.getBean(VoziloForm.class);
+				form.editConsumer(potrosaci.getSelectedValue());
+				form.setVisible(true);
+				if (form.getModalResult() == ModalResult.OK) {
+					potrosaci.clearSelection();
+					listajVozila();
+				}
+				form.dispose();
 			}
 		}
 	}

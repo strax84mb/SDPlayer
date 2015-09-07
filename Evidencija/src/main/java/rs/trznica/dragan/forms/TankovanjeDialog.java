@@ -82,16 +82,40 @@ public class TankovanjeDialog extends GenericDialog {
 	private Long entityId = null;
 
 	private PotrosacDao potrosacDao;
-
 	private TankovanjeDao tankovanjeDao;
+
+	public void editFillUp(Tankovanje fill) {
+		entityId = fill.getId();
+		for (int i = 0; i < cbPotrosac.getItemCount(); i++) {
+			if (cbPotrosac.getItemAt(i).getId().equals(fill.getId())) {
+				cbPotrosac.setSelectedIndex(i);
+				break;
+			}
+		}
+		cbPotrosac.setEnabled(false);
+		dpDatum.setDate(fill.getDatum());
+		tfMesec.setText(fill.getMesec());
+		tfKolicina.setText(DecimalFormater.formatFromLong(fill.getKolicina(), 2));
+		tfJedCena.setText(DecimalFormater.formatFromLong(fill.getJedCena(), 2));
+		tfUkupno.setText(DecimalFormater.formatFromLong(fill.getJedCena() * fill.getKolicina() / 100L, 2));
+		if (fill.getKilometraza() != null) {
+			tfKM.setText(fill.getKilometraza().toString());
+		} else {
+			tfKM.setText("");
+		}
+	}
+
+	private void autowireFields(ApplicationContext ctx) {
+		potrosacDao = ctx.getBean(PotrosacDao.class);
+		tankovanjeDao = ctx.getBean(TankovanjeDao.class);
+	}
 
 	/**
 	 * Create the dialog.
 	 */
 	@Autowired
 	public TankovanjeDialog(ApplicationContext ctx) {
-		potrosacDao = ctx.getBean(PotrosacDao.class);
-		tankovanjeDao = ctx.getBean(TankovanjeDao.class);
+		autowireFields(ctx);
 		setModal(true);
 		setTitle("Tankovanje");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -309,7 +333,7 @@ public class TankovanjeDialog extends GenericDialog {
 				buttonPane.add(horizontalGlue);
 			}
 		}
-		setFocusTraversalPolicy(new FocusTraversalOnArray(new java.awt.Component[]{cbPotrosac, dpDatum, tfMesec, tfKolicina, tfJedCena, tfUkupno, btnSnimi, btnOtkazi}));
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new java.awt.Component[]{cbPotrosac, dpDatum, tfMesec, tfKolicina, tfJedCena, tfUkupno, tfKM, btnSnimi, btnOtkazi}));
 		populateConsumers();
 	}
 
@@ -426,6 +450,7 @@ public class TankovanjeDialog extends GenericDialog {
 				if (tankovanje.getPotrosac().getVozilo()) {
 					tankovanje.setKilometraza(Long.valueOf(tfKM.getText()));
 				}
+				tankovanje.setId(entityId);
 				tankovanje = tankovanjeDao.save(tankovanje);
 				modalResult = ModalResult.OK;
 				setVisible(false);

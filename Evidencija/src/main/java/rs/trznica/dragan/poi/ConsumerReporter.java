@@ -113,7 +113,11 @@ public class ConsumerReporter {
 		// Read prevKM
 		if (potrosac.getVozilo()) {
 			List<Tankovanje> lastFills = tankovanjeDao.getLastFill(potrosac.getId(), months.get(0), new PageRequest(0, 1));
-			prevKM = lastFills.get(0).getKilometraza();
+			if (lastFills.size() > 0) {
+				prevKM = lastFills.get(0).getKilometraza();
+			} else {
+				prevKM = 0L;
+			}
 		}
 		for (String month : months) {
 			Tankovanje[] fills = tankovanja.stream().filter(x -> month.equals(x.getMesec())).toArray(Tankovanje[]::new);
@@ -154,7 +158,7 @@ public class ConsumerReporter {
 				if (potrosac.getVozilo()) {
 					sheet.getRow(currRow).getCell(3).setCellValue(DecimalFormater.formatFromLongSep(monthKM, 0));
 					sheet.getRow(currRow).getCell(9).setCellValue(DecimalFormater.formatFromLongSep(
-							monthVolume / (monthKM / 100L), 2));
+							monthVolume / monthKM * 100L, 2));
 				}
 				sheet.getRow(currRow).getCell(8).setCellValue(DecimalFormater.formatFromLongSep(monthSum / 100L, 2));
 				setRowStyles(sheet.getRow(currRow), boldStyleFirst, boldStyle);
