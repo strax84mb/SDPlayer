@@ -2,12 +2,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>rs.trznica.dragan</groupId>
 	<artifactId>Evidencija</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.81-SNAPSHOT</version>
 
 	<properties>
 		<!-- maven-compiler-plugin configuration -->
-		<maven.compiler.source>1.5</maven.compiler.source>
-		<maven.compiler.target>1.5</maven.compiler.target>
+		<maven.compiler.source>1.8</maven.compiler.source>
+		<maven.compiler.target>1.8</maven.compiler.target>
 	</properties>
 
 	<dependencies>

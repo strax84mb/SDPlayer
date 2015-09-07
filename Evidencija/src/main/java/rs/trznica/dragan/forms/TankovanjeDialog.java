@@ -405,8 +405,10 @@ public class TankovanjeDialog extends GenericDialog {
 	private class BtnSnimiActionListener implements ActionListener {
 
 		public void actionPerformed(ActionEvent ev) {
+			Potrosac potrosac = (cbPotrosac.getSelectedItem() != null) ? (Potrosac)cbPotrosac.getSelectedItem() : null;
 			TankovanjeDto dto = new TankovanjeDto(
-					((cbPotrosac.getSelectedItem() != null) ? ((Potrosac)cbPotrosac.getSelectedItem()).getId() : null),
+					((potrosac != null) ? potrosac.getId() : null),
+					((potrosac != null) ? potrosac.getVozilo() : null),
 					dpDatum.getDate(),
 					tfMesec.getText(),
 					tfKolicina.getText(),
@@ -421,6 +423,9 @@ public class TankovanjeDialog extends GenericDialog {
 				tankovanje.setMesec(tfMesec.getText());
 				tankovanje.setKolicina(DecimalFormater.parseToLong(tfKolicina.getText(), 2));
 				tankovanje.setJedCena(DecimalFormater.parseToLong(tfJedCena.getText(), 2));
+				if (tankovanje.getPotrosac().getVozilo()) {
+					tankovanje.setKilometraza(Long.valueOf(tfKM.getText()));
+				}
 				tankovanje = tankovanjeDao.save(tankovanje);
 				modalResult = ModalResult.OK;
 				setVisible(false);

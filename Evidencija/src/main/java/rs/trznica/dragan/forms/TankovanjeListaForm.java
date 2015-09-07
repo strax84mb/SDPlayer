@@ -10,6 +10,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
 import java.beans.PropertyVetoException;
+import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -39,6 +41,8 @@ import rs.trznica.dragan.dao.TankovanjeDao;
 import rs.trznica.dragan.entities.tankovanje.Tankovanje;
 import rs.trznica.dragan.forms.support.ConsumerCheckBox;
 import rs.trznica.dragan.forms.support.DecimalFormater;
+import rs.trznica.dragan.poi.ConsumerReporter;
+
 import javax.swing.border.EmptyBorder;
 
 @org.springframework.stereotype.Component
@@ -55,10 +59,12 @@ public class TankovanjeListaForm extends JInternalFrame {
 
 	private PotrosacDao potrosacDao;
 	private TankovanjeDao tankovanjeDao;
+	private ConsumerReporter reporter;
 
 	private void populateAutowiredFields(ApplicationContext ctx) {
 		potrosacDao = ctx.getBean(PotrosacDao.class);
 		tankovanjeDao = ctx.getBean(TankovanjeDao.class);
+		reporter = ctx.getBean(ConsumerReporter.class);
 	}
 
 	private void populateConsumers(JPanel panel) {
@@ -195,6 +201,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 		bottomPanel.add(horizontalGlue);
 		
 		JButton btnReport = new JButton("Izveštaj");
+		btnReport.addActionListener(new BtnReportActionListener());
 		btnReport.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		bottomPanel.add(btnReport);
 
@@ -300,6 +307,39 @@ public class TankovanjeListaForm extends JInternalFrame {
 					} else {
 						populateTableWithData(tankovanjeDao.listTilMonthForConsumers(ids, tfEndsWith.getText()));
 					}
+				}
+			}
+		}
+	}
+	private class BtnReportActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ev) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+			sdf.setLenient(false);
+			try {
+				sdf.parse(tfStartFrom.getText());
+			} catch (ParseException e) {
+				new ErrorDialog().showError("Moraš uneti početni mesec.");
+				return;
+			}
+			try {
+				sdf.parse(tfEndsWith.getText());
+			} catch (ParseException e) {
+				new ErrorDialog().showError("Moraš uneti završni mesec.");
+				return;
+			}
+			List<Long> ids = getChosenIds();
+			if (ids.size() == 0) {
+				new ErrorDialog().showError("Moraš izabrati vozilo za koje će se ispisati izveštaj.");
+				return;
+			}
+			for (Long id : ids) {
+				try {
+					reporter.makeReport(getCheckBoxById(id).getConsumer(), tfStartFrom.getText(), tfEndsWith.getText());
+					new ErrorDialog().showError("Gotovo.");
+				} catch (IOException e) {
+					new ErrorDialog().showError("Desila se greška tokom čitanja/pisanja datoteka.");
+				} catch (ParseException e) {
+					new ErrorDialog().showError("Desila se greška prilikom obrade podataka.");
 				}
 			}
 		}

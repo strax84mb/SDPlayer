@@ -31,7 +31,7 @@ public class Tankovanje {
 	@Column(length = 10, nullable = false)
 	private String mesec = "";
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private Long kilometraza;
 
 	public Long getId() {

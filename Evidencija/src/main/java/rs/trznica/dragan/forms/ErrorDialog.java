@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import org.springframework.validation.BindingResult;
+import javax.swing.border.EmptyBorder;
 
 public class ErrorDialog extends JDialog {
 
@@ -28,6 +29,7 @@ public class ErrorDialog extends JDialog {
 
 	public void showError(String error) {
 		lblText.setText(error);
+		pack();
 		setVisible(true);
 	}
 
@@ -37,6 +39,7 @@ public class ErrorDialog extends JDialog {
 			builder.append(x.getCode()).append("<br/>");
 		});
 		lblText.setText(builder.toString());
+		pack();
 		setVisible(true);
 	}
 
@@ -72,6 +75,7 @@ public class ErrorDialog extends JDialog {
 		}
 		{
 			lblText = new JLabel("");
+			lblText.setBorder(new EmptyBorder(5, 5, 5, 5));
 			lblText.setFont(new Font("Times New Roman", Font.PLAIN, 18));
 			getContentPane().add(lblText, BorderLayout.CENTER);
 		}

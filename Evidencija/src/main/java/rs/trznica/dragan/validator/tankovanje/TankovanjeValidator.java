@@ -46,13 +46,15 @@ public class TankovanjeValidator implements Validator {
 		} catch (Exception e) {
 			err.reject("Cena litre mora biti veća od nule.");
 		}
-		try {
-			Long num = Long.valueOf(dto.getKilometraza());
-			if (num <= 0) {
-				throw new NumberFormatException();
+		if (Boolean.TRUE.equals(dto.getVozilo())) {
+			try {
+				Long num = Long.valueOf(dto.getKilometraza());
+				if (num <= 0) {
+					throw new NumberFormatException();
+				}
+			} catch (Exception e) {
+				err.reject("Kilometraža mora biti ceo pozitivan broj.");
 			}
-		} catch (Exception e) {
-			err.reject("Kilometraža mora biti ceo pozitivan broj.");
 		}
 	}
 

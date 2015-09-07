@@ -12,7 +12,7 @@ import rs.trznica.dragan.forms.ApplicationFrame;
 @SpringBootApplication
 @EnableAutoConfiguration
 @Import(AppConfig.class)
-@ComponentScan(basePackages={"rs.trznica.dragan.forms", "rs.trznica.dragan.dao"})
+@ComponentScan(basePackages={"rs.trznica.dragan.forms", "rs.trznica.dragan.dao", "rs.trznica.dragan.poi"})
 public class ApplicationStarter {
 
 	/**

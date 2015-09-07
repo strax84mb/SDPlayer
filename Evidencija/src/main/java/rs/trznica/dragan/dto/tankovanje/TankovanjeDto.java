@@ -6,6 +6,8 @@ public class TankovanjeDto {
 
 	private Long potrosacId;
 
+	private Boolean vozilo;
+
 	private Date datum;
 
 	private String mesec;
@@ -20,55 +22,36 @@ public class TankovanjeDto {
 		return potrosacId;
 	}
 
-	public void setPotrosacId(Long potrosacId) {
-		this.potrosacId = potrosacId;
+	public Boolean getVozilo() {
+		return vozilo;
 	}
 
 	public Date getDatum() {
 		return datum;
 	}
 
-	public void setDatum(Date datum) {
-		this.datum = datum;
-	}
-
 	public String getMesec() {
 		return mesec;
-	}
-
-	public void setMesec(String mesec) {
-		this.mesec = mesec;
 	}
 
 	public String getKolicina() {
 		return kolicina;
 	}
 
-	public void setKolicina(String kolicina) {
-		this.kolicina = kolicina;
-	}
-
 	public String getJedCena() {
 		return jedCena;
-	}
-
-	public void setJedCena(String jedCena) {
-		this.jedCena = jedCena;
 	}
 
 	public String getKilometraza() {
 		return kilometraza;
 	}
 
-	public void setKilometraza(String kilometraza) {
-		this.kilometraza = kilometraza;
-	}
-
 	public TankovanjeDto() {}
 
-	public TankovanjeDto(Long potrosacId, Date datum, String mesec,
+	public TankovanjeDto(Long potrosacId, Boolean vozilo, Date datum, String mesec,
 			String kolicina, String jedCena, String kilometraza) {
 		this.potrosacId = potrosacId;
+		this.vozilo = vozilo;
 		this.datum = datum;
 		this.mesec = mesec;
 		this.kolicina = kolicina;
