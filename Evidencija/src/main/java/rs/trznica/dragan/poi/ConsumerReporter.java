@@ -132,7 +132,7 @@ public class ConsumerReporter {
 					if (potrosac.getVozilo()) {
 						sheet.getRow(currRow).getCell(2).setCellValue(DecimalFormater.formatFromLongSep(fill.getKilometraza(), 0));
 						sheet.getRow(currRow).getCell(3).setCellValue(DecimalFormater.formatFromLongSep(
-								fill.getKilometraza() - prevKM, 2));
+								fill.getKilometraza() - prevKM, 0));
 					}
 					sheet.getRow(currRow).getCell(7).setCellValue(DecimalFormater.formatFromLongSep(fill.getJedCena(), 2));
 					sheet.getRow(currRow).getCell(8).setCellValue(DecimalFormater.formatFromLongSep(
