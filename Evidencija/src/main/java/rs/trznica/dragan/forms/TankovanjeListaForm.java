@@ -38,10 +38,12 @@ import org.springframework.util.StringUtils;
 
 import rs.trznica.dragan.dao.PotrosacDao;
 import rs.trznica.dragan.dao.TankovanjeDao;
+import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.entities.tankovanje.Tankovanje;
 import rs.trznica.dragan.forms.support.ConsumerCheckBox;
 import rs.trznica.dragan.forms.support.DecimalFormater;
 import rs.trznica.dragan.poi.ConsumerReporter;
+import rs.trznica.dragan.poi.SummaryReporter;
 
 import javax.swing.border.EmptyBorder;
 import javax.swing.ListSelectionModel;
@@ -61,11 +63,13 @@ public class TankovanjeListaForm extends JInternalFrame {
 	private PotrosacDao potrosacDao;
 	private TankovanjeDao tankovanjeDao;
 	private ConsumerReporter reporter;
+	private SummaryReporter summaryReporter;
 
 	private void populateAutowiredFields(ApplicationContext ctx) {
 		potrosacDao = ctx.getBean(PotrosacDao.class);
 		tankovanjeDao = ctx.getBean(TankovanjeDao.class);
 		reporter = ctx.getBean(ConsumerReporter.class);
+		summaryReporter = ctx.getBean(SummaryReporter.class);
 	}
 
 	private void populateConsumers(JPanel panel) {
@@ -206,6 +210,14 @@ public class TankovanjeListaForm extends JInternalFrame {
 		btnReport.addActionListener(new BtnReportActionListener());
 		btnReport.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		bottomPanel.add(btnReport);
+		
+		Component horizontalStrut = Box.createHorizontalStrut(10);
+		bottomPanel.add(horizontalStrut);
+		
+		JButton btnSumReport = new JButton("Zbirni izveštaj");
+		btnSumReport.addActionListener(new BtnSumReportActionListener());
+		btnSumReport.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		bottomPanel.add(btnSumReport);
 
 	}
 
@@ -226,6 +238,14 @@ public class TankovanjeListaForm extends JInternalFrame {
 				.filter(x -> x.isSelected())
 				.forEach(x -> ids.add(x.getConsumer().getId()));
 		return ids;
+	}
+
+	private List<Potrosac> getChosenConsumers() {
+		List<Potrosac> ret = new ArrayList<Potrosac>();
+		consumers.stream()
+				.filter(x -> x.isSelected())
+				.forEach(x -> ret.add(x.getConsumer()));
+		return ret;
 	}
 
 	private void populateTableWithData(Iterable<Tankovanje> fillUps) {
@@ -342,6 +362,34 @@ public class TankovanjeListaForm extends JInternalFrame {
 			} catch (IOException e) {
 				new ErrorDialog().showError("Desila se greška tokom čitanja/pisanja datoteka.");
 			} catch (ParseException e) {
+				new ErrorDialog().showError("Desila se greška prilikom obrade podataka.");
+			}
+		}
+	}
+	private class BtnSumReportActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent arg0) {
+			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+			sdf.setLenient(false);
+			try {
+				sdf.parse(tfStartFrom.getText());
+			} catch (ParseException e) {
+				new ErrorDialog().showError("Moraš uneti početni mesec.");
+				return;
+			}
+			try {
+				sdf.parse(tfEndsWith.getText());
+			} catch (ParseException e) {
+				new ErrorDialog().showError("Moraš uneti završni mesec.");
+				return;
+			}
+			try {
+				summaryReporter.makeReport(getChosenConsumers(), tfStartFrom.getText(), tfEndsWith.getText());
+				new ErrorDialog().showError("Gotovo.");
+			} catch (IOException e) {
+				e.printStackTrace();
+				new ErrorDialog().showError("Desila se greška tokom čitanja/pisanja datoteka.");
+			} catch (Exception e) {
+				e.printStackTrace();
 				new ErrorDialog().showError("Desila se greška prilikom obrade podataka.");
 			}
 		}

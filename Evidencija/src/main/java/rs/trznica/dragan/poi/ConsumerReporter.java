@@ -16,6 +16,7 @@ import java.util.stream.StreamSupport;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -98,6 +99,14 @@ public class ConsumerReporter {
 		normalStyleFirst.setBorderRight(BorderStyle.THIN);
 		normalStyleFirst.setFont(normalFont);
 
+		XSSFCellStyle centeredStyle = wb.createCellStyle();
+		centeredStyle.setAlignment(HorizontalAlignment.CENTER);
+		centeredStyle.setBorderBottom(BorderStyle.NONE);
+		centeredStyle.setBorderTop(BorderStyle.NONE);
+		centeredStyle.setBorderLeft(BorderStyle.NONE);
+		centeredStyle.setBorderRight(BorderStyle.NONE);
+		centeredStyle.setFont(normalFont);
+
 		XSSFSheet sheet = wb.getSheetAt(0);
 		sheet.getRow(0).getCell(0).setCellValue(makeConsumerName(potrosac));
 		if (potrosac.getVozilo()) {
@@ -127,6 +136,7 @@ public class ConsumerReporter {
 			if (fills.length > 0) {
 				for (int i = 0; i < fills.length; i++) {
 					Tankovanje fill = fills[i];
+					addRow(sheet, currRow, normalStyleFirst, normalStyle);
 					sheet.getRow(currRow).getCell(0).setCellValue(sdf.format(fill.getDatum()));
 					sheet.getRow(currRow).getCell(1).setCellValue(DecimalFormater.formatFromLongSep(fill.getKolicina(), 2));
 					if (potrosac.getVozilo()) {
@@ -137,7 +147,6 @@ public class ConsumerReporter {
 					sheet.getRow(currRow).getCell(7).setCellValue(DecimalFormater.formatFromLongSep(fill.getJedCena(), 2));
 					sheet.getRow(currRow).getCell(8).setCellValue(DecimalFormater.formatFromLongSep(
 							fill.getJedCena() * fill.getKolicina() / 100L, 2));
-					setRowStyles(sheet.getRow(currRow), normalStyleFirst, normalStyle);
 					currRow++;
 					if (potrosac.getVozilo()) {
 						// Add mileage
@@ -153,6 +162,7 @@ public class ConsumerReporter {
 					yearSum += fill.getKolicina() * fill.getJedCena();
 				}
 				// Month summary
+				addRow(sheet, currRow, boldStyleFirst, boldStyle);
 				sheet.getRow(currRow).getCell(0).setCellValue(getMonthString(month));
 				sheet.getRow(currRow).getCell(1).setCellValue(DecimalFormater.formatFromLongSep(monthVolume, 2));
 				if (potrosac.getVozilo()) {
@@ -161,17 +171,37 @@ public class ConsumerReporter {
 							monthVolume / monthKM * 100L, 2));
 				}
 				sheet.getRow(currRow).getCell(8).setCellValue(DecimalFormater.formatFromLongSep(monthSum / 100L, 2));
-				setRowStyles(sheet.getRow(currRow), boldStyleFirst, boldStyle);
 				currRow++;
 			}
 		}
 		// Yearly summary
-		sheet.getRow(46).getCell(1).setCellValue(DecimalFormater.formatFromLongSep(yearVolume, 2));
+		addRow(sheet, currRow, boldStyleFirst, boldStyle);
+		sheet.getRow(currRow).getCell(1).setCellValue("Ukupno:");
+		sheet.getRow(currRow).getCell(1).setCellValue(DecimalFormater.formatFromLongSep(yearVolume, 2));
 		if (potrosac.getVozilo()) {
-			sheet.getRow(46).getCell(3).setCellValue(DecimalFormater.formatFromLongSep(yearKM, 0));
+			sheet.getRow(currRow).getCell(3).setCellValue(DecimalFormater.formatFromLongSep(yearKM, 0));
 		}
-		sheet.getRow(46).getCell(8).setCellValue(DecimalFormater.formatFromLongSep(yearSum / 100L, 2));
-		setRowStyles(sheet.getRow(46), boldStyleFirst, boldStyle);
+		sheet.getRow(currRow).getCell(8).setCellValue(DecimalFormater.formatFromLongSep(yearSum / 100L, 2));
+		// Signatures
+		sheet.addMergedRegion(new CellRangeAddress(currRow + 1, currRow + 1, 0, 2));
+		sheet.addMergedRegion(new CellRangeAddress(currRow + 2, currRow + 2, 0, 2));
+		sheet.addMergedRegion(new CellRangeAddress(currRow + 1, currRow + 1, 6, 8));
+		sheet.addMergedRegion(new CellRangeAddress(currRow + 2, currRow + 2, 6, 8));
+		XSSFRow row = sheet.createRow(currRow + 1);
+		XSSFCell cell = row.createCell(0);
+		cell.setCellStyle(centeredStyle);
+		cell.setCellValue("Ruk. odelj. opštih poslova:");
+		cell = row.createCell(6);
+		cell.setCellStyle(centeredStyle);
+		cell.setCellValue("Dir. prav. kad. i opš. poslove:");
+		row = sheet.createRow(currRow + 2);
+		cell = row.createCell(0);
+		cell.setCellStyle(centeredStyle);
+		cell.setCellValue("Dragan Dobrijević");
+		cell = row.createCell(6);
+		cell.setCellStyle(centeredStyle);
+		cell.setCellValue("Samir Rustemović");
+		
 		// Write XLSX file
 		StringBuilder builder = new StringBuilder(xlsTablesPath);
 		builder.append("/TANKOVANJE ");
@@ -189,13 +219,13 @@ public class ConsumerReporter {
 		wb.close();
 	}
 
-	private void setRowStyles(XSSFRow row, XSSFCellStyle styleFirst, XSSFCellStyle style) {
-		XSSFCell cell = row.getCell(0);
-		cell.setCellStyle(styleFirst);
-		for (int i = 1; i <= 9; i++) {
-			cell = row.getCell(i);
-			cell.setCellStyle(style);
+	private XSSFRow addRow(XSSFSheet sheet, int rowNum, XSSFCellStyle firstStyle, XSSFCellStyle othersStyle) {
+		XSSFRow row = sheet.createRow(rowNum);
+		row.createCell(0).setCellStyle(firstStyle);
+		for (int i = 1; i < 10; i++) {
+			row.createCell(i).setCellStyle(othersStyle);
 		}
+		return row;
 	}
 
 	private String getMonthString(String month) {

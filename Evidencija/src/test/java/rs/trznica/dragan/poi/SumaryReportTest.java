@@ -10,7 +10,8 @@ public class SumaryReportTest {
 
 	@Test
 	public void testGeneration() throws IOException {
-		XSSFWorkbook wb = SumarySheetGenerator.createWorkbook();
+		SumarySheetGenerator generator = new SumarySheetGenerator(12, 12);
+		XSSFWorkbook wb = generator.getWorkbook();
 		try (FileOutputStream fos = new FileOutputStream("f:/Prog/summary.xlsx")) {
 			wb.write(fos);
 		}
