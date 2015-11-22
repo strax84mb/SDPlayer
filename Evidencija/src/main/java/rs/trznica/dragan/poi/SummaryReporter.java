@@ -32,6 +32,10 @@ public class SummaryReporter {
 	@Value("${xls.tables.path}")
 	private String xlsTablesPath;
 	
+	private int maxConsumers = 8;
+	private int monthColumns = 2;
+	private SumarySheetGenerator generator;
+
 	@Autowired
 	public SummaryReporter(ApplicationContext ctx) {
 		tankovanjeDao = ctx.getBean(TankovanjeDao.class);
@@ -46,18 +50,22 @@ public class SummaryReporter {
 
 		/*
 		 * Last is yearly sum
-		 * Sum indexes:	0 - km
-		 * 				1 - bmb
-		 * 				2 - ed
-		 * 				3 - price
+		 * Sum indexes:	0 - km bmb
+		 * 				1 - km ed
+		 * 				2 - lit bmb
+		 * 				3 - lit ed
+		 * 				4 - price
 		 */
-		long[][] sums = new long[potrosaci.size() + 1][4];
-		long[][] monthSums = new long[months][4];
-		for (int i = 0; i < 4; i++) {
-			sums[potrosaci.size()][i] = 0L;
+		ConsumerStatSummary[] consumerSums = new ConsumerStatSummary[potrosaci.size()];
+		ConsumerStatSummary[] monthSums = new ConsumerStatSummary[months];
+		for (int i = 0; i < potrosaci.size(); i++) {
+			consumerSums[i] = new ConsumerStatSummary();
+		}
+		for (int i = 0; i < potrosaci.size(); i++) {
+			monthSums[i] = new ConsumerStatSummary();
 		}
 
-		SumarySheetGenerator generator = new SumarySheetGenerator(months, potrosaci.size());
+		generator = new SumarySheetGenerator(months, potrosaci.size());
 		XSSFWorkbook wb = generator.getWorkbook();
 		writeMonthNames(wb, months, sheetsNum, potrosaci.size(), firstMonth);
 		writeConsumerDesignations(wb, potrosaci);
@@ -66,9 +74,6 @@ public class SummaryReporter {
 					tankovanjeDao.listInIntervalForConsumer(potrosaci.get(i).getId(), fromMonth, tilMonth).spliterator(), false)
 					.collect(Collectors.toList());
 			tankovanja = insertLastPrevFillup(tankovanja, potrosaci.get(i).getId(), fromMonth);
-			for (int z = 0; z < 4; z++) {
-				sums[i][z] = 0L;
-			}
 			String currMonth = fromMonth;
 			Long tempValue = 0l;
 			XSSFCell cell = null;
@@ -77,38 +82,30 @@ public class SummaryReporter {
 					// Fill km
 					tempValue = getKmForMonth(tankovanja, currMonth);
 					if (tempValue > 0L) {
-						cell = getCell(wb, potrosaci.size(), i, monthIndex, DataType.KM);
+						cell = getCell(wb, potrosaci.size(), i, monthIndex, 
+								(GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? DataType.KM_BMB : DataType.KM_ED);
 						cell.setCellValue(tempValue);
 					}
-					sums[i][0] += tempValue;
-					sums[potrosaci.size()][0] += tempValue;
-					monthSums[monthIndex][0] += tempValue;
+					consumerSums[i].addKm(potrosaci.get(i).getGorivo(), tempValue);
+					monthSums[monthIndex].addKm(potrosaci.get(i).getGorivo(), tempValue);
 				}
 				// Fill fuel volume
 				tempValue = getVolumeForMonth(tankovanja, currMonth);
 				if (tempValue > 0L) {
 					cell = getCell(wb, potrosaci.size(), i, monthIndex, 
-							((GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? DataType.BMB : DataType.ED));
+							((GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? DataType.LIT_BMB : DataType.LIT_ED));
 					cell.setCellValue(tempValue.doubleValue() / 100d);
 				}
-				if (GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) {
-					sums[i][1] += tempValue;
-					sums[potrosaci.size()][1] += tempValue;
-					monthSums[monthIndex][1] += tempValue;
-				} else {
-					sums[i][2] += tempValue;
-					sums[potrosaci.size()][2] += tempValue;
-					monthSums[monthIndex][2] += tempValue;
-				}
+				consumerSums[i].addLit(potrosaci.get(i).getGorivo(), tempValue);
+				monthSums[monthIndex].addLit(potrosaci.get(i).getGorivo(), tempValue);
 				// Fill price
 				tempValue = getPriceForMonth(tankovanja, currMonth);
 				if (tempValue > 0L) {
 					cell = getCell(wb, potrosaci.size(), i, monthIndex, DataType.PRICE);
 					cell.setCellValue(tempValue.doubleValue() / 100d);
 				}
-				sums[i][3] += tempValue;
-				sums[potrosaci.size()][3] += tempValue;
-				monthSums[monthIndex][3] += tempValue;
+				consumerSums[i].addPrice(tempValue);
+				monthSums[monthIndex].addPrice(tempValue);
 				// Increase month
 				currMonth = increaseMonthString(currMonth);
 			}
@@ -116,31 +113,48 @@ public class SummaryReporter {
 		// Write month sums
 		XSSFCell cell = null;
 		for (int i = 0; i < months; i++) {
-			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.KM);
-			cell.setCellValue(Long.valueOf(monthSums[i][0]));
-			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.BMB);
-			cell.setCellValue(Long.valueOf(monthSums[i][1]).doubleValue() / 100d);
-			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.ED);
-			cell.setCellValue(Long.valueOf(monthSums[i][2]).doubleValue() / 100d);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.KM_BMB);
+			cell.setCellValue(Long.valueOf(monthSums[i].getKmBmb()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.KM_ED);
+			cell.setCellValue(Long.valueOf(monthSums[i].getKmEd()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size() + 1, i, DataType.KM_BMB);
+			cell.setCellValue(Long.valueOf(monthSums[i].getKmBmb() + monthSums[i].getKmEd()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.LIT_BMB);
+			cell.setCellValue(Long.valueOf(monthSums[i].getLitBmb()).doubleValue() / 100d);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.LIT_ED);
+			cell.setCellValue(Long.valueOf(monthSums[i].getLitEd()).doubleValue() / 100d);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size() + 1, i, DataType.LIT_BMB);
+			cell.setCellValue(Long.valueOf(monthSums[i].getLitBmb() + monthSums[i].getLitEd()).doubleValue() / 100d);
 			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.PRICE);
-			cell.setCellValue(Long.valueOf(monthSums[i][3]).doubleValue() / 100d);
+			cell.setCellValue(Long.valueOf(monthSums[i].getPrice()).doubleValue() / 100d);
 		}
 		// Write consumer sums
 		XSSFSheet sheet = wb.getSheetAt(wb.getNumberOfSheets() - 1);
 		XSSFRow row;
+		ConsumerStatSummary finalSumm = new ConsumerStatSummary();
 		for (int i = 0; i < potrosaci.size(); i++) {
 			row = sheet.getRow(2 + i);
-			row.getCell(1).setCellValue(sums[i][0]);
-			row.getCell(2).setCellValue(Long.valueOf(sums[i][1]).doubleValue() / 100d);
-			row.getCell(3).setCellValue(Long.valueOf(sums[i][2]).doubleValue() / 100d);
-			row.getCell(4).setCellValue(Long.valueOf(sums[i][3]).doubleValue() / 100d);
+			row.getCell(1).setCellValue(consumerSums[i].getKmBmb());
+			finalSumm.addKmBmb(consumerSums[i].getKmBmb());
+			row.getCell(2).setCellValue(consumerSums[i].getKmEd());
+			finalSumm.addKmEd(consumerSums[i].getKmEd());
+			row.getCell(3).setCellValue(Long.valueOf(consumerSums[i].getLitBmb()).doubleValue() / 100d);
+			finalSumm.addLitBmb(consumerSums[i].getLitBmb());
+			row.getCell(4).setCellValue(Long.valueOf(consumerSums[i].getLitEd()).doubleValue() / 100d);
+			finalSumm.addLitEd(consumerSums[i].getLitEd());
+			row.getCell(5).setCellValue(Long.valueOf(consumerSums[i].getPrice()).doubleValue() / 100d);
+			finalSumm.addPrice(consumerSums[i].getPrice());
 		}
 		// Write total sums
 		row = sheet.getRow(3 + potrosaci.size());
-		row.getCell(1).setCellValue(sums[potrosaci.size()][0]);
-		row.getCell(2).setCellValue(Long.valueOf(sums[potrosaci.size()][1]).doubleValue() / 100d);
-		row.getCell(3).setCellValue(Long.valueOf(sums[potrosaci.size()][2]).doubleValue() / 100d);
-		row.getCell(4).setCellValue(Long.valueOf(sums[potrosaci.size()][3]).doubleValue() / 100d);
+		row.getCell(1).setCellValue(finalSumm.getKmBmb());
+		row.getCell(2).setCellValue(finalSumm.getKmEd());
+		row.getCell(3).setCellValue(Long.valueOf(finalSumm.getLitBmb()).doubleValue() / 100d);
+		row.getCell(4).setCellValue(Long.valueOf(finalSumm.getLitEd()).doubleValue() / 100d);
+		row.getCell(5).setCellValue(Long.valueOf(finalSumm.getPrice()).doubleValue() / 100d);
+		row = sheet.getRow(4 + potrosaci.size());
+		row.getCell(1).setCellValue(finalSumm.getKmBmb() + finalSumm.getKmEd());
+		row.getCell(2).setCellValue(Long.valueOf(finalSumm.getLitBmb() + finalSumm.getLitEd()).doubleValue() / 100d);
 		// Save File
 		try (FileOutputStream fos = new FileOutputStream(xlsTablesPath + "/zbirni_izvestaj.xlsx")) {
 			wb.write(fos);
@@ -167,18 +181,14 @@ public class SummaryReporter {
 			for (int j = 0; j < consumers.size(); j++) {
 				row = sheet.getRow(j + 3);
 				row.getCell(0).setCellValue(consumers.get(j).getVozilo() ? consumers.get(j).getRegOznaka() : consumers.get(j).getTip());
-				row.getCell(13).setCellValue(consumers.get(j).getVozilo() ? consumers.get(j).getRegOznaka() : consumers.get(j).getTip());
+				row.getCell(monthColumns * 5 + 1).setCellValue(consumers.get(j).getVozilo() ? consumers.get(j).getRegOznaka() : consumers.get(j).getTip());
 			}
-			sheet.getRow(consumers.size() + 3).getCell(0).setCellValue("Ukupno:");
-			sheet.getRow(consumers.size() + 3).getCell(13).setCellValue("Ukupno:");
-			if (consumers.size() <= 9) {
+			if (consumers.size() <= maxConsumers) {
 				for (int j = 0; j < consumers.size(); j++) {
 					row = sheet.getRow(consumers.size() + j + 7);
 					row.getCell(0).setCellValue(consumers.get(j).getVozilo() ? consumers.get(j).getRegOznaka() : consumers.get(j).getTip());
-					row.getCell(13).setCellValue(consumers.get(j).getVozilo() ? consumers.get(j).getRegOznaka() : consumers.get(j).getTip());
+					row.getCell(monthColumns * 5 + 1).setCellValue(consumers.get(j).getVozilo() ? consumers.get(j).getRegOznaka() : consumers.get(j).getTip());
 				}
-				sheet.getRow(consumers.size() * 2 + 7).getCell(0).setCellValue("Ukupno:");
-				sheet.getRow(consumers.size() * 2 + 7).getCell(13).setCellValue("Ukupno:");
 			}
 		}
 		sheet = wb.getSheetAt(wb.getNumberOfSheets() - 1);
@@ -190,33 +200,27 @@ public class SummaryReporter {
 
 	private void writeMonthNames(XSSFWorkbook wb, int months, int sheetsNum, int consumersNum, int startMonth) {
 		int monthNum = startMonth;
-		if (consumersNum < 9) {
+		if (consumersNum <= maxConsumers) {
 			for (int i = 0; i < sheetsNum; i++) {
 				XSSFRow row = wb.getSheetAt(i).getRow(0);
-				row.getCell(1).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
-				row.getCell(5).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
-				row.getCell(9).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
+				for (int j = 0; j < monthColumns; j++) {
+					row.getCell(j * 5 + 1).setCellValue(getMonthString(monthNum));
+					monthNum = increaseMonthNum(monthNum);
+				}
 				// Write next row
-				row = wb.getSheetAt(i).getRow(consumersNum + 5);
-				row.getCell(1).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
-				row.getCell(5).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
-				row.getCell(9).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
+				row = wb.getSheetAt(i).getRow(consumersNum + generator.getTitleSpan() + generator.getFooterSpan());
+				for (int j = 0; j < monthColumns; j++) {
+					row.getCell(j * 5 + 1).setCellValue(getMonthString(monthNum));
+					monthNum = increaseMonthNum(monthNum);
+				}
 			}
 		} else {
 			for (int i = 0; i < sheetsNum; i++) {
 				XSSFRow row = wb.getSheetAt(i).getRow(0);
-				row.getCell(1).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
-				row.getCell(5).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
-				row.getCell(9).setCellValue(getMonthString(monthNum));
-				monthNum = increaseMonthNum(monthNum);
+				for (int j = 0; j < monthColumns; j++) {
+					row.getCell(j * 5 + 1).setCellValue(getMonthString(monthNum));
+					monthNum = increaseMonthNum(monthNum);
+				}
 			}
 		}
 	}
@@ -277,28 +281,33 @@ public class SummaryReporter {
 	
 	private XSSFCell getCell(XSSFWorkbook wb, int consumersNum, int consumer, int month, DataType type) {
 		XSSFRow row;
-		if (consumersNum < 9) {
-			if (month % 6 < 3) {
-				row = wb.getSheetAt(month / 6).getRow(consumer + 3);
+		if (consumersNum <= maxConsumers) {
+			if (month % (monthColumns * 2) < monthColumns) {
+				row = wb.getSheetAt(month / (monthColumns * 2)).getRow(consumer + generator.getTitleSpan());
 			} else {
-				row = wb.getSheetAt(month / 6).getRow(consumer + consumersNum + 7);
+				row = wb.getSheetAt(month / (monthColumns * 2)).getRow(consumer 
+						+ consumersNum 
+						+ (generator.getTitleSpan() * 2) 
+						+ generator.getFooterSpan());
 			}
 		} else {
-			row = wb.getSheetAt(month / 3).getRow(consumer + 3);
+			row = wb.getSheetAt(month / monthColumns).getRow(consumer + generator.getTitleSpan());
 		}
 		switch (type) {
-		case KM:
-			return row.getCell(1 + ((month % 3) * 4));
-		case BMB:
-			return row.getCell(2 + ((month % 3) * 4));
-		case ED:
-			return row.getCell(3 + ((month % 3) * 4));
+		case KM_BMB:
+			return row.getCell(1 + ((month % monthColumns) * 5));
+		case KM_ED:
+			return row.getCell(2 + ((month % monthColumns) * 5));
+		case LIT_BMB:
+			return row.getCell(3 + ((month % monthColumns) * 5));
+		case LIT_ED:
+			return row.getCell(4 + ((month % monthColumns) * 5));
 		case PRICE:
-			return row.getCell(4 + ((month % 3) * 4));
+			return row.getCell(5 + ((month % monthColumns) * 5));
 		case NAME:
 			return row.getCell(0);
 		default:
-			return row.getCell(13);
+			return row.getCell(monthColumns * 5 + 1);
 		}
 	}
 	
@@ -349,9 +358,10 @@ public class SummaryReporter {
 	
 	private enum DataType {
 		NAME,
-		BMB,
-		ED,
-		KM,
+		LIT_BMB,
+		LIT_ED,
+		KM_BMB,
+		KM_ED,
 		PRICE,
 		LAST_NAME
 	}

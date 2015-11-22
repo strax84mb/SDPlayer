@@ -10,6 +10,7 @@ import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.PaperSize;
 import org.apache.poi.ss.usermodel.VerticalAlignment;
 import org.apache.poi.ss.util.CellRangeAddress;
+import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFDataFormat;
 import org.apache.poi.xssf.usermodel.XSSFFont;
@@ -25,23 +26,32 @@ public class SumarySheetGenerator {
 	private int consumersNum;
 	private XSSFFont normalFont;
 	private XSSFWorkbook wb;
-	
+
+	private int maxConsumers = 8;
+	private int monthColumns = 2;
+
 	public SumarySheetGenerator(int months, int consumersNum) {
+		this(months, consumersNum, 8, 2);
+	}
+
+	public SumarySheetGenerator(int months, int consumersNum, int maxConsumers, int monthColumns) {
 		this.consumersNum = consumersNum;
+		this.maxConsumers = maxConsumers;
+		this.monthColumns = monthColumns;
 		wb = new XSSFWorkbook();
 		generateFont();
 		generateStyles();
 		rowHeight = (short)365;
 		
 		int sheetNum = 0;
-		if (consumersNum < 9) {
-			sheetNum = months / 6;
-			if (months % 6 > 0) {
+		if (consumersNum <= maxConsumers) {
+			sheetNum = months / (monthColumns * 2);
+			if (months % (monthColumns * 2) > 0) {
 				sheetNum++;
 			}
 		} else {
-			sheetNum = months / 3;
-			if (months % 3 > 0) {
+			sheetNum = months / monthColumns;
+			if (months % monthColumns > 0) {
 				sheetNum++;
 			}
 		}
@@ -124,129 +134,158 @@ public class SumarySheetGenerator {
 		}
 		sheet.setColumnWidth(13, 2459);
 		
-		if (consumersNum < 9) {
-			drawTitle(sheet, 0);
-			for (int i = 0; i < consumersNum + 1; i++) {
-				drawEntryRow(sheet, i + 3);
+		int rowIndex = 0;
+		if (consumersNum <= maxConsumers) {
+			rowIndex = drawTitle(sheet, rowIndex);
+			for (int i = 0; i < consumersNum; i++) {
+				rowIndex = drawEntryRow(sheet, rowIndex);
 			}
-			drawTitle(sheet, consumersNum + 4);
+			rowIndex = drawTitle(sheet, rowIndex);
 			for (int i = 0; i < consumersNum + 1; i++) {
-				drawEntryRow(sheet, consumersNum + i + 7);
+				rowIndex = drawEntryRow(sheet, rowIndex);
 			}
+			rowIndex = drawFooterRows(sheet, rowIndex);
 		} else {
-			drawTitle(sheet, 0);
+			rowIndex = drawTitle(sheet, rowIndex);
 			for (int i = 0; i < consumersNum + 1; i++) {
-				drawEntryRow(sheet, i + 3);
+				rowIndex = drawEntryRow(sheet, rowIndex);
 			}
+			rowIndex = drawFooterRows(sheet, rowIndex);
 		}
 		
 		return sheet;
 	}
 	
-	private void drawTitle(XSSFSheet sheet, int rowNum) {
+	private int drawTitle(XSSFSheet sheet, int rowNum) {
 		sheet.createRow(rowNum);
 		sheet.getRow(rowNum).setHeight(rowHeight);
 		sheet.createRow(rowNum + 1);
 		sheet.getRow(rowNum + 1).setHeight(rowHeight);
 		sheet.createRow(rowNum + 2);
 		sheet.getRow(rowNum + 2).setHeight(rowHeight);
+
+		//Add registration fields
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 0, 0));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, monthColumns * 5 + 1, monthColumns * 5 + 1));
 		
-		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 1, 4)); // 0
-		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 5, 8)); // 1
-		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, 9, 12)); // 2
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 0, 0)); // 3
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 1, 1)); // 4
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 2, 3)); // 5
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 4, 4)); // 6
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 5, 5)); // 7
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 6, 7)); // 8
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 8, 8)); // 9
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 9, 9)); // 10
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 10, 11)); // 11
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 12, 12)); // 12
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, 13, 13)); // 13
+		for (int i = 0; i < monthColumns; i++) {
+			// Add month name field
+			sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, i * 5 + 1, (i + 1) * 5 + 1));
+			// Add km label
+			sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, i * 5 + 1, i * 5 + 2));
+			// Add liter label
+			sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, i * 5 + 3, i * 5 + 4));
+			// Add price label
+			sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 2, i * 5 + 5, i * 5 + 5));
+		}
 		
+		// Create month name cells
 		XSSFRow row = sheet.getRow(rowNum);
-		row.createCell(1).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(5).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(9).setCellStyle(styles.get(CellStyleEnum.TITLE));
+		for (int i = 0; i < monthColumns; i++) {
+			for (int j = 0; j < 5; j++) {
+				row.createCell(i * 5 + 1 + j).setCellStyle(styles.get(CellStyleEnum.TITLE));
+			}
+		}
 		
 		row = sheet.getRow(rowNum + 1);
-		row.createCell(0);
-		row.getCell(0).setCellStyle(styles.get(CellStyleEnum.TITLE));
+		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.TITLE));
 		row.getCell(0).setCellValue("Reg. Oznaka");
-		row.createCell(1);
-		row.getCell(1).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(1).setCellValue("km");
-		row.createCell(2);
-		row.getCell(2).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(2).setCellValue("Litara");
-		row.createCell(4);
-		row.getCell(4).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(4).setCellValue("Ukupno bez PDV");
-		row.createCell(5);
-		row.getCell(5).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(5).setCellValue("km");
-		row.createCell(6);
-		row.getCell(6).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(6).setCellValue("Litara");
-		row.createCell(8);
-		row.getCell(8).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(8).setCellValue("Ukupno bez PDV");
-		row.createCell(9);
-		row.getCell(9).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(9).setCellValue("km");
-		row.createCell(10);
-		row.getCell(10).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(10).setCellValue("Litara");
-		row.createCell(12);
-		row.getCell(12).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(12).setCellValue("Ukupno bez PDV");
-		row.createCell(13);
-		row.getCell(13).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(13).setCellValue("Reg. Oznaka");
-		
+		// Create first row titles
+		for (int i = 0; i < monthColumns; i++) {
+			for (int j = 0; j < 5; j++) {
+				row.createCell(i * 5 + 1 + j).setCellStyle(styles.get(CellStyleEnum.TITLE));
+			}
+			row.getCell(i * 5 + 1).setCellValue("km");
+			row.getCell(i * 5 + 3).setCellValue("Litara");
+			row.getCell(i * 5 + 4).setCellValue("Ukupno bez PDV");
+		}
+		row.createCell(monthColumns * 5 + 1).setCellStyle(styles.get(CellStyleEnum.TITLE));
+		row.getCell(monthColumns * 5 + 1).setCellValue("Reg. Oznaka");
+		// Create second row titles
 		row = sheet.getRow(rowNum + 2);
 		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(1).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(2);
-		row.getCell(2).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(2).setCellValue("BMB");
-		row.createCell(3);
-		row.getCell(3).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(3).setCellValue("ED");
-		row.createCell(4).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(5).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(6);
-		row.getCell(6).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(6).setCellValue("BMB");
-		row.createCell(7);
-		row.getCell(7).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(7).setCellValue("ED");
-		row.createCell(8).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(9).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(10);
-		row.getCell(10).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(10).setCellValue("BMB");
-		row.createCell(11);
-		row.getCell(11).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(11).setCellValue("ED");
-		row.createCell(12).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.createCell(13).setCellStyle(styles.get(CellStyleEnum.TITLE));
+		for (int i = 0; i < monthColumns; i++) {
+			for (int j = 0; j < 5; j++) {
+				row.createCell(i * 5 + 1 + j).setCellStyle(styles.get(CellStyleEnum.TITLE));
+			}
+			row.getCell(i * 5).setCellValue("BMB");
+			row.getCell(i * 5 + 1).setCellValue("ED");
+			row.getCell(i * 5 + 2).setCellValue("BMB");
+			row.getCell(i * 5 + 3).setCellValue("ED");
+		}
+		row.createCell(monthColumns * 5 + 1).setCellStyle(styles.get(CellStyleEnum.TITLE));
+		
+		return rowNum + 3;
 	}
 	
-	private void drawEntryRow(XSSFSheet sheet, int rowNum) {
+	public int getTitleSpan() {
+		return 3;
+	}
+	
+	private int  drawEntryRow(XSSFSheet sheet, int rowNum) {
 		sheet.createRow(rowNum);
 		sheet.getRow(rowNum).setHeight(rowHeight);
 		XSSFRow row = sheet.getRow(rowNum);
+		XSSFCell cell;
 		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
-		for (int i = 1; i < 13; i++) {
-			row.createCell(i).setCellStyle(styles.get(CellStyleEnum.NORMAL));
+		for (int i = 0; i < monthColumns; i++) {
+			for (int j = 0; j < 5; j++) {
+				cell = row.createCell(i * 5 + 1 + j);
+				if (j < 2) {
+					cell.setCellStyle(styles.get(CellStyleEnum.KM));
+				} else {
+					cell.setCellStyle(styles.get(CellStyleEnum.NORMAL));
+				}
+			}
 		}
-		row.createCell(1).setCellStyle(styles.get(CellStyleEnum.KM));
-		row.createCell(5).setCellStyle(styles.get(CellStyleEnum.KM));
-		row.createCell(9).setCellStyle(styles.get(CellStyleEnum.KM));
-		row.createCell(13).setCellStyle(styles.get(CellStyleEnum.NAME));
+		row.createCell(monthColumns * 5 + 1).setCellStyle(styles.get(CellStyleEnum.NAME));
+		return rowNum + 1;
+	}
+	
+	private int drawFooterRows(XSSFSheet sheet, int rowNum) {
+		sheet.createRow(rowNum);
+		sheet.getRow(rowNum).setHeight(rowHeight);
+		sheet.createRow(rowNum + 1);
+		sheet.getRow(rowNum + 1).setHeight(rowHeight);
+
+		// Add regions for summary
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, 0, 0));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, monthColumns + 1, monthColumns + 1));
+		for (int i = 0; i < monthColumns; i++) {
+			sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, i * 5 + 1, i * 5 + 2));
+			sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, i * 5 + 3, i * 5 + 4));
+			sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, i * 5 + 5, i * 5 + 5));
+		}
+		
+		XSSFRow row = sheet.getRow(rowNum);
+		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
+		row.getCell(0).setCellValue("Ukupno:");
+		for (int i = 0; i < monthColumns; i++) {
+			row.createCell(i * 5 + 1).setCellStyle(styles.get(CellStyleEnum.KM));
+			row.createCell(i * 5 + 2).setCellStyle(styles.get(CellStyleEnum.KM));
+			row.createCell(i * 5 + 3).setCellStyle(styles.get(CellStyleEnum.NORMAL));
+			row.createCell(i * 5 + 4).setCellStyle(styles.get(CellStyleEnum.NORMAL));
+			row.createCell(i * 5 + 5).setCellStyle(styles.get(CellStyleEnum.NORMAL));
+		}
+		row.createCell(monthColumns * 5 + 1).setCellStyle(styles.get(CellStyleEnum.NAME));
+		row.getCell(monthColumns * 5 + 1).setCellValue("Ukupno:");
+		
+		row = sheet.getRow(rowNum + 1);
+		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
+		for (int i = 0; i < monthColumns; i++) {
+			row.createCell(i * 5 + 1).setCellStyle(styles.get(CellStyleEnum.KM));
+			row.createCell(i * 5 + 2).setCellStyle(styles.get(CellStyleEnum.KM));
+			row.createCell(i * 5 + 3).setCellStyle(styles.get(CellStyleEnum.NORMAL));
+			row.createCell(i * 5 + 4).setCellStyle(styles.get(CellStyleEnum.NORMAL));
+			row.createCell(i * 5 + 5).setCellStyle(styles.get(CellStyleEnum.NORMAL));
+		}
+		row.createCell(monthColumns * 5 + 1).setCellStyle(styles.get(CellStyleEnum.NAME));
+		
+		return rowNum + 2;
+	}
+	
+	public int getFooterSpan() {
+		return 2;
 	}
 	
 	private void addSummarySheet() {
@@ -257,7 +296,11 @@ public class SumarySheetGenerator {
 		sheet.setColumnWidth(3, 2459);
 		sheet.setColumnWidth(4, 3200);
 		
-		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 4));
+		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
+		sheet.addMergedRegion(new CellRangeAddress(consumersNum + 3, consumersNum + 4, 0, 0));
+		sheet.addMergedRegion(new CellRangeAddress(consumersNum + 3, consumersNum + 4, 5, 5));
+		sheet.addMergedRegion(new CellRangeAddress(consumersNum + 4, consumersNum + 4, 1, 2));
+		sheet.addMergedRegion(new CellRangeAddress(consumersNum + 4, consumersNum + 4, 3, 4));
 		
 		XSSFRow row = sheet.createRow(0);
 		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.TITLE));
@@ -270,16 +313,19 @@ public class SumarySheetGenerator {
 		row.getCell(0).setCellValue("Reg. Oznaka");
 		row.createCell(1);
 		row.getCell(1).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(1).setCellValue("km");
+		row.getCell(1).setCellValue("km BMB");
 		row.createCell(2);
 		row.getCell(2).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(2).setCellValue("Litara BMB");
+		row.getCell(2).setCellValue("km ED");
 		row.createCell(3);
 		row.getCell(3).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(3).setCellValue("Litara ED");
+		row.getCell(3).setCellValue("Litara BMB");
 		row.createCell(4);
 		row.getCell(4).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(4).setCellValue("Ukupno bez PDV");
+		row.getCell(4).setCellValue("Litara ED");
+		row.createCell(5);
+		row.getCell(5).setCellStyle(styles.get(CellStyleEnum.TITLE));
+		row.getCell(5).setCellValue("Ukupno bez PDV");
 		
 		for (int i = 0; i < consumersNum; i++) {
 			row = sheet.createRow(i + 2);
@@ -295,8 +341,16 @@ public class SumarySheetGenerator {
 		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
 		row.getCell(0).setCellValue("Ukupno:");
 		row.createCell(1).setCellStyle(styles.get(CellStyleEnum.KM));
-		for (int j = 2; j < 5; j++) {
+		row.createCell(2).setCellStyle(styles.get(CellStyleEnum.KM));
+		for (int j = 3; j <= 5; j++) {
 			row.createCell(j).setCellStyle(styles.get(CellStyleEnum.NORMAL)); // row number = consumersNum + 3
+		}
+		row = sheet.createRow(consumersNum + 4);
+		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
+		row.createCell(1).setCellStyle(styles.get(CellStyleEnum.KM));
+		row.createCell(2).setCellStyle(styles.get(CellStyleEnum.KM));
+		for (int j = 3; j <= 5; j++) {
+			row.createCell(j).setCellStyle(styles.get(CellStyleEnum.NORMAL)); // row number = consumersNum + 4
 		}
 	}
 	
