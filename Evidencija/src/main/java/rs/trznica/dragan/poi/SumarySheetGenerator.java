@@ -80,6 +80,7 @@ public class SumarySheetGenerator {
 		normalStyle.setFont(normalFont);
 		normalStyle.setDataFormat(volumeFormat.getFormat("#,##0.00"));
 		normalStyle.setAlignment(HorizontalAlignment.RIGHT);
+		normalStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 		normalStyle.setBorderBottom(BorderStyle.THIN);
 		normalStyle.setBorderTop(BorderStyle.THIN);
 		normalStyle.setBorderLeft(BorderStyle.THIN);
@@ -100,6 +101,7 @@ public class SumarySheetGenerator {
 		XSSFCellStyle nameStyle = wb.createCellStyle();
 		nameStyle.setFont(normalFont);
 		nameStyle.setAlignment(HorizontalAlignment.LEFT);
+		nameStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 		nameStyle.setBorderBottom(BorderStyle.THIN);
 		nameStyle.setBorderTop(BorderStyle.THIN);
 		nameStyle.setBorderLeft(BorderStyle.THIN);
@@ -109,6 +111,7 @@ public class SumarySheetGenerator {
 		XSSFCellStyle kmStyle = wb.createCellStyle();
 		kmStyle.setFont(normalFont);
 		kmStyle.setAlignment(HorizontalAlignment.RIGHT);
+		kmStyle.setVerticalAlignment(VerticalAlignment.CENTER);
 		kmStyle.setDataFormat(wb.createDataFormat().getFormat("#,##0"));
 		kmStyle.setBorderBottom(BorderStyle.THIN);
 		kmStyle.setBorderTop(BorderStyle.THIN);
@@ -125,14 +128,14 @@ public class SumarySheetGenerator {
 		sheet.setDefaultRowHeight((short)365);
 		
 		sheet.setColumnWidth(0, 2459);
-		for (int i = 1; i < 13; i++) {
-			if (i % 4 == 0) {
-				sheet.setColumnWidth(i, 2600);
-			} else {
-				sheet.setColumnWidth(i, 2236);
-			}
+		for (int i = 0; i < monthColumns; i++) {
+			sheet.setColumnWidth(i * 5 + 1, 2236);
+			sheet.setColumnWidth(i * 5 + 2, 2236);
+			sheet.setColumnWidth(i * 5 + 3, 2600);
+			sheet.setColumnWidth(i * 5 + 4, 2600);
+			sheet.setColumnWidth(i * 5 + 5, 2600);
 		}
-		sheet.setColumnWidth(13, 2459);
+		sheet.setColumnWidth(monthColumns * 5 + 1, 2459);
 		
 		int rowIndex = 0;
 		if (consumersNum <= maxConsumers) {
@@ -141,13 +144,13 @@ public class SumarySheetGenerator {
 				rowIndex = drawEntryRow(sheet, rowIndex);
 			}
 			rowIndex = drawTitle(sheet, rowIndex);
-			for (int i = 0; i < consumersNum + 1; i++) {
+			for (int i = 0; i < consumersNum; i++) {
 				rowIndex = drawEntryRow(sheet, rowIndex);
 			}
 			rowIndex = drawFooterRows(sheet, rowIndex);
 		} else {
 			rowIndex = drawTitle(sheet, rowIndex);
-			for (int i = 0; i < consumersNum + 1; i++) {
+			for (int i = 0; i < consumersNum; i++) {
 				rowIndex = drawEntryRow(sheet, rowIndex);
 			}
 			rowIndex = drawFooterRows(sheet, rowIndex);
@@ -170,7 +173,7 @@ public class SumarySheetGenerator {
 		
 		for (int i = 0; i < monthColumns; i++) {
 			// Add month name field
-			sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, i * 5 + 1, (i + 1) * 5 + 1));
+			sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum, i * 5 + 1, (i + 1) * 5));
 			// Add km label
 			sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, i * 5 + 1, i * 5 + 2));
 			// Add liter label
@@ -197,7 +200,7 @@ public class SumarySheetGenerator {
 			}
 			row.getCell(i * 5 + 1).setCellValue("km");
 			row.getCell(i * 5 + 3).setCellValue("Litara");
-			row.getCell(i * 5 + 4).setCellValue("Ukupno bez PDV");
+			row.getCell(i * 5 + 5).setCellValue("Ukupno bez PDV");
 		}
 		row.createCell(monthColumns * 5 + 1).setCellStyle(styles.get(CellStyleEnum.TITLE));
 		row.getCell(monthColumns * 5 + 1).setCellValue("Reg. Oznaka");
@@ -250,10 +253,13 @@ public class SumarySheetGenerator {
 
 		// Add regions for summary
 		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, 0, 0));
-		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, monthColumns + 1, monthColumns + 1));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, monthColumns * 5 + 1, monthColumns * 5 + 1));
 		for (int i = 0; i < monthColumns; i++) {
+			// km summary
 			sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, i * 5 + 1, i * 5 + 2));
+			// Liter summary
 			sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, i * 5 + 3, i * 5 + 4));
+			// Money summary
 			sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, i * 5 + 5, i * 5 + 5));
 		}
 		
@@ -293,8 +299,9 @@ public class SumarySheetGenerator {
 		sheet.setColumnWidth(0, 3000);
 		sheet.setColumnWidth(1, 2459);
 		sheet.setColumnWidth(2, 2459);
-		sheet.setColumnWidth(3, 2459);
+		sheet.setColumnWidth(3, 3200);
 		sheet.setColumnWidth(4, 3200);
+		sheet.setColumnWidth(5, 3200);
 		
 		sheet.addMergedRegion(new CellRangeAddress(0, 0, 0, 5));
 		sheet.addMergedRegion(new CellRangeAddress(consumersNum + 3, consumersNum + 4, 0, 0));
@@ -331,7 +338,7 @@ public class SumarySheetGenerator {
 			row = sheet.createRow(i + 2);
 			row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
 			row.createCell(1).setCellStyle(styles.get(CellStyleEnum.KM));
-			for (int j = 2; j < 5; j++) {
+			for (int j = 2; j <= 5; j++) {
 				row.createCell(j).setCellStyle(styles.get(CellStyleEnum.NORMAL));
 			}
 		}

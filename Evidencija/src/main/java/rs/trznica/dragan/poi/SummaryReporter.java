@@ -154,7 +154,7 @@ public class SummaryReporter {
 		row.getCell(5).setCellValue(Long.valueOf(finalSumm.getPrice()).doubleValue() / 100d);
 		row = sheet.getRow(4 + potrosaci.size());
 		row.getCell(1).setCellValue(finalSumm.getKmBmb() + finalSumm.getKmEd());
-		row.getCell(2).setCellValue(Long.valueOf(finalSumm.getLitBmb() + finalSumm.getLitEd()).doubleValue() / 100d);
+		row.getCell(3).setCellValue(Long.valueOf(finalSumm.getLitBmb() + finalSumm.getLitEd()).doubleValue() / 100d);
 		// Save File
 		try (FileOutputStream fos = new FileOutputStream(xlsTablesPath + "/zbirni_izvestaj.xlsx")) {
 			wb.write(fos);
@@ -227,16 +227,10 @@ public class SummaryReporter {
 
 	private int getSheetsNum(int consumersNum, int months) {
 		int sheetNum = 0;
-		if (consumersNum < 9) {
-			sheetNum = months / 6;
-			if (months % 6 > 0) {
-				sheetNum++;
-			}
+		if (consumersNum <= maxConsumers) {
+			sheetNum = months / monthColumns / 2 + 1;
 		} else {
-			sheetNum = months / 3;
-			if (months % 3 > 0) {
-				sheetNum++;
-			}
+			sheetNum = months / monthColumns + 1;
 		}
 		return sheetNum;
 	}
