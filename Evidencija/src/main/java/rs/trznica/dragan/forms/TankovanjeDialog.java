@@ -97,9 +97,10 @@ public class TankovanjeDialog extends GenericDialog {
 
 	public void editFillUp(Tankovanje fill) {
 		entityId = fill.getId();
+		cbPotrosac.setEnabled(true);
 		for (int i = 0; i < cbPotrosac.getItemCount(); i++) {
 			if (cbPotrosac.getItemAt(i).getId().equals(fill.getId())) {
-				cbPotrosac.setSelectedIndex(i);
+				cbPotrosac.getModel().setSelectedItem(cbPotrosac.getModel().getElementAt(i));
 				break;
 			}
 		}
@@ -196,6 +197,7 @@ public class TankovanjeDialog extends GenericDialog {
 			dpDatum.setPreferredSize(new Dimension(150, 28));
 			dpDatum.setMinimumSize(new Dimension(100, 28));
 			dpDatum.getDateEditor().addPropertyChangeListener(new DpDatumPropertyChangeListener());
+			dpDatum.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 			GridBagConstraints gbc_dpDatum = new GridBagConstraints();
 			gbc_dpDatum.anchor = GridBagConstraints.WEST;
 			gbc_dpDatum.insets = new Insets(0, 0, 5, 0);
