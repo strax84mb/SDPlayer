@@ -1,6 +1,7 @@
 package rs.trznica.dragan.forms;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -11,6 +12,8 @@ import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Iterator;
@@ -44,9 +47,6 @@ import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.validator.tankovanje.TankovanjeValidator;
 
 import com.toedter.calendar.JDateChooser;
-import java.awt.Dimension;
-import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 
 @Component
 @Configurable
@@ -83,6 +83,17 @@ public class TankovanjeDialog extends GenericDialog {
 
 	private PotrosacDao potrosacDao;
 	private TankovanjeDao tankovanjeDao;
+
+	private ModalResult modalResult = ModalResult.CANCEL;
+	private Tankovanje returnValue;
+
+	public ModalResult getModalResult() {
+		return modalResult;
+	}
+
+	public Tankovanje getReturnValue() {
+		return returnValue;
+	}
 
 	public void editFillUp(Tankovanje fill) {
 		entityId = fill.getId();
@@ -451,7 +462,7 @@ public class TankovanjeDialog extends GenericDialog {
 					tankovanje.setKilometraza(Long.valueOf(tfKM.getText()));
 				}
 				tankovanje.setId(entityId);
-				tankovanje = tankovanjeDao.save(tankovanje);
+				returnValue = tankovanjeDao.save(tankovanje);
 				modalResult = ModalResult.OK;
 				setVisible(false);
 			} else {

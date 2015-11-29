@@ -36,6 +36,9 @@ public class Potrosac {
 	@Enumerated(EnumType.STRING)
 	private GorivoType gorivo = GorivoType.BMB;
 
+	@Column(nullable = false)
+	private Boolean aktivan = true;
+
 	public Long getId() {
 		return id;
 	}
@@ -90,6 +93,14 @@ public class Potrosac {
 
 	public void setGorivo(GorivoType gorivo) {
 		this.gorivo = gorivo;
+	}
+
+	public Boolean getAktivan() {
+		return aktivan;
+	}
+
+	public void setAktivan(Boolean aktivan) {
+		this.aktivan = aktivan;
 	}
 
 	@Override

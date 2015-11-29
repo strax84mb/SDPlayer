@@ -3,6 +3,7 @@ package rs.trznica.dragan.forms;
 import java.awt.BorderLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.beans.PropertyVetoException;
 
@@ -16,6 +17,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -48,7 +50,7 @@ public class ApplicationFrame extends JFrame {
 		setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		setTitle("Evidencija vozila");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		setBounds(100, 100, 843, 483);
+		setBounds(100, 100, 850, 550);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
 		setContentPane(contentPane);
@@ -64,11 +66,13 @@ public class ApplicationFrame extends JFrame {
 		JMenuItem mntmListConsumers = new JMenuItem("Lista potro\u0161a\u010Da");
 		mntmListConsumers.setAction(listConsumersAction);
 		mntmListConsumers.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		mntmListConsumers.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.CTRL_DOWN_MASK));
 		mnConsumers.add(mntmListConsumers);
 		
 		JMenuItem mntmNewConsumer = new JMenuItem("Dodaj potro\u0161a\u010Da");
 		mntmNewConsumer.setAction(newConsumerAction);
 		mntmNewConsumer.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		mntmNewConsumer.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_P, KeyEvent.ALT_DOWN_MASK));
 		mnConsumers.add(mntmNewConsumer);
 		
 		JMenu mnFillups = new JMenu("Tankovanja");
@@ -78,11 +82,13 @@ public class ApplicationFrame extends JFrame {
 		JMenuItem mntmNewFillup = new JMenuItem("Unesi tankovanje");
 		mntmNewFillup.setAction(newFillupAction);
 		mntmNewFillup.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		mntmNewFillup.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.ALT_DOWN_MASK));
 		mnFillups.add(mntmNewFillup);
 		
 		JMenuItem mntmListFillups = new JMenuItem("Lista tankovanja");
 		mntmListFillups.setAction(listFillUpsAction);
 		mntmListFillups.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		mntmListFillups.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK));
 		mnFillups.add(mntmListFillups);
 		
 		java.awt.Component horizontalGlue = Box.createHorizontalGlue();
@@ -95,6 +101,7 @@ public class ApplicationFrame extends JFrame {
 		JMenuItem mntmClose = new JMenuItem("Kraj rada");
 		mntmClose.setAction(closeAction);
 		mntmClose.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		mntmClose.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_F4, KeyEvent.ALT_DOWN_MASK));
 		mnSystem.add(mntmClose);
 		contentPane.setLayout(new BorderLayout(0, 0));
 		

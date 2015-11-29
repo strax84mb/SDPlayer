@@ -163,6 +163,9 @@ public class VoziloListaForm extends JInternalFrame {
 			return;
 		}
 		StringBuilder builder = new StringBuilder("<html><p>");
+		if (!potrosac.getAktivan()) {
+			builder.append("<b>Nije vi\u0161e u uputrebi</b><br/>");
+		}
 		if (potrosac.getVozilo()) {
 			if (potrosac.getTeretnjak()) {
 				builder.append("Teretno vozilo<br/><br/>");

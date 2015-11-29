@@ -15,6 +15,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -42,6 +43,7 @@ import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.entities.tankovanje.Tankovanje;
 import rs.trznica.dragan.forms.support.ConsumerCheckBox;
 import rs.trznica.dragan.forms.support.DecimalFormater;
+import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.poi.ConsumerReporter;
 import rs.trznica.dragan.poi.SummaryReporter;
 
@@ -57,15 +59,18 @@ public class TankovanjeListaForm extends JInternalFrame {
 	private JTextField tfStartFrom;
 	private JTextField tfEndsWith;
 	private JCheckBox chckbxAll;
+	private JCheckBox chckbxHideObsolete;
 
 	private List<ConsumerCheckBox> consumers = new ArrayList<ConsumerCheckBox>();
 
+	private ApplicationContext ctx;
 	private PotrosacDao potrosacDao;
 	private TankovanjeDao tankovanjeDao;
 	private ConsumerReporter reporter;
 	private SummaryReporter summaryReporter;
 
 	private void populateAutowiredFields(ApplicationContext ctx) {
+		this.ctx = ctx;
 		potrosacDao = ctx.getBean(PotrosacDao.class);
 		tankovanjeDao = ctx.getBean(TankovanjeDao.class);
 		reporter = ctx.getBean(ConsumerReporter.class);
@@ -106,13 +111,13 @@ public class TankovanjeListaForm extends JInternalFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"Datum", "Potrošač", "Za mesec", "Količina", "Cena litre", "Ukupna cena"
+				"Datum", "Potrošač", "Za mesec", "Količina", "Cena litre", "Ukupna cena", "ID"
 			}
 		) {
 			private static final long serialVersionUID = -4076593013718122690L;
 			@SuppressWarnings("rawtypes")
 			Class[] columnTypes = new Class[] {
-				String.class, String.class, String.class, String.class, String.class, String.class
+				String.class, String.class, String.class, String.class, String.class, String.class, Long.class
 			};
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			public Class getColumnClass(int columnIndex) {
@@ -136,6 +141,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 		table.getColumnModel().getColumn(3).setCellRenderer(rightSideRend);
 		table.getColumnModel().getColumn(4).setCellRenderer(rightSideRend);
 		table.getColumnModel().getColumn(5).setCellRenderer(rightSideRend);
+		table.getColumnModel().getColumn(6).setMaxWidth(25);
 		scrollPane.setViewportView(table);
 		
 		JPanel topPanel = new JPanel();
@@ -188,15 +194,29 @@ public class TankovanjeListaForm extends JInternalFrame {
 		Component verticalGlue = Box.createVerticalGlue();
 		paramsPanel.add(verticalGlue);
 		
-		JCheckBox chckbxHideObsolete = new JCheckBox("Sakrij zastarele");
+		chckbxHideObsolete = new JCheckBox("Sakrij zastarele");
 		chckbxHideObsolete.addItemListener(new ChckbxHideObsoleteItemListener());
 		chckbxHideObsolete.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		paramsPanel.add(chckbxHideObsolete);
 		
+		JPanel panelLeftCommands = new JPanel();
+		panelLeftCommands.setBorder(null);
+		FlowLayout flowLayout_1 = (FlowLayout) panelLeftCommands.getLayout();
+		flowLayout_1.setAlignment(FlowLayout.LEFT);
+		panelLeftCommands.setAlignmentX(Component.LEFT_ALIGNMENT);
+		panelLeftCommands.setPreferredSize(new Dimension(10, 40));
+		panelLeftCommands.setMaximumSize(new Dimension(32767, 40));
+		paramsPanel.add(panelLeftCommands);
+		
 		JButton btnSearch = new JButton("Prika\u017Ei");
+		panelLeftCommands.add(btnSearch);
 		btnSearch.addActionListener(new BtnSearchActionListener());
 		btnSearch.setFont(new Font("Times New Roman", Font.PLAIN, 16));
-		paramsPanel.add(btnSearch);
+		
+		JButton btnChange = new JButton("Izmeni");
+		btnChange.addActionListener(new BtnChangeActionListener());
+		btnChange.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		panelLeftCommands.add(btnChange);
 		
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -233,19 +253,24 @@ public class TankovanjeListaForm extends JInternalFrame {
 	}
 
 	private List<Long> getChosenIds() {
-		List<Long> ids = new ArrayList<Long>();
-		consumers.stream()
-				.filter(x -> x.isSelected())
-				.forEach(x -> ids.add(x.getConsumer().getId()));
-		return ids;
+		return consumers.stream()
+				.filter(x -> x.isSelected() && x.isVisible())
+				.map(ConsumerCheckBox::getConsumer)
+				.map(Potrosac::getId)
+				.collect(Collectors.toList());
 	}
 
 	private List<Potrosac> getChosenConsumers() {
-		List<Potrosac> ret = new ArrayList<Potrosac>();
+		return consumers.stream()
+				.filter(x -> x.isSelected() && x.isVisible())
+				.map(ConsumerCheckBox::getConsumer)
+				.collect(Collectors.toList());
+	}
+
+	private void hideObsolete(boolean hide) {
 		consumers.stream()
-				.filter(x -> x.isSelected())
-				.forEach(x -> ret.add(x.getConsumer()));
-		return ret;
+				.filter(x -> !x.getConsumer().getAktivan())
+				.forEach(x -> x.setVisible(!hide));
 	}
 
 	private void populateTableWithData(Iterable<Tankovanje> fillUps) {
@@ -256,13 +281,14 @@ public class TankovanjeListaForm extends JInternalFrame {
 			model.addRow(new Object[] {sdf.format(x.getDatum()), x.getPotrosac().toString(), x.getMesec(), 
 					DecimalFormater.formatFromLong(x.getKolicina(), 2), 
 					DecimalFormater.formatFromLong(x.getJedCena(), 2), 
-					DecimalFormater.formatFromLong(x.getJedCena() * x.getKolicina() / 100L, 2)});
+					DecimalFormater.formatFromLong(x.getJedCena() * x.getKolicina() / 100L, 2),
+					x.getId()});
 		});
 	}
 
 	private class ChckbxHideObsoleteItemListener implements ItemListener {
 		public void itemStateChanged(ItemEvent ev) {
-			// TODO dodaj sakivanje zastarelih vozila
+			hideObsolete(chckbxHideObsolete.isSelected());
 		}
 	}
 	private class ChckbxAllActionListener implements ActionListener {
@@ -391,6 +417,31 @@ public class TankovanjeListaForm extends JInternalFrame {
 			} catch (Exception e) {
 				e.printStackTrace();
 				new ErrorDialog().showError("Desila se greška prilikom obrade podataka.");
+			}
+		}
+	}
+	private class BtnChangeActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ev) {
+			if (table.getSelectedRow() != -1) {
+				Long id = (Long) table.getModel().getValueAt(table.getSelectedRow(), 6);
+				Tankovanje tankovanje = tankovanjeDao.findOne(id);
+				TankovanjeDialog dlg = ctx.getBean(TankovanjeDialog.class);
+				dlg.editFillUp(tankovanje);
+				dlg.setVisible(true);
+				if (ModalResult.OK.equals(dlg.getModalResult())) {
+					int row = table.getSelectedRow();
+					SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy.");
+					DefaultTableModel model = (DefaultTableModel) table.getModel();
+					model.setValueAt(sdf.format(tankovanje.getDatum()), row, 0);
+					model.setValueAt(tankovanje.getPotrosac().toString(), row, 1);
+					model.setValueAt(tankovanje.getMesec(), row, 2);
+					model.setValueAt(DecimalFormater.formatFromLong(tankovanje.getKolicina(), 2), row, 3);
+					model.setValueAt(DecimalFormater.formatFromLong(tankovanje.getJedCena(), 2), row, 4);
+					model.setValueAt(DecimalFormater.formatFromLong(tankovanje.getJedCena() * tankovanje.getKolicina() / 100L, 2), row, 5);
+					model.setValueAt(tankovanje.getId(), row, 6);
+					table.repaint();
+				}
+				dlg.dispose();
 			}
 		}
 	}

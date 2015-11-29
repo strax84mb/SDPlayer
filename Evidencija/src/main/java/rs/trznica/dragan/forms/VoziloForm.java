@@ -48,6 +48,7 @@ public class VoziloForm extends JDialog {
 
 	private JCheckBox cbxVozilo;
 	private JCheckBox cbxTeretnjak;
+	private JCheckBox cbxUUpotrebi;
 	private JTextField tfTip;
 	private JTextField tfMarka;
 	private JTextField tfRegOznaka;
@@ -97,6 +98,7 @@ public class VoziloForm extends JDialog {
 		} else {
 			tfRegOznaka.setText("");
 		}
+		cbxUUpotrebi.setSelected(consumer.getAktivan());
 	}
 
 	/**
@@ -109,7 +111,7 @@ public class VoziloForm extends JDialog {
 		setTitle("Potro\u0161a\u010D");
 		getContentPane().setFont(defaultFont);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setBounds(100, 100, 450, 313);
+		setBounds(100, 100, 450, 309);
 		
 		JPanel panelTop = new JPanel();
 		getContentPane().add(panelTop, BorderLayout.NORTH);
@@ -250,6 +252,16 @@ public class VoziloForm extends JDialog {
 		panelCenter.add(tfRegOznaka, gbc_tfRegOznaka);
 		tfRegOznaka.setColumns(10);
 
+		cbxUUpotrebi = new JCheckBox("U upotrebi");
+		cbxUUpotrebi.setSelected(true);
+		cbxUUpotrebi.setFont(defaultFont);
+		GridBagConstraints gbc_cbxUUpotrebi = new GridBagConstraints();
+		gbc_cbxUUpotrebi.anchor = GridBagConstraints.WEST;
+		gbc_cbxUUpotrebi.insets = new Insets(0, 0, 5, 5);
+		gbc_cbxUUpotrebi.gridx = 0;
+		gbc_cbxUUpotrebi.gridy = 5;
+		panelCenter.add(cbxUUpotrebi, gbc_cbxUUpotrebi);
+
 		for (GorivoType gorivo : GorivoType.values()) {
 			cbGorivo.addItem(gorivo);
 		}
@@ -280,7 +292,8 @@ public class VoziloForm extends JDialog {
 	private class BtnOkActionListener implements ActionListener {
 		public void actionPerformed(ActionEvent ev) {
 			PotrosacDto dto = new PotrosacDto(entityId, tfRegOznaka.getText(), tfMarka.getText(), tfTip.getText(), 
-					cbxVozilo.isSelected(), cbxTeretnjak.isSelected(), cbGorivo.getItemAt(cbGorivo.getSelectedIndex()));
+					cbxVozilo.isSelected(), cbxTeretnjak.isSelected(), cbGorivo.getItemAt(cbGorivo.getSelectedIndex()), 
+					cbxUUpotrebi.isSelected());
 			BindingResult result = new DataBinder(dto).getBindingResult();
 			new PotrosacValidator().validate(dto, result);
 			if (result.getErrorCount() == 0) {
