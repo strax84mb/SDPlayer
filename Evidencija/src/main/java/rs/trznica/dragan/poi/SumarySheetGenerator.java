@@ -211,10 +211,10 @@ public class SumarySheetGenerator {
 			for (int j = 0; j < 5; j++) {
 				row.createCell(i * 5 + 1 + j).setCellStyle(styles.get(CellStyleEnum.TITLE));
 			}
-			row.getCell(i * 5).setCellValue("BMB");
-			row.getCell(i * 5 + 1).setCellValue("ED");
-			row.getCell(i * 5 + 2).setCellValue("BMB");
-			row.getCell(i * 5 + 3).setCellValue("ED");
+			row.getCell(i * 5 + 1).setCellValue("BMB");
+			row.getCell(i * 5 + 2).setCellValue("ED");
+			row.getCell(i * 5 + 3).setCellValue("BMB");
+			row.getCell(i * 5 + 4).setCellValue("ED");
 		}
 		row.createCell(monthColumns * 5 + 1).setCellStyle(styles.get(CellStyleEnum.TITLE));
 		
@@ -338,7 +338,8 @@ public class SumarySheetGenerator {
 			row = sheet.createRow(i + 2);
 			row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
 			row.createCell(1).setCellStyle(styles.get(CellStyleEnum.KM));
-			for (int j = 2; j <= 5; j++) {
+			row.createCell(2).setCellStyle(styles.get(CellStyleEnum.KM));
+			for (int j = 3; j <= 5; j++) {
 				row.createCell(j).setCellStyle(styles.get(CellStyleEnum.NORMAL));
 			}
 		}

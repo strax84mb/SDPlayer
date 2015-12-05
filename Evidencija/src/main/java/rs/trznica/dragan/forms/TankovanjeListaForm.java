@@ -204,8 +204,8 @@ public class TankovanjeListaForm extends JInternalFrame {
 		FlowLayout flowLayout_1 = (FlowLayout) panelLeftCommands.getLayout();
 		flowLayout_1.setAlignment(FlowLayout.LEFT);
 		panelLeftCommands.setAlignmentX(Component.LEFT_ALIGNMENT);
-		panelLeftCommands.setPreferredSize(new Dimension(10, 40));
-		panelLeftCommands.setMaximumSize(new Dimension(32767, 40));
+		panelLeftCommands.setPreferredSize(new Dimension(10, 70));
+		panelLeftCommands.setMaximumSize(new Dimension(32767, 70));
 		paramsPanel.add(panelLeftCommands);
 		
 		JButton btnSearch = new JButton("Prika\u017Ei");
@@ -217,6 +217,11 @@ public class TankovanjeListaForm extends JInternalFrame {
 		btnChange.addActionListener(new BtnChangeActionListener());
 		btnChange.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		panelLeftCommands.add(btnChange);
+		
+		JButton btnDelete = new JButton("Obriši");
+		btnDelete.addActionListener(new BtnDeleteActionListener());
+		btnDelete.setFont(new Font("Times New Roman", Font.PLAIN, 16));
+		panelLeftCommands.add(btnDelete);
 		
 		JPanel bottomPanel = new JPanel();
 		bottomPanel.setBorder(new EmptyBorder(10, 0, 0, 0));
@@ -442,6 +447,21 @@ public class TankovanjeListaForm extends JInternalFrame {
 					table.repaint();
 				}
 				dlg.dispose();
+			}
+		}
+	}
+	private class BtnDeleteActionListener implements ActionListener {
+		public void actionPerformed(ActionEvent ev) {
+			if (table.getSelectedRow() != -1) {
+				Long id = (Long) table.getModel().getValueAt(table.getSelectedRow(), 6);
+				YesNoDialog dlg = new YesNoDialog("Da li želiš da obrišeš izabrano tankovanje?");
+				dlg.setVisible(true);
+				if (ModalResult.YES.equals(dlg.getModalResult())) {
+					tankovanjeDao.delete(id);
+					((DefaultTableModel) table.getModel()).removeRow(table.getSelectedRow());
+					table.clearSelection();
+					table.repaint();
+				}
 			}
 		}
 	}

@@ -270,7 +270,7 @@ public class SummaryReporter {
 				prevKM = tankovanja.get(i).getKilometraza();
 			}
 		}
-		return (lastKM > 0L) ? lastKM - prevKM : 0L;
+		return (lastKM > 0L && prevKM > 0L) ? lastKM - prevKM : 0L;
 	}
 	
 	private XSSFCell getCell(XSSFWorkbook wb, int consumersNum, int consumer, int month, DataType type) {

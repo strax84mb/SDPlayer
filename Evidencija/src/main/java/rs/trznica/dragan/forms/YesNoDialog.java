@@ -1,6 +1,7 @@
 package rs.trznica.dragan.forms;
 
 import java.awt.Component;
+import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,12 +36,14 @@ public class YesNoDialog extends JDialog {
 		JLabel label = new JLabel("<html>" + text + "</html>");
 		label.setBorder(new EmptyBorder(10, 10, 10, 10));
 		label.setAlignmentX(CENTER_ALIGNMENT);
+		label.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		box.add(label);
 		// Dugmici
 		JPanel panel = new JPanel();
 		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
 		panel.add(Box.createHorizontalGlue());
 		JButton btn = new JButton("Ne");
+		btn.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				modalResult = ModalResult.NO;
@@ -50,6 +53,7 @@ public class YesNoDialog extends JDialog {
 		panel.add(btn);
 		panel.add(Box.createHorizontalStrut(10));
 		btn = new JButton("Da");
+		btn.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		btn.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				modalResult = ModalResult.YES;

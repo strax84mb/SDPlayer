@@ -99,7 +99,7 @@ public class TankovanjeDialog extends GenericDialog {
 		entityId = fill.getId();
 		cbPotrosac.setEnabled(true);
 		for (int i = 0; i < cbPotrosac.getItemCount(); i++) {
-			if (cbPotrosac.getItemAt(i).getId().equals(fill.getId())) {
+			if (cbPotrosac.getItemAt(i).getId().equals(fill.getPotrosac().getId())) {
 				cbPotrosac.getModel().setSelectedItem(cbPotrosac.getModel().getElementAt(i));
 				break;
 			}
