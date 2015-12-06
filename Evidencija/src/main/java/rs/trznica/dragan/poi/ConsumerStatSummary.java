@@ -12,7 +12,11 @@ public class ConsumerStatSummary {
 
 	private long litEd = 0L;
 
-	private long price = 0L;
+	private long priceBmb = 0L;
+
+	private long priceEd = 0L;
+
+	public ConsumerStatSummary() {}
 
 	public long getKmBmb() {
 		return kmBmb;
@@ -30,8 +34,12 @@ public class ConsumerStatSummary {
 		return litEd;
 	}
 
-	public long getPrice() {
-		return price;
+	public long getPriceBmb() {
+		return priceBmb;
+	}
+
+	public long getPriceEd() {
+		return priceEd;
 	}
 
 	public long addKmBmb(long value) {
@@ -66,7 +74,19 @@ public class ConsumerStatSummary {
 		}
 	}
 
-	public long addPrice(long value) {
-		return (price += value);
+	public long addPriceBmb(long value) {
+		return (priceBmb += value);
+	}
+
+	public long addPriceEd(long value) {
+		return (priceEd += value);
+	}
+
+	public long addPrice(GorivoType type, long value) {
+		if (GorivoType.BMB.equals(type)) {
+			return addPriceBmb(value);
+		} else {
+			return addPriceEd(value);
+		}
 	}
 }
