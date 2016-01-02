@@ -54,6 +54,10 @@ public class ConsumerReporter {
 		try (FileInputStream fis = new FileInputStream(xlsBlankTablePath + "/blank.xlsx")) {
 			wb = new XSSFWorkbook(fis);
 		}
+		if (!potrosac.getMeriKm()) {
+			wb.getSheetAt(0).getRow(2).getCell(2).setCellValue("Stanje\nRS");
+			wb.getSheetAt(0).getRow(2).getCell(3).setCellValue("Pro\u0161lo\nRS");
+		}
 		// Create bold font and style
 		Font boldFont = wb.createFont();
 		boldFont.setBold(true);

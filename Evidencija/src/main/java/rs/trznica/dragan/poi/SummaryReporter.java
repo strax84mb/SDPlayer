@@ -50,7 +50,7 @@ public class SummaryReporter {
 		for (int i = 0; i < potrosaci.size(); i++) {
 			consumerSums[i] = new ConsumerStatSummary();
 		}
-		for (int i = 0; i < potrosaci.size(); i++) {
+		for (int i = 0; i < months; i++) {
 			monthSums[i] = new ConsumerStatSummary();
 		}
 		List<ConsumerStatSummary[]> monthlyTotals = new ArrayList<ConsumerStatSummary[]>();
@@ -79,19 +79,24 @@ public class SummaryReporter {
 					// Fill km
 					tempValue = getKmForMonth(tankovanja, currMonth);
 					if (tempValue > 0L) {
-						cell = getCell(wb, false, i, monthIndex, 
-								(GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? DataType.KM_BMB : DataType.KM_ED);
-						cell.setCellValue(tempValue);
+						if (potrosaci.get(i).getMeriKm()) {
+							cell = getCell(wb, potrosaci.size(), i, monthIndex, 
+									(GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? DataType.KM_BMB : DataType.KM_ED);
+						} else {
+							cell = getCell(wb, potrosaci.size(), i, monthIndex, 
+									(GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? DataType.RS_BMB : DataType.RS_ED);
+						}
+						cell.setCellValue(getKmRsString(potrosaci.get(i).getMeriKm(), tempValue));
 					}
-					consumerSums[i].addKm(potrosaci.get(i).getGorivo(), tempValue);
-					monthSums[monthIndex].addKm(potrosaci.get(i).getGorivo(), tempValue);
-					monthlyTotals.get(monthIndex)[i].addKm(potrosaci.get(i).getGorivo(), 
+					consumerSums[i].addKm_Rs(potrosaci.get(i).getGorivo(), potrosaci.get(i).getMeriKm(), tempValue);
+					monthSums[monthIndex].addKm_Rs(potrosaci.get(i).getGorivo(), potrosaci.get(i).getMeriKm(), tempValue);
+					monthlyTotals.get(monthIndex)[i].addKm_Rs(potrosaci.get(i).getGorivo(), potrosaci.get(i).getMeriKm(), 
 							(GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? consumerSums[i].getKmBmb() : consumerSums[i].getKmEd());
 				}
 				// Fill fuel volume
 				tempValue = getVolumeForMonth(tankovanja, currMonth);
 				if (tempValue > 0L) {
-					cell = getCell(wb, false, i, monthIndex, 
+					cell = getCell(wb, potrosaci.size(), i, monthIndex, 
 							((GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? DataType.LIT_BMB : DataType.LIT_ED));
 					cell.setCellValue(tempValue.doubleValue() / 100d);
 				}
@@ -102,7 +107,7 @@ public class SummaryReporter {
 				// Fill price
 				tempValue = getPriceForMonth(tankovanja, currMonth);
 				if (tempValue > 0L) {
-					cell = getCell(wb, false, i, monthIndex, 
+					cell = getCell(wb, potrosaci.size(), i, monthIndex, 
 							((GorivoType.BMB.equals(potrosaci.get(i).getGorivo())) ? DataType.PRICE_BMB : DataType.PRICE_ED));
 					cell.setCellValue(tempValue.doubleValue() / 100d);
 				}
@@ -117,23 +122,29 @@ public class SummaryReporter {
 		// Write month sums
 		XSSFCell cell = null;
 		for (int i = 0; i < months; i++) {
-			cell = getCell(wb, false, potrosaci.size(), i, DataType.KM_BMB);
-			cell.setCellValue(Long.valueOf(monthSums[i].getKmBmb()));
-			cell = getCell(wb, false, potrosaci.size(), i, DataType.KM_ED);
-			cell.setCellValue(Long.valueOf(monthSums[i].getKmEd()));
-			cell = getCell(wb, false, potrosaci.size() + 1, i, DataType.KM_BMB);
-			cell.setCellValue(Long.valueOf(monthSums[i].getKmBmb() + monthSums[i].getKmEd()));
-			cell = getCell(wb, false, potrosaci.size(), i, DataType.LIT_BMB);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.KM_BMB);
+			cell.setCellValue(getKmRsString(true, monthSums[i].getKmBmb()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.KM_ED);
+			cell.setCellValue(getKmRsString(true, monthSums[i].getKmEd()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size() + 1, i, DataType.KM_BMB);
+			cell.setCellValue(getKmRsString(true, monthSums[i].getKmBmb() + monthSums[i].getKmEd()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.RS_BMB);
+			cell.setCellValue(getKmRsString(false, monthSums[i].getRsBmb()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.RS_ED);
+			cell.setCellValue(getKmRsString(false, monthSums[i].getRsEd()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size() + 1, i, DataType.RS_BMB);
+			cell.setCellValue(getKmRsString(false, monthSums[i].getRsBmb() + monthSums[i].getRsEd()));
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.LIT_BMB);
 			cell.setCellValue(Long.valueOf(monthSums[i].getLitBmb()).doubleValue() / 100d);
-			cell = getCell(wb, false, potrosaci.size(), i, DataType.LIT_ED);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.LIT_ED);
 			cell.setCellValue(Long.valueOf(monthSums[i].getLitEd()).doubleValue() / 100d);
-			cell = getCell(wb, false, potrosaci.size() + 1, i, DataType.LIT_BMB);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size() + 1, i, DataType.LIT_BMB);
 			cell.setCellValue(Long.valueOf(monthSums[i].getLitBmb() + monthSums[i].getLitEd()).doubleValue() / 100d);
-			cell = getCell(wb, false, potrosaci.size(), i, DataType.PRICE_BMB);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.PRICE_BMB);
 			cell.setCellValue(Long.valueOf(monthSums[i].getPriceBmb()).doubleValue() / 100d);
-			cell = getCell(wb, false, potrosaci.size(), i, DataType.PRICE_ED);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size(), i, DataType.PRICE_ED);
 			cell.setCellValue(Long.valueOf(monthSums[i].getPriceEd()).doubleValue() / 100d);
-			cell = getCell(wb, false, potrosaci.size() + 1, i, DataType.PRICE_BMB);
+			cell = getCell(wb, potrosaci.size(), potrosaci.size() + 1, i, DataType.PRICE_BMB);
 			cell.setCellValue(Long.valueOf(monthSums[i].getPriceBmb() + monthSums[i].getPriceEd()).doubleValue() / 100d);
 			fillMonthlyCumulativeSum(wb.getSheetAt(i), monthlyTotals.get(i), i);
 		}
@@ -218,11 +229,18 @@ public class SummaryReporter {
 		return (lastKM > 0L && prevKM > 0L) ? lastKM - prevKM : 0L;
 	}
 	
-	private XSSFCell getCell(XSSFWorkbook wb, boolean forSum, int consumer, int month, DataType type) {
+	private XSSFCell getCell(XSSFWorkbook wb, int consumersNumber, int offset, int month, DataType type) {
 		XSSFRow row;
-		row = wb.getSheetAt(month).getRow(consumer + generator.getTitleSpan());
-		int baseOffset = (forSum) ? 6 : 0;
-		return row.getCell(type.getColumnOffset() + baseOffset);
+		if (offset >= consumersNumber) {
+			if (type.name().startsWith("RS_")) {
+				offset = (offset - consumersNumber) * 2 + 1 + consumersNumber;
+			} else {
+				offset = (offset - consumersNumber) * 2 + consumersNumber;
+			}
+		}
+		row = wb.getSheetAt(month).getRow(offset + generator.getTitleSpan());
+		
+		return row.getCell(type.getColumnOffset());
 	}
 	
 	private void fillMonthlyCumulativeSum(XSSFSheet sheet, ConsumerStatSummary[] consumerSums, int monthlyIndex) {
@@ -230,6 +248,8 @@ public class SummaryReporter {
 		int firstColumn = 7;
 		long kmBMB = 0L;
 		long kmED = 0L;
+		long rsBMB = 0L;
+		long rsED = 0L;
 		long litBMB = 0L;
 		long litED = 0L;
 		long priceBMB = 0L;
@@ -237,10 +257,24 @@ public class SummaryReporter {
 		XSSFRow row = null;
 		for (int i = 0; i < consumerSums.length; i++) {
 			row = sheet.getRow(firstRow + i);
-			row.getCell(firstColumn).setCellValue(Long.valueOf(consumerSums[i].getKmBmb()));
-			kmBMB += consumerSums[i].getKmBmb();
-			row.getCell(firstColumn + 1).setCellValue(Long.valueOf(consumerSums[i].getKmEd()));
-			kmED += consumerSums[i].getKmEd();
+			if (consumerSums[i].getKmBmb() > 0L) {
+				row.getCell(firstColumn).setCellValue(getKmRsString(true, consumerSums[i].getKmBmb()));
+				kmBMB += consumerSums[i].getKmBmb();
+			} else if (consumerSums[i].getRsBmb() > 0L) {
+				row.getCell(firstColumn).setCellValue(getKmRsString(false, consumerSums[i].getRsBmb()));
+				rsBMB += consumerSums[i].getRsBmb();
+			} else {
+				row.getCell(firstColumn).setCellValue("0");
+			}
+			if (consumerSums[i].getKmEd() > 0L) {
+				row.getCell(firstColumn + 1).setCellValue(getKmRsString(true, consumerSums[i].getKmEd()));
+				kmED += consumerSums[i].getKmBmb();
+			} else if (consumerSums[i].getRsEd() > 0L) {
+				row.getCell(firstColumn + 1).setCellValue(getKmRsString(false, consumerSums[i].getRsEd()));
+				rsED += consumerSums[i].getRsEd();
+			} else {
+				row.getCell(firstColumn + 1).setCellValue("0");
+			}
 			row.getCell(firstColumn + 2).setCellValue(Long.valueOf(consumerSums[i].getLitBmb()).doubleValue() / 100d);
 			litBMB += consumerSums[i].getLitBmb();
 			row.getCell(firstColumn + 3).setCellValue(Long.valueOf(consumerSums[i].getLitEd()).doubleValue() / 100d);
@@ -251,16 +285,21 @@ public class SummaryReporter {
 			priceED += consumerSums[i].getPriceEd();
 		}
 		row = sheet.getRow(firstRow + consumerSums.length);
-		row.getCell(firstColumn).setCellValue(Long.valueOf(kmBMB));
-		row.getCell(firstColumn + 1).setCellValue(Long.valueOf(kmED));
+		row.getCell(firstColumn).setCellValue(getKmRsString(true, kmBMB));
+		row.getCell(firstColumn + 1).setCellValue(getKmRsString(true, kmED));
 		row.getCell(firstColumn + 2).setCellValue(Long.valueOf(litBMB).doubleValue() / 100d);
 		row.getCell(firstColumn + 3).setCellValue(Long.valueOf(litED).doubleValue() / 100d);
 		row.getCell(firstColumn + 4).setCellValue(Long.valueOf(priceBMB).doubleValue() / 100d);
 		row.getCell(firstColumn + 5).setCellValue(Long.valueOf(priceED).doubleValue() / 100d);
 		row = sheet.getRow(firstRow + consumerSums.length + 1);
-		row.getCell(firstColumn).setCellValue(Long.valueOf(kmBMB + kmED));
+		row.getCell(firstColumn).setCellValue(getKmRsString(false, rsBMB));
+		row.getCell(firstColumn + 1).setCellValue(getKmRsString(false, rsED));
+		row = sheet.getRow(firstRow + consumerSums.length + 2);
+		row.getCell(firstColumn).setCellValue(getKmRsString(true, kmBMB + kmED));
 		row.getCell(firstColumn + 2).setCellValue(Long.valueOf(litBMB + litED).doubleValue() / 100d);
 		row.getCell(firstColumn + 4).setCellValue(Long.valueOf(priceBMB + priceED).doubleValue() / 100d);
+		row = sheet.getRow(firstRow + consumerSums.length + 3);
+		row.getCell(firstColumn).setCellValue(getKmRsString(false, rsBMB + rsED));
 	}
 	
 	private String increaseMonthString(String monthString) {
@@ -279,6 +318,23 @@ public class SummaryReporter {
 		return builder.toString();
 	}
 
+	private String getKmRsString(boolean km, long value) {
+		StringBuilder builder = new StringBuilder(Long.valueOf(value).toString());
+		int length = builder.length();
+		int dots = length / 3;
+		int offset = length % 3;
+		if (offset == 0) {
+			dots--;
+			offset = 3;
+		}
+		if (dots > 0) {
+			for (int i = 0; i < dots; i++) {
+				builder.insert(offset + i + (i * 3), '.');
+			}
+		}
+		return builder.append((km) ? " k" : " r").toString();
+	}
+	
 	private String getMonthString(int month) {
 		switch (month) {
 		case 1:
@@ -312,6 +368,8 @@ public class SummaryReporter {
 		NAME(0),
 		KM_BMB(1),
 		KM_ED(2),
+		RS_BMB(1),
+		RS_ED(2),
 		LIT_BMB(3),
 		LIT_ED(4),
 		PRICE_BMB(5),

@@ -39,6 +39,9 @@ public class Potrosac {
 	@Column(nullable = false)
 	private Boolean aktivan = true;
 
+	@Column(nullable = false, name = "meri_km")
+	private Boolean meriKm = true;
+
 	public Long getId() {
 		return id;
 	}
@@ -101,6 +104,14 @@ public class Potrosac {
 
 	public void setAktivan(Boolean aktivan) {
 		this.aktivan = aktivan;
+	}
+
+	public Boolean getMeriKm() {
+		return meriKm;
+	}
+
+	public void setMeriKm(Boolean meriKm) {
+		this.meriKm = meriKm;
 	}
 
 	@Override

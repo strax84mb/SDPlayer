@@ -8,6 +8,10 @@ public class ConsumerStatSummary {
 
 	private long kmEd = 0L;
 
+	private long rsBmb = 0L;
+
+	private long rsEd = 0L;
+
 	private long litBmb = 0L;
 
 	private long litEd = 0L;
@@ -23,6 +27,14 @@ public class ConsumerStatSummary {
 	}
 
 	public long getKmEd() {
+		return kmEd;
+	}
+
+	public long getRsBmb() {
+		return kmBmb;
+	}
+
+	public long getRsEd() {
 		return kmEd;
 	}
 
@@ -50,11 +62,27 @@ public class ConsumerStatSummary {
 		return (kmEd += value);
 	}
 
-	public void addKm(GorivoType type, long value) {
-		if (GorivoType.BMB.equals(type)) {
-			addKmBmb(value);
+	public long addRsBmb(long value) {
+		return (rsBmb += value);
+	}
+
+	public long addRsEd(long value) {
+		return (rsEd += value);
+	}
+
+	public void addKm_Rs(GorivoType type, boolean useKm, long value) {
+		if (useKm) {
+			if (GorivoType.BMB.equals(type)) {
+				addKmBmb(value);
+			} else {
+				addKmEd(value);
+			}
 		} else {
-			addKmEd(value);
+			if (GorivoType.BMB.equals(type)) {
+				addRsBmb(value);
+			} else {
+				addRsEd(value);
+			}
 		}
 	}
 

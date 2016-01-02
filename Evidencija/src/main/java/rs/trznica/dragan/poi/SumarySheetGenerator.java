@@ -85,16 +85,15 @@ public class SumarySheetGenerator {
 		nameStyle.setBorderRight(BorderStyle.THIN);
 		styles.put(CellStyleEnum.NAME, nameStyle);
 
-		XSSFCellStyle kmStyle = wb.createCellStyle();
-		kmStyle.setFont(normalFont);
-		kmStyle.setAlignment(HorizontalAlignment.RIGHT);
-		kmStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-		kmStyle.setDataFormat(wb.createDataFormat().getFormat("#,##0"));
-		kmStyle.setBorderBottom(BorderStyle.THIN);
-		kmStyle.setBorderTop(BorderStyle.THIN);
-		kmStyle.setBorderLeft(BorderStyle.THIN);
-		kmStyle.setBorderRight(BorderStyle.THIN);
-		styles.put(CellStyleEnum.KM, kmStyle);
+		XSSFCellStyle kmRsStyle = wb.createCellStyle();
+		kmRsStyle.setFont(normalFont);
+		kmRsStyle.setAlignment(HorizontalAlignment.RIGHT);
+		kmRsStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		kmRsStyle.setBorderBottom(BorderStyle.THIN);
+		kmRsStyle.setBorderTop(BorderStyle.THIN);
+		kmRsStyle.setBorderLeft(BorderStyle.THIN);
+		kmRsStyle.setBorderRight(BorderStyle.THIN);
+		styles.put(CellStyleEnum.KM_RS, kmRsStyle);
 	}
 	
 	private XSSFSheet createSheet() {
@@ -105,9 +104,11 @@ public class SumarySheetGenerator {
 		sheet.setDefaultRowHeight((short)365);
 		
 		sheet.setColumnWidth(0, 2459);
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 5; i++) {
 			sheet.setColumnWidth(i + 1, (i < 2) ? 1788 : 2080);
 		}
+		sheet.setColumnWidth(5, 2459);
+		sheet.setColumnWidth(6, 2459);
 		for (int i = 0; i < 6; i++) {
 			sheet.setColumnWidth(6 + i + 1, (i < 2) ? 2210 : 2880);
 		}
@@ -168,14 +169,14 @@ public class SumarySheetGenerator {
 		for (int j = 1; j < 7; j++) {
 			row.createCell(j).setCellStyle(styles.get(CellStyleEnum.TITLE));
 		}
-		row.getCell(1).setCellValue("km");
+		row.getCell(1).setCellValue("km / rs");
 		row.getCell(3).setCellValue("Litara");
 		row.getCell(5).setCellValue("Ukupno bez PDV");
 		// Create first row summary titles
 		for (int j = sumStartColumnIndex; j < sumStartColumnIndex + 6; j++) {
 			row.createCell(j).setCellStyle(styles.get(CellStyleEnum.TITLE));
 		}
-		row.getCell(sumStartColumnIndex).setCellValue("km");
+		row.getCell(sumStartColumnIndex).setCellValue("km / rs");
 		row.getCell(sumStartColumnIndex + 2).setCellValue("Litara");
 		row.getCell(sumStartColumnIndex + 4).setCellValue("Ukupno bez PDV");
 		
@@ -205,12 +206,12 @@ public class SumarySheetGenerator {
 		XSSFRow row = sheet.getRow(rowNum);
 		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
 		for (int j = 1; j < 7; j++) {
-			row.createCell(j).setCellStyle(styles.get((j < 3) ? CellStyleEnum.KM : CellStyleEnum.NORMAL));
+			row.createCell(j).setCellStyle(styles.get((j < 3) ? CellStyleEnum.KM_RS : CellStyleEnum.NORMAL));
 		}
 		// Create summary entries
 		int sumStartColumnIndex = 7;
 		for (int i = 0; i < 6; i++) {
-			row.createCell(i + sumStartColumnIndex).setCellStyle(styles.get((i < 2) ? CellStyleEnum.KM : CellStyleEnum.NORMAL));
+			row.createCell(i + sumStartColumnIndex).setCellStyle(styles.get((i < 2) ? CellStyleEnum.KM_RS : CellStyleEnum.NORMAL));
 		}
 		return rowNum + 1;
 	}
@@ -220,46 +221,66 @@ public class SumarySheetGenerator {
 		sheet.getRow(rowNum).setHeight(rowHeight);
 		sheet.createRow(rowNum + 1);
 		sheet.getRow(rowNum + 1).setHeight(rowHeight);
+		sheet.createRow(rowNum + 2);
+		sheet.getRow(rowNum + 2).setHeight(rowHeight);
+		sheet.createRow(rowNum + 3);
+		sheet.getRow(rowNum + 3).setHeight(rowHeight);
 
 		// Add regions for summary
-		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, 0, 0));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 3, 0, 0));
 		// km summary
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 1, 2));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 2, rowNum + 2, 1, 2));
+		// rs summary
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 3, rowNum + 3, 1, 2));
+		// Liter bmb field
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, 3, 3));
+		// Liter ed field
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, 4, 4));
 		// Liter summary
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 3, 4));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 2, rowNum + 3, 3, 4));
+		// Money bmb field
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, 5, 5));
+		// Money ed field
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, 6, 6));
 		// Money summary
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, 5, 6));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 2, rowNum + 3, 5, 6));
 		// Add regions for total monthly summary
 		int sumStartColumnIndex = 7;
 		// km summary
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, sumStartColumnIndex, sumStartColumnIndex + 1));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 2, rowNum + 2, sumStartColumnIndex, sumStartColumnIndex + 1));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 3, rowNum + 3, sumStartColumnIndex, sumStartColumnIndex + 1));
+		// Liter bmb field
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, sumStartColumnIndex + 2, sumStartColumnIndex + 2));
+		// Liter ed field
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, sumStartColumnIndex + 3, sumStartColumnIndex + 3));
 		// Liter summary
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, sumStartColumnIndex + 2, sumStartColumnIndex + 3));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 2, rowNum + 3, sumStartColumnIndex + 2, sumStartColumnIndex + 3));
+		// Money bmb field
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, sumStartColumnIndex + 4, sumStartColumnIndex + 4));
+		// Money ed field
+		sheet.addMergedRegion(new CellRangeAddress(rowNum, rowNum + 1, sumStartColumnIndex + 5, sumStartColumnIndex + 5));
 		// Money summary
-		sheet.addMergedRegion(new CellRangeAddress(rowNum + 1, rowNum + 1, sumStartColumnIndex + 4, sumStartColumnIndex + 5));
+		sheet.addMergedRegion(new CellRangeAddress(rowNum + 2, rowNum + 3, sumStartColumnIndex + 4, sumStartColumnIndex + 5));
 
-		XSSFRow row = sheet.getRow(rowNum);
-		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.TITLE));
-		row.getCell(0).setCellValue("Ukupno:");
-		for (int i = 1; i < 7; i++) {
-			row.createCell(i).setCellStyle(styles.get((i < 3) ? CellStyleEnum.KM : CellStyleEnum.NORMAL));
-		}
-		for (int i = 0; i < 6; i++) {
-			row.createCell(sumStartColumnIndex + i).setCellStyle(styles.get(
-					(i < 2) ? CellStyleEnum.KM : CellStyleEnum.NORMAL));
-		}
-		
-		row = sheet.getRow(rowNum + 1);
-		row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
-		for (int i = 1; i < 7; i++) {
-			row.createCell(i).setCellStyle(styles.get((i < 3) ? CellStyleEnum.KM : CellStyleEnum.NORMAL));
-		}
-		for (int i = 0; i < 6; i++) {
-			row.createCell(sumStartColumnIndex + i).setCellStyle(styles.get(
-					(i < 2) ? CellStyleEnum.KM : CellStyleEnum.NORMAL));
+		XSSFRow row = null;
+		for (int j = 0; j <= 3; j++) {
+			row = sheet.getRow(rowNum + j);
+			if (j == 0) {
+				row.createCell(0).setCellStyle(styles.get(CellStyleEnum.TITLE));
+				row.getCell(0).setCellValue("Ukupno:");
+			} else {
+				row.createCell(0).setCellStyle(styles.get(CellStyleEnum.NAME));
+			}
+			for (int i = 1; i < 7; i++) {
+				row.createCell(i).setCellStyle(styles.get((i < 3) ? CellStyleEnum.KM_RS : CellStyleEnum.NORMAL));
+			}
+			for (int i = 0; i < 6; i++) {
+				row.createCell(sumStartColumnIndex + i).setCellStyle(styles.get(
+						(i < 2) ? CellStyleEnum.KM_RS : CellStyleEnum.NORMAL));
+			}
 		}
 		
-		return rowNum + 2;
+		return rowNum + 4;
 	}
 	
 	public int getFooterSpan() {
@@ -269,7 +290,7 @@ public class SumarySheetGenerator {
 	private enum CellStyleEnum {
 		TITLE,
 		NAME,
-		KM,
+		KM_RS,
 		NORMAL
 	}
 }
