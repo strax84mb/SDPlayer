@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>rs.trznica.dragan</groupId>
 	<artifactId>Evidencija</artifactId>
-	<version>0.85-SNAPSHOT</version>
+	<version>0.95-SNAPSHOT</version>
 
 	<properties>
 		<!-- maven-compiler-plugin configuration -->
@@ -28,6 +28,16 @@
 		</dependency>
 
 		<!-- Database -->
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-core</artifactId>
+			<version>5.4.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-analyzers-common</artifactId>
+			<version>5.4.0</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>
