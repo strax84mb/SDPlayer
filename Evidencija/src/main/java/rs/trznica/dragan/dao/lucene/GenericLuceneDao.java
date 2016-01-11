@@ -26,7 +26,7 @@ import org.apache.lucene.search.SortField.Type;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.SimpleFSDirectory;
+import org.apache.lucene.store.FSDirectory;
 
 import rs.trznica.dragan.entities.struja.BasicEntity;
 
@@ -40,7 +40,7 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 	public GenericLuceneDao(String indexDir, Class<T> clazz) throws IOException {
 		this.indexDir = Paths.get(indexDir);
 		this.clazz = clazz;
-		index = new SimpleFSDirectory(this.indexDir.resolve(Paths.get(this.clazz.getName())));
+		index = FSDirectory.open(this.indexDir.resolve(Paths.get(this.clazz.getName())));
 	}
 
 	protected abstract T docToEntity(Document doc);
@@ -48,7 +48,7 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 	protected abstract Document entityToDoc(T entity);
 	
 	protected IndexSearcher getSearcher() throws IOException {
-		return new IndexSearcher(DirectoryReader.open(index));
+		return (DirectoryReader.indexExists(index)) ?  new IndexSearcher(DirectoryReader.open(index)) : null;
 	}
 	
 	protected IndexWriter getWriter() throws IOException {
@@ -57,7 +57,7 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 		return new IndexWriter(index, config);
 	}
 	
-	public void save(T entity) throws IOException {
+	public T save(T entity) throws IOException {
 		if (entity.getId() == null) {
 			entity.setId(getNewId());
 		}
@@ -66,6 +66,7 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 		writer.addDocument(doc);
 		writer.commit();
 		writer.close();
+		return entity;
 	}
 	
 	public void update(T entity) throws IOException {
@@ -129,6 +130,9 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 	
 	public Long getNewId() throws IOException {
 		IndexSearcher searcher = getSearcher();
+		if (searcher == null) {
+			return 1L;
+		}
 		Sort sort = new Sort(new SortField(FIELD_ID, Type.LONG));
 		TopDocs docs = searcher.search(new MatchAllDocsQuery(), 1, sort);
 		if (docs.totalHits == 0) {

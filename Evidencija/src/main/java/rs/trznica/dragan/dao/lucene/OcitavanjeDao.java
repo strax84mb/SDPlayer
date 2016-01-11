@@ -6,6 +6,10 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
+import org.apache.lucene.index.Term;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.TermQuery;
+import org.apache.lucene.search.TopDocs;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 
@@ -27,7 +31,7 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 	private static final String FIELD_CENA_KW = "cenaKW";
 
 	@Autowired
-	public OcitavanjeDao(@Value("index.dir") String indexDir) throws IOException {
+	public OcitavanjeDao(@Value("${index.dir}") String indexDir) throws IOException {
 		super(indexDir, Ocitavanje.class);
 	}
 	
@@ -71,4 +75,11 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 		return doc;
 	}
 
+	public int countReadingsForCounter(Long counterId) throws IOException {
+		IndexSearcher searcher = getSearcher();
+		TopDocs docs = searcher.search(new TermQuery(new Term(FIELD_BROJILO_ID, counterId.toString())), Integer.MAX_VALUE);
+		int ret = docs.totalHits;
+		searcher.getIndexReader().close();
+		return ret;
+	}
 }

@@ -1,5 +1,7 @@
 package rs.trznica.dragan.entities.struja;
 
+import org.springframework.util.StringUtils;
+
 
 public class Brojilo extends BasicEntity {
 	
@@ -52,5 +54,9 @@ public class Brojilo extends BasicEntity {
 	public void setVrstaBrojila(VrstaBrojila vrstaBrojila) {
 		this.vrstaBrojila = vrstaBrojila;
 	}
-	
+
+	@Override
+	public String toString() {
+		return (StringUtils.isEmpty(broj)) ? "Greska" : broj;
+	}
 }

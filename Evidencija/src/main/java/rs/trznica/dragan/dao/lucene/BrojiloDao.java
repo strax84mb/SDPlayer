@@ -8,6 +8,7 @@ import org.apache.lucene.document.StringField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
+import org.springframework.util.StringUtils;
 
 import rs.trznica.dragan.entities.struja.Brojilo;
 import rs.trznica.dragan.entities.struja.VrstaBrojila;
@@ -22,7 +23,7 @@ public class BrojiloDao extends GenericLuceneDao<Brojilo>{
 	private static final String FIELD_VRSTA = "vrsta";
 	
 	@Autowired
-	public BrojiloDao(@Value("index.dir") String indexDir) throws IOException {
+	public BrojiloDao(@Value("${index.dir}") String indexDir) throws IOException {
 		super(indexDir, Brojilo.class);
 	}
 
@@ -43,7 +44,9 @@ public class BrojiloDao extends GenericLuceneDao<Brojilo>{
 		doc.add(new StringField(FIELD_ID, entity.getId().toString(), Store.YES));
 		doc.add(new StringField(FIELD_BROJ, entity.getBroj(), Store.YES));
 		doc.add(new StringField(FIELD_ED, entity.getEd(), Store.YES));
-		doc.add(new StringField(FIELD_OPIS, entity.getOpis(), Store.YES));
+		if (!StringUtils.isEmpty(entity.getOpis())) {
+			doc.add(new StringField(FIELD_OPIS, entity.getOpis(), Store.YES));
+		}
 		doc.add(new StringField(FIELD_U_FUNKCIJI, storeBoolean(entity.getuFunkciji()), Store.YES));
 		doc.add(new StringField(FIELD_VRSTA, entity.getVrstaBrojila().name(), Store.YES));
 		return doc;

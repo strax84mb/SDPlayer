@@ -21,10 +21,13 @@ public class BrojiloValidator implements Validator {
 		}
 		Brojilo brojilo = (Brojilo) obj;
 		if (StringUtils.isEmpty(brojilo.getBroj())) {
-			errors.reject("Broj brojila je obavezan za vozilo.");
+			errors.reject("Broj brojila je obavezan.");
 		}
 		if (StringUtils.isEmpty(brojilo.getEd())) {
-			errors.reject("ED brojila je obavezan za vozilo.");
+			errors.reject("ED broj brojila je obavezan.");
+		}
+		if (brojilo.getVrstaBrojila() == null) {
+			errors.reject("Vrsta brojila je obavezna.");
 		}
 	}
 

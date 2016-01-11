@@ -51,7 +51,7 @@ import com.toedter.calendar.JDateChooser;
 @Component
 @Configurable
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class TankovanjeDialog extends GenericDialog {
+public class TankovanjeDialog extends GenericDialog<Tankovanje> {
 
 	private static final long serialVersionUID = -8625818313169843072L;
 
@@ -95,23 +95,24 @@ public class TankovanjeDialog extends GenericDialog {
 		return returnValue;
 	}
 
-	public void editFillUp(Tankovanje fill) {
-		entityId = fill.getId();
+	@Override
+	public void editObject(Tankovanje object) {
+		entityId = object.getId();
 		cbPotrosac.setEnabled(true);
 		for (int i = 0; i < cbPotrosac.getItemCount(); i++) {
-			if (cbPotrosac.getItemAt(i).getId().equals(fill.getPotrosac().getId())) {
+			if (cbPotrosac.getItemAt(i).getId().equals(object.getPotrosac().getId())) {
 				cbPotrosac.getModel().setSelectedItem(cbPotrosac.getModel().getElementAt(i));
 				break;
 			}
 		}
 		cbPotrosac.setEnabled(false);
-		dpDatum.setDate(fill.getDatum());
-		tfMesec.setText(fill.getMesec());
-		tfKolicina.setText(DecimalFormater.formatFromLong(fill.getKolicina(), 2));
-		tfJedCena.setText(DecimalFormater.formatFromLong(fill.getJedCena(), 2));
-		tfUkupno.setText(DecimalFormater.formatFromLong(fill.getJedCena() * fill.getKolicina() / 100L, 2));
-		if (fill.getKilometraza() != null) {
-			tfKM.setText(fill.getKilometraza().toString());
+		dpDatum.setDate(object.getDatum());
+		tfMesec.setText(object.getMesec());
+		tfKolicina.setText(DecimalFormater.formatFromLong(object.getKolicina(), 2));
+		tfJedCena.setText(DecimalFormater.formatFromLong(object.getJedCena(), 2));
+		tfUkupno.setText(DecimalFormater.formatFromLong(object.getJedCena() * object.getKolicina() / 100L, 2));
+		if (object.getKilometraza() != null) {
+			tfKM.setText(object.getKilometraza().toString());
 		} else {
 			tfKM.setText("");
 		}

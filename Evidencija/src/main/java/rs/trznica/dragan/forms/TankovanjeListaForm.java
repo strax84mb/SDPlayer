@@ -431,7 +431,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 				Long id = (Long) table.getModel().getValueAt(table.getSelectedRow(), 6);
 				Tankovanje tankovanje = tankovanjeDao.findOne(id);
 				TankovanjeDialog dlg = ctx.getBean(TankovanjeDialog.class);
-				dlg.editFillUp(tankovanje);
+				dlg.editObject(tankovanje);
 				dlg.setVisible(true);
 				if (ModalResult.OK.equals(dlg.getModalResult())) {
 					int row = table.getSelectedRow();
