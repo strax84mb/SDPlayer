@@ -56,7 +56,7 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 		this.ctx = ctx;
 		brojiloDao = this.ctx.getBean(BrojiloDao.class);
 		setModal(true);
-		setTitle("Brojilo");
+		setTitle("Merno mesto");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 309);
 		setResizable(false);
@@ -64,7 +64,7 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 		JPanel panelTop = new JPanel();
 		getContentPane().add(panelTop, BorderLayout.NORTH);
 		
-		JLabel lblTitle = new JLabel("Brojilo");
+		JLabel lblTitle = new JLabel("Merno mesto");
 		lblTitle.setFont(new Font("Times New Roman", Font.PLAIN, 20));
 		panelTop.add(lblTitle);
 		
@@ -83,8 +83,8 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 		
 		JPanel panelCenter = makeCenterPanel(100, 250);
 		
-		tfBroj = makeTextField(panelCenter, 0, "Broj", 12);
-		tfED = makeTextField(panelCenter, 1, "ED broj", 12);
+		tfED = makeTextField(panelCenter, 0, "ED broj", 12);
+		tfBroj = makeTextField(panelCenter, 1, "Broj brojila", 12);
 		tfOpis = makeTextField(panelCenter, 2, "Opis", null);
 		chckbxUFunkciji = makeCheckBox(panelCenter, 3, "U funkciji");
 		chckbxUFunkciji.setSelected(true);

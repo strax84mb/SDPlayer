@@ -81,7 +81,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		JPanel panelTop = new JPanel();
 		getContentPane().add(panelTop, BorderLayout.NORTH);
 		
-		JLabel lblTitle = new JLabel("Očitavanje brojila");
+		JLabel lblTitle = new JLabel("Očitavanje mernog mesta");
 		lblTitle.setFont(new Font("Times New Roman", Font.PLAIN, 20));
 		panelTop.add(lblTitle);
 		
@@ -110,7 +110,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		
 		cbBrojila = new JComboBox<Brojilo>();
 		cbBrojila.setFont(defaultFont);
-		addComponent(panelCenter, 0, "Brojilo:", cbBrojila, true);
+		addComponent(panelCenter, 0, "Merno mesto:", cbBrojila, true);
 		cbBrojila.addItemListener(new CbBrojilaItemListener());
 		
 		tfMesec = makeTextField(panelCenter, 1, "Mesec:", 10);
@@ -147,7 +147,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		} catch (IOException e) {
 			e.printStackTrace();
 			ErrorDialog err = new ErrorDialog();
-			err.showError("Desila se greška tokom čitanja svih brojila: " + e.getMessage());
+			err.showError("Desila se greška tokom čitanja svih mernih mesta: " + e.getMessage());
 		}
 		
 	}
@@ -168,7 +168,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		tfCenaNT.setText(DecimalFormater.formatFromLongSep(object.getCenaNT(), 2));
 		tfPristup.setText(DecimalFormater.formatFromLongSep(object.getPristup(), 2));
 		tfPodsticaj.setText(DecimalFormater.formatFromLongSep(object.getPodsticaj(), 2));
-		if (VrstaBrojila.SIR_POT.equals(object.getBrojiloVrsta())) {
+		if (VrstaBrojila.MAXIGRAF.equals(object.getBrojiloVrsta())) {
 			tfKwReatkivna.setText(DecimalFormater.formatFromLongSep(object.getKwReaktivna(), 0));
 			tfCenaKW.setText(DecimalFormater.formatFromLongSep(object.getCenaKW(), 3));
 			tfKwReatkivna.setEnabled(true);
@@ -341,7 +341,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 					tfKwReatkivna.setEnabled(false);
 					tfCenaKW.setEnabled(false);
 					tfCenaReaktivna.setEnabled(false);
-				} else if (VrstaBrojila.MAXIGRAF.equals(cbBrojila.getItemAt(cbBrojila.getSelectedIndex()).getVrstaBrojila())) {
+				} else if (VrstaBrojila.SIR_POT.equals(cbBrojila.getItemAt(cbBrojila.getSelectedIndex()).getVrstaBrojila())) {
 					tfKwReatkivna.setEnabled(false);
 					tfCenaKW.setEnabled(false);
 					tfCenaReaktivna.setEnabled(false);

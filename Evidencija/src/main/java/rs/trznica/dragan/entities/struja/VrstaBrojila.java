@@ -3,7 +3,7 @@ package rs.trznica.dragan.entities.struja;
 public enum VrstaBrojila {
 	
 	SIR_POT("Široke potrošnje"),
-	MAXIGRAF("Sa maksigrafom");
+	MAXIGRAF("Niskog napona");
 	
 	private String description;
 	
@@ -22,6 +22,11 @@ public enum VrstaBrojila {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public String toString() {
+		return getDescription();
 	}
 
 }

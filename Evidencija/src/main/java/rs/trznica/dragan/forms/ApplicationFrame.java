@@ -66,8 +66,8 @@ public class ApplicationFrame extends JFrame {
 		addMenuItem(mnFillups, new ListFillUpsAction(), KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK);
 		
 		JMenu mnElectricity = addMenu("Struja");
-		addMenuItem(mnElectricity, new NovoBrojiloAction(), KeyEvent.VK_B, KeyEvent.ALT_DOWN_MASK);
-		addMenuItem(mnElectricity, new ListajBrojilaAction(), KeyEvent.VK_B, KeyEvent.CTRL_DOWN_MASK);
+		addMenuItem(mnElectricity, new NovoBrojiloAction(), KeyEvent.VK_M, KeyEvent.ALT_DOWN_MASK);
+		addMenuItem(mnElectricity, new ListajBrojilaAction(), KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK);
 		addMenuItem(mnElectricity, new NovoOcitavanjeAction(), KeyEvent.VK_O, KeyEvent.ALT_DOWN_MASK);
 		addMenuItem(mnElectricity, new ListaOcitavanjaAction(), KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
 		
@@ -176,7 +176,7 @@ public class ApplicationFrame extends JFrame {
 	private class NovoBrojiloAction extends AbstractAction {
 		private static final long serialVersionUID = -4146707191099755001L;
 		public NovoBrojiloAction() {
-			putValue(NAME, "Unos brojila");
+			putValue(NAME, "Unos mernog mesta");
 		}
 		public void actionPerformed(ActionEvent ev) {
 			BrojiloForm form = ctx.getBean(BrojiloForm.class);
@@ -187,7 +187,7 @@ public class ApplicationFrame extends JFrame {
 	private class ListajBrojilaAction extends AbstractAction {
 		private static final long serialVersionUID = -7010598094839937826L;
 		public ListajBrojilaAction() {
-			putValue(NAME, "Lista brojila");
+			putValue(NAME, "Lista mernih mesta");
 		}
 		public void actionPerformed(ActionEvent ev) {
 			ListaBrojilaForm form = ctx.getBean(ListaBrojilaForm.class);

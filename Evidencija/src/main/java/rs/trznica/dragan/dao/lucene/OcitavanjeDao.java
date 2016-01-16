@@ -62,7 +62,7 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 		ocitavanje.setCenaVT(Long.valueOf(doc.get(FIELD_CENA_VT)));
 		ocitavanje.setPristup(Long.valueOf(doc.get(FIELD_PRISTUP)));
 		ocitavanje.setPodsticaj(Long.valueOf(doc.get(FIELD_PODSTICAJ)));
-		if (VrstaBrojila.SIR_POT.equals(ocitavanje.getBrojiloId())) {
+		if (VrstaBrojila.MAXIGRAF.equals(ocitavanje.getBrojiloId())) {
 			ocitavanje.setKwReaktivna(Long.valueOf(doc.get(FIELD_KW_REAKT)));
 			ocitavanje.setCenaKW(Long.valueOf(doc.get(FIELD_CENA_KW)));
 		}
@@ -85,7 +85,7 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 		doc.add(new LongField(FIELD_CENA_VT, entity.getCenaVT(), ID_LONG_TYPE));
 		doc.add(new LongField(FIELD_PRISTUP, entity.getPristup(), ID_LONG_TYPE));
 		doc.add(new LongField(FIELD_PODSTICAJ, entity.getPodsticaj(), ID_LONG_TYPE));
-		if (VrstaBrojila.SIR_POT.equals(entity.getBrojiloVrsta())) {
+		if (VrstaBrojila.MAXIGRAF.equals(entity.getBrojiloVrsta())) {
 			doc.add(new LongField(FIELD_KW_REAKT, entity.getKwReaktivna(), ID_LONG_TYPE));
 			doc.add(new LongField(FIELD_CENA_KW, entity.getCenaKW(), ID_LONG_TYPE));
 		}

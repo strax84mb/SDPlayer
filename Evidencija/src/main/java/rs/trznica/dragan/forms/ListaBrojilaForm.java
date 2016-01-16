@@ -28,7 +28,7 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 	
 	@Autowired
 	public ListaBrojilaForm(ApplicationContext ctx) {
-		super(ctx, "Želite li obrisati izabrano brojilo?");
+		super(ctx, "Želite li obrisati izabrano merno mesto?");
 	}
 
 	@Override
@@ -47,7 +47,7 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 		} catch (IOException e) {
 			e.printStackTrace();
 			ErrorDialog dlg = new ErrorDialog();
-			dlg.showError("Desila se greška prilikom čitanja svih brojila.");
+			dlg.showError("Desila se greška prilikom čitanja svih mernih mesta.");
 		}
 	}
 
@@ -88,7 +88,7 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 			if (ocitavanjeDao.countReadingsForCounter(brojiloId) == 0) {
 				brojiloDao.delete(getObjectList().getSelectedValue().getId());
 			} else {
-				throw new Exception("Postoje očitavanja za izabrano brojilo.<br/>Prvo to treba obrisati.");
+				throw new Exception("Postoje očitavanja za izabrano merno mesto.<br/>Prvo to treba obrisati.");
 			}
 			return ModalResult.YES;
 		} catch (Exception e) {

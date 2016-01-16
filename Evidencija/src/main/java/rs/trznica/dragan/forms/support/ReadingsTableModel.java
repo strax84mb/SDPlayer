@@ -57,8 +57,8 @@ public class ReadingsTableModel extends DefaultTableModel {
 				DecimalFormater.formatFromLong(object.getCenaVT(), 2), 
 				DecimalFormater.formatFromLong(object.getPristup(), 2), 
 				DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
-				(VrstaBrojila.MAXIGRAF.equals(object.getBrojiloVrsta())) ? "" : DecimalFormater.formatFromLong(object.getKwReaktivna(), 0), 
-				(VrstaBrojila.MAXIGRAF.equals(object.getBrojiloVrsta())) ? "" : DecimalFormater.formatFromLong(object.getCenaReaktivna(), 2), 
+				(VrstaBrojila.SIR_POT.equals(object.getBrojiloVrsta())) ? "" : DecimalFormater.formatFromLong(object.getKwReaktivna(), 0), 
+				(VrstaBrojila.SIR_POT.equals(object.getBrojiloVrsta())) ? "" : DecimalFormater.formatFromLong(object.getCenaReaktivna(), 2), 
 				object.getId()
 		};
 	}
