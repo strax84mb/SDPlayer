@@ -21,6 +21,8 @@ public class PotrosacDto extends BaseDto {
 
 	private Boolean aktivan;
 
+	private Boolean koristiKM;
+
 	public Long getId() {
 		return id;
 	}
@@ -85,8 +87,17 @@ public class PotrosacDto extends BaseDto {
 		this.aktivan = aktivan;
 	}
 
+	public Boolean getKoristiKM() {
+		return koristiKM;
+	}
+
+	public void setKoristiKM(Boolean koristiKM) {
+		this.koristiKM = koristiKM;
+	}
+
 	public PotrosacDto(Long id, String regOznaka, String marka, String tip,
-			Boolean vozilo, Boolean teretnjak, GorivoType gorivo, Boolean aktivan) {
+			Boolean vozilo, Boolean teretnjak, GorivoType gorivo, Boolean aktivan, 
+			Boolean koristiKM) {
 		this.id = id;
 		this.regOznaka = (regOznaka != null) ? regOznaka.trim() : regOznaka;
 		this.marka = (marka != null)? marka.trim() : marka;
@@ -95,6 +106,7 @@ public class PotrosacDto extends BaseDto {
 		this.teretnjak = teretnjak;
 		this.gorivo = gorivo;
 		this.aktivan = aktivan;
+		this.koristiKM = koristiKM;
 	}
 
 	public Potrosac createNewEntity() {
@@ -112,6 +124,7 @@ public class PotrosacDto extends BaseDto {
 		entity.setTeretnjak(teretnjak);
 		entity.setGorivo(gorivo);
 		entity.setAktivan(aktivan);
+		entity.setMeriKm(koristiKM);
 		return entity;
 	}
 }

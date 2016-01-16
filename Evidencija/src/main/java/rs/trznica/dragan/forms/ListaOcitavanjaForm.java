@@ -154,7 +154,11 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 			brojila.clear();
 			brojiloDao.findAll().stream()
 					.map(x -> new BrojiloCheckBox(x))
-					.forEach(x -> brojila.add(x));
+					.forEach(x -> {
+						brojila.add(x);
+						x.setVisible(x.getBrojilo().getuFunkciji());
+						box.add(x);
+					});
 		} catch (IOException e) {
 			e.printStackTrace();
 			ErrorDialog dlg = new ErrorDialog();

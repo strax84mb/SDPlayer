@@ -1,7 +1,6 @@
 package rs.trznica.dragan.validator.struja;
 
-import java.text.SimpleDateFormat;
-
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
@@ -12,10 +11,13 @@ public class OcitavanjeValidator implements Validator {
 
 	@Override
 	public boolean supports(Class<?> clazz) {
-		return clazz.isAssignableFrom(getClass());
+		return clazz.isAssignableFrom(OcitavanjeDto.class);
 	}
 
 	private boolean validNumber(String value, int decimals) {
+		if (StringUtils.isEmpty(value)) {
+			return false;
+		}
 		try {
 			DecimalFormater.parseToLong(value, decimals);
 			return true;
@@ -36,9 +38,13 @@ public class OcitavanjeValidator implements Validator {
 			errors.reject("Obavezno je izabrati brojilo.");
 		}
 		try {
-			SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
-			sdf.setLenient(false);
-			sdf.parse(dto.getMesec());
+			if (!dto.getMesec().matches("^[0-9]{4}-[0-9]{2}$")) {
+				throw new Exception();
+			}
+			Integer.valueOf(dto.getMesec().substring(0, 4));
+			if (Integer.valueOf(dto.getMesec().substring(5)) > 12) {
+				throw new Exception();
+			}
 		} catch(Exception e) {
 			errors.reject("Obavezno je uneti mesec u formatu yyyy-MM (npr. 2015-10).");
 		}

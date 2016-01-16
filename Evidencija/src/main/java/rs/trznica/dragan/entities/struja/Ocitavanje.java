@@ -12,21 +12,21 @@ public class Ocitavanje extends BasicEntity {
 	
 	private String mesec;
 	
-	private Long kwVT;
+	private Long kwVT = 0L;
 	
-	private Long kwNT;
+	private Long kwNT = 0L;
 	
-	private Long cenaVT;
+	private Long cenaVT = 0L;
 	
-	private Long cenaNT;
+	private Long cenaNT = 0L;
 	
-	private Long pristup;
+	private Long pristup = 0L;
 	
-	private Long podsticaj;
+	private Long podsticaj = 0L;
 	
-	private Long kwReaktivna;
+	private Long kwReaktivna = 0L;
 	
-	private Long cenaKW;
+	private Long cenaKW = 0L;
 	
 	public Long getBrojiloId() {
 		return brojiloId;

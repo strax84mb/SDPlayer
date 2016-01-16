@@ -38,6 +38,7 @@ import rs.trznica.dragan.entities.support.BrojiloComparator;
 import rs.trznica.dragan.forms.support.DecimalFormater;
 import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.validator.exceptions.ChangeNotAcceptedException;
+import rs.trznica.dragan.validator.struja.OcitavanjeValidator;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -74,7 +75,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		setModal(true);
 		setTitle("Očitavanje");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setBounds(100, 100, 450, 309);
+		setBounds(100, 100, 450, 550);
 		setResizable(false);
 		
 		JPanel panelTop = new JPanel();
@@ -199,6 +200,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 					tfCenaKW.getText());
 			
 			BindingResult result = new DataBinder(dto).getBindingResult();
+			new OcitavanjeValidator().validate(dto, result);
 			if (result.getErrorCount() > 0) {
 				ErrorDialog dialog = new ErrorDialog();
 				dialog.showErrors(result);
@@ -296,6 +298,9 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		}
 		protected void doCheck(FocusEvent ev) {
 			JTextField comp = (JTextField) ev.getComponent();
+			if (StringUtils.isEmpty(comp.getText())) {
+				return;
+			}
 			try {
 				Long num = DecimalFormater.parseToLong(comp.getText(), decimals);
 				comp.setText(DecimalFormater.formatFromLong(num, decimals));
@@ -335,12 +340,15 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 				if (cbBrojila.getSelectedIndex() == -1) {
 					tfKwReatkivna.setEnabled(false);
 					tfCenaKW.setEnabled(false);
+					tfCenaReaktivna.setEnabled(false);
 				} else if (VrstaBrojila.MAXIGRAF.equals(cbBrojila.getItemAt(cbBrojila.getSelectedIndex()).getVrstaBrojila())) {
 					tfKwReatkivna.setEnabled(false);
 					tfCenaKW.setEnabled(false);
+					tfCenaReaktivna.setEnabled(false);
 				} else {
 					tfKwReatkivna.setEnabled(true);
 					tfCenaKW.setEnabled(true);
+					tfCenaReaktivna.setEnabled(true);
 				}
 			}
 		}

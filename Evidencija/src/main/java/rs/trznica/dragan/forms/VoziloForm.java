@@ -49,6 +49,7 @@ public class VoziloForm extends JDialog {
 	private JCheckBox cbxVozilo;
 	private JCheckBox cbxTeretnjak;
 	private JCheckBox cbxUUpotrebi;
+	private JCheckBox cbxKoristiKM;
 	private JTextField tfTip;
 	private JTextField tfMarka;
 	private JTextField tfRegOznaka;
@@ -99,6 +100,7 @@ public class VoziloForm extends JDialog {
 			tfRegOznaka.setText("");
 		}
 		cbxUUpotrebi.setSelected(consumer.getAktivan());
+		cbxKoristiKM.setSelected(consumer.getMeriKm());
 	}
 
 	/**
@@ -262,6 +264,16 @@ public class VoziloForm extends JDialog {
 		gbc_cbxUUpotrebi.gridy = 5;
 		panelCenter.add(cbxUUpotrebi, gbc_cbxUUpotrebi);
 
+		cbxKoristiKM = new JCheckBox("Meri pređene kilometre");
+		cbxKoristiKM.setSelected(true);
+		cbxKoristiKM.setFont(defaultFont);
+		GridBagConstraints gbc_cbxKoristiKM = new GridBagConstraints();
+		gbc_cbxKoristiKM.insets = new Insets(0, 0, 5, 0);
+		gbc_cbxKoristiKM.fill = GridBagConstraints.HORIZONTAL;
+		gbc_cbxKoristiKM.gridx = 1;
+		gbc_cbxKoristiKM.gridy = 5;
+		panelCenter.add(cbxKoristiKM, gbc_cbxKoristiKM);
+
 		for (GorivoType gorivo : GorivoType.values()) {
 			cbGorivo.addItem(gorivo);
 		}
@@ -293,7 +305,7 @@ public class VoziloForm extends JDialog {
 		public void actionPerformed(ActionEvent ev) {
 			PotrosacDto dto = new PotrosacDto(entityId, tfRegOznaka.getText(), tfMarka.getText(), tfTip.getText(), 
 					cbxVozilo.isSelected(), cbxTeretnjak.isSelected(), cbGorivo.getItemAt(cbGorivo.getSelectedIndex()), 
-					cbxUUpotrebi.isSelected());
+					cbxUUpotrebi.isSelected(), cbxKoristiKM.isSelected());
 			BindingResult result = new DataBinder(dto).getBindingResult();
 			new PotrosacValidator().validate(dto, result);
 			if (result.getErrorCount() == 0) {

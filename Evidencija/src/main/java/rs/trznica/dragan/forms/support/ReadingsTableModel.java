@@ -107,7 +107,7 @@ public class ReadingsTableModel extends DefaultTableModel {
 			sum.setPristup(sum.getPristup() + temp.getPristup());
 			sum.setPodsticaj(sum.getPodsticaj() + temp.getPodsticaj());
 			sum.setKwReaktivna(sum.getKwReaktivna() + temp.getKwReaktivna());
-			sum.setCenaKW(sum.getCenaKW() + temp.getCenaKW());
+			sum.setCenaKW(sum.getCenaKW() + temp.getCenaReaktivna());
 			addReading(temp);
 		}
 		addSummary(sum);

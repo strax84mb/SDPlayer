@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>rs.trznica.dragan</groupId>
 	<artifactId>Evidencija</artifactId>
-	<version>0.95-SNAPSHOT</version>
+	<version>1.97-SNAPSHOT</version>
 
 	<properties>
 		<!-- maven-compiler-plugin configuration -->
