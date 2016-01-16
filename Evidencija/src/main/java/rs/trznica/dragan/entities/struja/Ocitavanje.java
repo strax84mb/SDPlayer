@@ -2,9 +2,13 @@ package rs.trznica.dragan.entities.struja;
 
 public class Ocitavanje extends BasicEntity {
 
-	private String brojiloId;
+	private Long brojiloId;
 	
 	private VrstaBrojila brojiloVrsta;
+
+	private String brojiloBroj;
+
+	private String brojiloED;
 	
 	private String mesec;
 	
@@ -24,11 +28,11 @@ public class Ocitavanje extends BasicEntity {
 	
 	private Long cenaKW;
 	
-	public String getBrojiloId() {
+	public Long getBrojiloId() {
 		return brojiloId;
 	}
 
-	public void setBrojiloId(String brojiloId) {
+	public void setBrojiloId(Long brojiloId) {
 		this.brojiloId = brojiloId;
 	}
 
@@ -38,6 +42,22 @@ public class Ocitavanje extends BasicEntity {
 
 	public void setBrojiloVrsta(VrstaBrojila brojiloVrsta) {
 		this.brojiloVrsta = brojiloVrsta;
+	}
+
+	public String getBrojiloBroj() {
+		return brojiloBroj;
+	}
+
+	public void setBrojiloBroj(String brojiloBroj) {
+		this.brojiloBroj = brojiloBroj;
+	}
+
+	public String getBrojiloED() {
+		return brojiloED;
+	}
+
+	public void setBrojiloED(String brojiloED) {
+		this.brojiloED = brojiloED;
 	}
 
 	public String getMesec() {
@@ -112,4 +132,7 @@ public class Ocitavanje extends BasicEntity {
 		this.cenaKW = cenaKW;
 	}
 
+	public Long getCenaReaktivna() {
+		return cenaKW * kwReaktivna / 10L;
+	}
 }

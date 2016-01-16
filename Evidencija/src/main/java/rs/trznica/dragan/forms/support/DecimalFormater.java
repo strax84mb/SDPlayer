@@ -65,6 +65,6 @@ public abstract class DecimalFormater {
 	}
 
 	public static Double parseToDouble(String value) {
-		return Double.valueOf(value.replaceAll(",", "."));
+		return Double.valueOf(value.replaceAll("\\.", "").replaceAll(",", "."));
 	}
 }

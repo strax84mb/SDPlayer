@@ -52,7 +52,7 @@ public abstract class GenericListForm<T> extends JInternalFrame {
 	
 	protected abstract ModalResult performEditAction();
 	
-	protected abstract void performDeleteAction();
+	protected abstract ModalResult performDeleteAction();
 	
 	protected void showObjectAsText(T object) {
 		if (object == null) {
@@ -113,7 +113,7 @@ public abstract class GenericListForm<T> extends JInternalFrame {
 		btnNew = new JButton("Dodaj");
 		btnNew.setAction(new NewAction());
 		btnNew.setFont(defaultFont);
-		panelUpper.add(btnEdit);
+		panelUpper.add(btnNew);
 		
 		java.awt.Component horizontalStrut_3 = Box.createHorizontalStrut(15);
 		panelUpper.add(horizontalStrut_3);
@@ -226,8 +226,10 @@ public abstract class GenericListForm<T> extends JInternalFrame {
 			if (objectList.getSelectedValue() != null) {
 				YesNoDialog dialog = new YesNoDialog(confirmText);
 				dialog.showDialogInCenter(getThisFrame());
-				if (dialog.getModalResult() == ModalResult.YES) {
-					performDeleteAction();
+				if (ModalResult.YES.equals(dialog.getModalResult())) {
+					if (ModalResult.YES.equals(performDeleteAction())) {
+						reloadData();
+					}
 				}
 			}
 		}

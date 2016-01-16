@@ -4,6 +4,7 @@ import java.io.IOException;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
+import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -41,7 +42,8 @@ public class BrojiloDao extends GenericLuceneDao<Brojilo>{
 	@Override
 	protected Document entityToDoc(Brojilo entity) {
 		Document doc = new Document();
-		doc.add(new StringField(FIELD_ID, entity.getId().toString(), Store.YES));
+		doc.add(new LongField(FIELD_ID, entity.getId(), ID_LONG_TYPE));
+		doc.add(new StringField(FIELD_ID_TEXT, entity.getId().toString(), Store.YES));
 		doc.add(new StringField(FIELD_BROJ, entity.getBroj(), Store.YES));
 		doc.add(new StringField(FIELD_ED, entity.getEd(), Store.YES));
 		if (!StringUtils.isEmpty(entity.getOpis())) {

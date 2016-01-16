@@ -28,16 +28,17 @@ public class ErrorDialog extends JDialog {
 	}
 
 	public void showError(String error) {
-		lblText.setText(error);
+		lblText.setText("<html>" + error + "</html>");
 		pack();
 		setVisible(true);
 	}
 
 	public void showErrors(BindingResult result) {
-		StringBuilder builder = new StringBuilder();
+		StringBuilder builder = new StringBuilder("<html>");
 		result.getGlobalErrors().stream().forEach(x -> {
 			builder.append(x.getCode()).append("<br/>");
 		});
+		builder.append("</html>");
 		lblText.setText(builder.toString());
 		pack();
 		setVisible(true);

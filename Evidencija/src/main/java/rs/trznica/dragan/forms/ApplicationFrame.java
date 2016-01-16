@@ -112,7 +112,7 @@ public class ApplicationFrame extends JFrame {
 			putValue(NAME, "Kraj rada");
 			putValue(SHORT_DESCRIPTION, "Zatvori program");
 		}
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent ev) {
 			getThisFrame().dispatchEvent(new WindowEvent(getThisFrame(), WindowEvent.WINDOW_CLOSING));
 		}
 	}
@@ -121,7 +121,7 @@ public class ApplicationFrame extends JFrame {
 		public NewConsumerAction() {
 			putValue(Action.NAME, "Dodaj potro\u0161a\u010Da");
 		}
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent ev) {
 			VoziloForm form = ctx.getBean(VoziloForm.class);
 			form.setVisible(true);
 			form.dispose();
@@ -132,14 +132,14 @@ public class ApplicationFrame extends JFrame {
 		public ListConsumersAction() {
 			putValue(Action.NAME, "Lista potro\u0161a\u010Da");
 		}
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent ev) {
 			VoziloListaForm form = ctx.getBean(VoziloListaForm.class);
 			form.setVisible(true);
 			desktopPane.add(form);
 			try {
 				form.setMaximum(true);
-			} catch (PropertyVetoException e1) {
-				e1.printStackTrace();
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
 			}
 		}
 	}
@@ -148,7 +148,7 @@ public class ApplicationFrame extends JFrame {
 		public NewFillupAction() {
 			putValue(NAME, "Unesi tankovanje");
 		}
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent ev) {
 			TankovanjeDialog form = ctx.getBean(TankovanjeDialog.class);
 			form.setVisible(true);
 			form.dispose();
@@ -162,52 +162,69 @@ public class ApplicationFrame extends JFrame {
 		public ListFillUpsAction() {
 			putValue(NAME, "Lista tankovanja");
 		}
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent ev) {
 			TankovanjeListaForm form = ctx.getBean(TankovanjeListaForm.class);
 			form.setVisible(true);
 			desktopPane.add(form);
 			try {
 				form.setMaximum(true);
-			} catch (PropertyVetoException e1) {
-				e1.printStackTrace();
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 	private class NovoBrojiloAction extends AbstractAction {
-		private static final long serialVersionUID = -135510350288315771L;
+		private static final long serialVersionUID = -4146707191099755001L;
 		public NovoBrojiloAction() {
 			putValue(NAME, "Unos brojila");
 		}
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent ev) {
 			BrojiloForm form = ctx.getBean(BrojiloForm.class);
 			form.setVisible(true);
 			form.dispose();
 		}
 	}
 	private class ListajBrojilaAction extends AbstractAction {
-		private static final long serialVersionUID = -135510350288315771L;
+		private static final long serialVersionUID = -7010598094839937826L;
 		public ListajBrojilaAction() {
 			putValue(NAME, "Lista brojila");
 		}
-		public void actionPerformed(ActionEvent e) {
-			// TODO Implement
+		public void actionPerformed(ActionEvent ev) {
+			ListaBrojilaForm form = ctx.getBean(ListaBrojilaForm.class);
+			form.setVisible(true);
+			desktopPane.add(form);
+			try {
+				form.setMaximum(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	private class NovoOcitavanjeAction extends AbstractAction {
-		private static final long serialVersionUID = -135510350288315771L;
+		private static final long serialVersionUID = 7761291848230410090L;
 		public NovoOcitavanjeAction() {
 			putValue(NAME, "Unos o\u010Ditavanja");
 		}
-		public void actionPerformed(ActionEvent e) {
-			// TODO Implement
+		public void actionPerformed(ActionEvent ev) {
+			OcitavanjeForm form = ctx.getBean(OcitavanjeForm.class);
+			form.setVisible(true);
+			form.dispose();
 		}
 	}
 	private class ListaOcitavanjaAction extends AbstractAction {
-		private static final long serialVersionUID = -135510350288315771L;
+		private static final long serialVersionUID = -4920687952236705574L;
 		public ListaOcitavanjaAction() {
 			putValue(NAME, "Lista o\u010Ditavanja");
 		}
-		public void actionPerformed(ActionEvent e) {
+		public void actionPerformed(ActionEvent ev) {
+			ListaOcitavanjaForm form = ctx.getBean(ListaOcitavanjaForm.class);
+			form.setVisible(true);
+			desktopPane.add(form);
+			try {
+				form.setMaximum(true);
+			} catch (PropertyVetoException e) {
+				e.printStackTrace();
+			}
 			// TODO Implement
 		}
 	}

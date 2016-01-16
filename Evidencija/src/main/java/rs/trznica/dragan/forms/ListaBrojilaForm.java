@@ -42,6 +42,7 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 	protected void populateList() {
 		try {
 			DefaultListModel<Brojilo> model = (DefaultListModel<Brojilo>)getObjectList().getModel();
+			model.removeAllElements();
 			brojiloDao.findAll().stream().sorted(new BrojiloComparator()).forEach(x -> model.addElement(x));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -81,7 +82,7 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 	}
 
 	@Override
-	protected void performDeleteAction() {
+	protected ModalResult performDeleteAction() {
 		try {
 			Long brojiloId = getObjectList().getSelectedValue().getId();
 			if (ocitavanjeDao.countReadingsForCounter(brojiloId) == 0) {
@@ -89,10 +90,12 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 			} else {
 				throw new Exception("Postoje očitavanja za izabrano brojilo.<br/>Prvo to treba obrisati.");
 			}
+			return ModalResult.YES;
 		} catch (Exception e) {
 			e.printStackTrace();
 			ErrorDialog dlg = new ErrorDialog();
 			dlg.showError("Desila se greška prilikom brisanja: " + e.getMessage());
+			return ModalResult.NO;
 		}
 	}
 }

@@ -2,9 +2,6 @@ package rs.trznica.dragan.forms;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.GridBagConstraints;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -43,7 +40,6 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 	private ApplicationContext ctx;
 	private BrojiloDao brojiloDao;
 	
-	private Font defaultFont = new Font("Times New Roman", Font.PLAIN, 18);
 	private JTextField tfBroj;
 	private JTextField tfED;
 	private JTextField tfOpis;
@@ -63,11 +59,12 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 		setTitle("Brojilo");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 309);
+		setResizable(false);
 		
 		JPanel panelTop = new JPanel();
 		getContentPane().add(panelTop, BorderLayout.NORTH);
 		
-		JLabel lblTitle = new JLabel("Potro\u0161a\u010D");
+		JLabel lblTitle = new JLabel("Brojilo");
 		lblTitle.setFont(new Font("Times New Roman", Font.PLAIN, 20));
 		panelTop.add(lblTitle);
 		
@@ -84,18 +81,10 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 		panelBottom.add(btnCancel);
 		panelBottom.add(Box.createHorizontalGlue());
 		
-		JPanel panelCenter = new JPanel();
-		panelCenter.setBorder(new EmptyBorder(0, 10, 0, 10));
-		getContentPane().add(panelCenter, BorderLayout.CENTER);
-		GridBagLayout gbl_panelCenter = new GridBagLayout();
-		gbl_panelCenter.columnWidths = new int[] {173, 251};
-		gbl_panelCenter.rowHeights = new int[] {0, 0, 0, 0, 0};
-		gbl_panelCenter.columnWeights = new double[]{0.0, 1.0};
-		gbl_panelCenter.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0};
-		panelCenter.setLayout(gbl_panelCenter);
+		JPanel panelCenter = makeCenterPanel(100, 250);
 		
-		tfBroj = makeTextField(panelCenter, 0, "Broj", 15);
-		tfED = makeTextField(panelCenter, 1, "ED broj", 15);
+		tfBroj = makeTextField(panelCenter, 0, "Broj", 12);
+		tfED = makeTextField(panelCenter, 1, "ED broj", 12);
 		tfOpis = makeTextField(panelCenter, 2, "Opis", null);
 		chckbxUFunkciji = makeCheckBox(panelCenter, 3, "U funkciji");
 		chckbxUFunkciji.setSelected(true);
@@ -105,7 +94,7 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 			cbVrstaBrojila.addItem(vrsta);
 		}
 		cbVrstaBrojila.setSelectedIndex(-1);
-		addComponent(panelCenter, 4, "Vrsta brojila", cbVrstaBrojila);
+		addComponent(panelCenter, 4, "Vrsta brojila", cbVrstaBrojila, true);
 		
 		setFocusTraversalPolicy(new FocusTraversalOnArray(new java.awt.Component[] {tfBroj, tfED, tfOpis, 
 				chckbxUFunkciji, cbVrstaBrojila, btnOk, btnCancel}));
@@ -132,56 +121,6 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 	
 	public Brojilo getReturnValue() {
 		return returnValue;
-	}
-	
-	private JButton makeButton(String title, ActionListener listener) {
-		JButton button = new JButton(title);
-		button.addActionListener(listener);
-		button.setFont(defaultFont);
-		return button;
-	}
-	
-	private JTextField makeTextField(JPanel panel, int row, String label, Integer columns) {
-		JTextField textField = new JTextField();
-		if (columns != null) {
-			textField.setColumns(columns);
-		}
-		addComponent(panel, row, label, textField);
-		return textField;
-	}
-	
-	private JCheckBox makeCheckBox(JPanel panel, int row, String label) {
-		JCheckBox checkBox = new JCheckBox(label);
-		checkBox.setFont(defaultFont);
-		
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.insets = new Insets(0, 0, 5, 0);
-		constraints.anchor = GridBagConstraints.WEST;
-		constraints.gridx = 1;
-		constraints.gridy = row;
-		panel.add(checkBox, constraints);
-		return checkBox;
-	}
-	
-	private void addComponent(JPanel panel, int row, String label, java.awt.Component component) {
-		JLabel jLabel = new JLabel(label);
-		jLabel.setFont(defaultFont);
-		
-		GridBagConstraints constraints = new GridBagConstraints();
-		constraints.insets = new Insets(0, 0, 5, 5);
-		constraints.anchor = GridBagConstraints.WEST;
-		constraints.gridx = 0;
-		constraints.gridy = row;
-		panel.add(jLabel, constraints);
-
-		component.setFont(defaultFont);
-		
-		constraints = new GridBagConstraints();
-		constraints.fill = GridBagConstraints.HORIZONTAL;
-		constraints.insets = new Insets(0, 0, 5, 0);
-		constraints.gridx = 1;
-		constraints.gridy = row;
-		panel.add(component, constraints);
 	}
 	
 	private class BtnOkActionListener implements ActionListener {
