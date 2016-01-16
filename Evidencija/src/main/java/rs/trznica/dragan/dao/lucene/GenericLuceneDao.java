@@ -94,6 +94,9 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 	
 	public T find(Long id) throws IOException {
 		IndexSearcher searcher = getSearcher();
+		if (searcher == null) {
+			return null;
+		}
 		TopDocs docs = searcher.search(new TermQuery(new Term(FIELD_ID_TEXT, id.toString())), 1);
 		if (docs.totalHits == 0) {
 			searcher.getIndexReader().close();
@@ -106,7 +109,10 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 	
 	public List<T> findAll() throws IOException {
 		IndexSearcher searcher = getSearcher();
-		TopDocs docs = searcher.search(new MatchAllDocsQuery(), 10);
+		if (searcher == null) {
+			return new ArrayList<T>();
+		}
+		TopDocs docs = searcher.search(new MatchAllDocsQuery(), Integer.MAX_VALUE);
 		List<T> ret = new ArrayList<T>();
 		for (ScoreDoc sDoc : docs.scoreDocs) {
 			Document doc = searcher.doc(sDoc.doc);
@@ -118,6 +124,9 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 	
 	public List<T> find(List<Long> ids) throws IOException {
 		IndexSearcher searcher = getSearcher();
+		if (searcher == null) {
+			return new ArrayList<T>();
+		}
 		List<Query> queries = ids.stream().map(x -> new TermQuery(new Term(FIELD_ID_TEXT, x.toString()))).collect(Collectors.toList());
 		TopDocs docs = searcher.search(new DisjunctionMaxQuery(queries, 1f), ids.size());
 		List<T> ret = new ArrayList<T>();
