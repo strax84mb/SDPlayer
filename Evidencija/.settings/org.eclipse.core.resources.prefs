@@ -1,5 +1,10 @@
 eclipse.preferences.version=1
+encoding//src/main/java/rs/trznica/dragan/forms/GenericListForm.java=UTF-8
+encoding//src/main/java/rs/trznica/dragan/forms/ListaBrojilaForm.java=UTF-8
+encoding//src/main/java/rs/trznica/dragan/forms/ListaOcitavanjaForm.java=UTF-8
+encoding//src/main/java/rs/trznica/dragan/forms/OcitavanjeForm.java=UTF-8
 encoding//src/main/java/rs/trznica/dragan/forms/TankovanjeListaForm.java=UTF-8
+encoding//src/main/java/rs/trznica/dragan/forms/VoziloForm.java=UTF-8
 encoding//src/main/java/rs/trznica/dragan/forms/VoziloListaForm.java=UTF-8
 encoding//src/main/java/rs/trznica/dragan/poi/ConsumerReporter.java=UTF-8
 encoding//src/main/java/rs/trznica/dragan/validator/tankovanje/TankovanjeValidator.java=UTF-8
