@@ -83,9 +83,9 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 		
 		JPanel panelCenter = makeCenterPanel(100, 250);
 		
-		tfED = makeTextField(panelCenter, 0, "ED broj", 12);
-		tfBroj = makeTextField(panelCenter, 1, "Broj brojila", 12);
-		tfOpis = makeTextField(panelCenter, 2, "Opis", null);
+		tfED = makeTextField(panelCenter, 0, new JLabel("ED broj"), 12);
+		tfBroj = makeTextField(panelCenter, 1, new JLabel("Broj brojila"), 12);
+		tfOpis = makeTextField(panelCenter, 2, new JLabel("Opis"), null);
 		chckbxUFunkciji = makeCheckBox(panelCenter, 3, "U funkciji");
 		chckbxUFunkciji.setSelected(true);
 		
@@ -94,12 +94,17 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 			cbVrstaBrojila.addItem(vrsta);
 		}
 		cbVrstaBrojila.setSelectedIndex(-1);
-		addComponent(panelCenter, 4, "Vrsta brojila", cbVrstaBrojila, true);
+		addComponent(panelCenter, 4, new JLabel("Vrsta brojila"), cbVrstaBrojila, true);
 		
-		setFocusTraversalPolicy(new FocusTraversalOnArray(new java.awt.Component[] {tfBroj, tfED, tfOpis, 
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new java.awt.Component[] {tfED, tfBroj, tfOpis, 
 				chckbxUFunkciji, cbVrstaBrojila, btnOk, btnCancel}));
+		traverseByEnter(tfED);
+		traverseByEnter(tfBroj);
+		traverseByEnter(tfOpis);
+		traverseByEnter(chckbxUFunkciji);
+		traverseByEnter(cbVrstaBrojila);
 	}
-	
+
 	@Override
 	public void editObject(Brojilo object) {
 		entityId = object.getId();

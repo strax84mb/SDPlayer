@@ -131,9 +131,11 @@ public class OcitavanjeDto {
 		entity.setBrojiloED(brojilo.getEd());
 		entity.setMesec(mesec);
 		entity.setKwNT(DecimalFormater.parseToLong(kwNT, 0));
-		entity.setKwVT(DecimalFormater.parseToLong(kwVT, 0));
 		entity.setCenaNT(DecimalFormater.parseToLong(cenaNT, 2));
-		entity.setCenaVT(DecimalFormater.parseToLong(cenaVT, 2));
+		if (VrstaBrojila.SIR_POT_DVO.equals(brojilo.getVrstaBrojila())) {
+			entity.setKwVT(DecimalFormater.parseToLong(kwVT, 0));
+			entity.setCenaVT(DecimalFormater.parseToLong(cenaVT, 2));
+		}
 		entity.setPristup(DecimalFormater.parseToLong(pristup, 2));
 		entity.setPodsticaj(DecimalFormater.parseToLong(podsticaj, 2));
 		if (VrstaBrojila.MAXIGRAF.equals(brojilo.getVrstaBrojila())) {

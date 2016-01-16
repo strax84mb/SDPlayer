@@ -5,6 +5,7 @@ import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
 
 import rs.trznica.dragan.dto.struja.OcitavanjeDto;
+import rs.trznica.dragan.entities.struja.VrstaBrojila;
 import rs.trznica.dragan.forms.support.DecimalFormater;
 
 public class OcitavanjeValidator implements Validator {
@@ -51,13 +52,13 @@ public class OcitavanjeValidator implements Validator {
 		if (!validNumber(dto.getKwNT(), 0)) {
 			errors.reject("Obavezno je uneti potrošene kW niže tarife.");
 		}
-		if (!validNumber(dto.getKwVT(), 0)) {
+		if (!VrstaBrojila.SIR_POT_JED.equals(dto.getBrojilo().getVrstaBrojila()) && !validNumber(dto.getKwVT(), 0)) {
 			errors.reject("Obavezno je uneti potrošene kW više tarife.");
 		}
 		if (!validNumber(dto.getCenaNT(), 2)) {
 			errors.reject("Obavezno je uneti cenu niže tarife.");
 		}
-		if (!validNumber(dto.getCenaVT(), 2)) {
+		if (!VrstaBrojila.SIR_POT_JED.equals(dto.getBrojilo().getVrstaBrojila()) && !validNumber(dto.getCenaVT(), 2)) {
 			errors.reject("Obavezno je uneti cenu više tarife.");
 		}
 		if (!validNumber(dto.getPristup(), 2)) {

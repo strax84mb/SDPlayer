@@ -135,4 +135,8 @@ public class Ocitavanje extends BasicEntity {
 	public Long getCenaReaktivna() {
 		return cenaKW * kwReaktivna / 10L;
 	}
+	
+	public String getBrojiloString() {
+		return new StringBuilder(brojiloED).append(" - ").append(brojiloBroj).append(" - ").append(brojiloVrsta.getAbrev()).toString();
+	}
 }

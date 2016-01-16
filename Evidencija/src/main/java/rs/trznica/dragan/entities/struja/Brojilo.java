@@ -57,6 +57,7 @@ public class Brojilo extends BasicEntity {
 
 	@Override
 	public String toString() {
-		return (StringUtils.isEmpty(broj) || StringUtils.isEmpty(ed)) ? "Greska" : ed + " - " + broj;
+		return (StringUtils.isEmpty(broj) || StringUtils.isEmpty(ed)) ? "Greska" : 
+			new StringBuilder(ed).append(" - ").append(broj).append(" - ").append(vrstaBrojila.getAbrev()).toString();
 	}
 }

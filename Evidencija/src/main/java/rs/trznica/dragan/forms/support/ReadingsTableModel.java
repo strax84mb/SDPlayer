@@ -5,7 +5,7 @@ import java.util.List;
 import javax.swing.table.DefaultTableModel;
 
 import rs.trznica.dragan.entities.struja.Ocitavanje;
-import rs.trznica.dragan.entities.struja.VrstaBrojila;
+import rs.trznica.dragan.entities.support.OcitavanjeSuma;
 
 public class ReadingsTableModel extends DefaultTableModel {
 
@@ -22,8 +22,10 @@ public class ReadingsTableModel extends DefaultTableModel {
 						"Vrsta brojila", 
 						"kW NT", 
 						"kW VT", 
+						"kW ST", 
 						"Cena NT", 
 						"Cena VT", 
+						"Cena ST", 
 						"Pristup", 
 						"Podsticaj", 
 						"kW Reakt.", 
@@ -47,20 +49,59 @@ public class ReadingsTableModel extends DefaultTableModel {
 	}
 	
 	private Object[] makeRowData(Ocitavanje object) {
-		return new Object[] {
-				object.getMesec(), 
-				object.getBrojiloBroj() + " - " + object.getBrojiloED(), 
-				object.getBrojiloVrsta().getDescription(), 
-				DecimalFormater.formatFromLong(object.getKwNT(), 0), 
-				DecimalFormater.formatFromLong(object.getKwVT(), 0), 
-				DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
-				DecimalFormater.formatFromLong(object.getCenaVT(), 2), 
-				DecimalFormater.formatFromLong(object.getPristup(), 2), 
-				DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
-				(VrstaBrojila.SIR_POT.equals(object.getBrojiloVrsta())) ? "" : DecimalFormater.formatFromLong(object.getKwReaktivna(), 0), 
-				(VrstaBrojila.SIR_POT.equals(object.getBrojiloVrsta())) ? "" : DecimalFormater.formatFromLong(object.getCenaReaktivna(), 2), 
-				object.getId()
-		};
+		switch (object.getBrojiloVrsta()) {
+		case SIR_POT_JED:
+			return new Object[] {
+					object.getMesec(), 
+					object.getBrojiloString(), 
+					object.getBrojiloVrsta().getDescription(), 
+					DecimalFormater.formatFromLong(object.getKwNT(), 0), 
+					DecimalFormater.formatFromLong(object.getKwVT(), 0), 
+					"", 
+					DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
+					DecimalFormater.formatFromLong(object.getCenaVT(), 2), 
+					"", 
+					DecimalFormater.formatFromLong(object.getPristup(), 2), 
+					DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
+					"", 
+					"", 
+					object.getId()
+			};
+		case SIR_POT_DVO:
+			return new Object[] {
+					object.getMesec(), 
+					object.getBrojiloString(), 
+					object.getBrojiloVrsta().getDescription(), 
+					DecimalFormater.formatFromLong(object.getKwNT(), 0), 
+					DecimalFormater.formatFromLong(object.getKwVT(), 0), 
+					"", 
+					DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
+					DecimalFormater.formatFromLong(object.getCenaVT(), 2), 
+					"", 
+					DecimalFormater.formatFromLong(object.getPristup(), 2), 
+					DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
+					"", 
+					"", 
+					object.getId()
+			};
+		default:
+			return new Object[] {
+					object.getMesec(), 
+					object.getBrojiloString(), 
+					object.getBrojiloVrsta().getDescription(), 
+					"", 
+					"", 
+					DecimalFormater.formatFromLong(object.getKwNT(), 0), 
+					"", 
+					"", 
+					DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
+					DecimalFormater.formatFromLong(object.getPristup(), 2), 
+					DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
+					DecimalFormater.formatFromLong(object.getKwReaktivna(), 0), 
+					DecimalFormater.formatFromLong(object.getCenaReaktivna(), 2), 
+					object.getId()
+			};
+		}
 	}
 	
 	public void addReading(Ocitavanje object) {
@@ -77,40 +118,35 @@ public class ReadingsTableModel extends DefaultTableModel {
 		}
 	}
 	
-	public void addSummary(Ocitavanje object) {
+	public void addSummary(OcitavanjeSuma object) {
 		addRow(new Object[] {
 				"Ukupno:", 
 				"", 
 				"", 
 				DecimalFormater.formatFromLong(object.getKwNT(), 0), 
 				DecimalFormater.formatFromLong(object.getKwVT(), 0), 
+				DecimalFormater.formatFromLong(object.getKwST(), 0), 
 				DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
 				DecimalFormater.formatFromLong(object.getCenaVT(), 2), 
+				DecimalFormater.formatFromLong(object.getCenaST(), 0), 
 				DecimalFormater.formatFromLong(object.getPristup(), 2), 
 				DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
 				DecimalFormater.formatFromLong(object.getKwReaktivna(), 0), 
-				DecimalFormater.formatFromLong(object.getCenaKW() / 10L, 2), 
+				DecimalFormater.formatFromLong(object.getCenaReaktivna(), 2), 
 				0L
 		});
 		hasSummary = true;
 	}
 	
 	public void addReadings(List<Ocitavanje> objects) {
-		Ocitavanje sum = new Ocitavanje();
+		OcitavanjeSuma suma = new OcitavanjeSuma();
 		Ocitavanje temp;
 		for (int i = 0; i < objects.size(); i++) {
 			temp = objects.get(i);
-			sum.setKwNT(sum.getKwNT() + temp.getKwNT());
-			sum.setKwVT(sum.getKwVT() + temp.getKwVT());
-			sum.setCenaNT(sum.getCenaNT() + temp.getCenaNT());
-			sum.setCenaVT(sum.getCenaVT() + temp.getCenaVT());
-			sum.setPristup(sum.getPristup() + temp.getPristup());
-			sum.setPodsticaj(sum.getPodsticaj() + temp.getPodsticaj());
-			sum.setKwReaktivna(sum.getKwReaktivna() + temp.getKwReaktivna());
-			sum.setCenaKW(sum.getCenaKW() + temp.getCenaReaktivna());
+			suma.addReading(temp);
 			addReading(temp);
 		}
-		addSummary(sum);
+		addSummary(suma);
 	}
 	
 	public Long getRowId(int index) {

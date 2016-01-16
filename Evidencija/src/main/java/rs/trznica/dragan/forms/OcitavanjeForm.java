@@ -19,6 +19,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.EmptyBorder;
 
+import org.eclipse.wb.swing.FocusTraversalOnArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -63,6 +64,8 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 	private JTextField tfKwReatkivna;
 	private JTextField tfCenaKW;
 	private JTextField tfCenaReaktivna;
+	private JLabel lblKwNT;
+	private JLabel lblCenaNT;
 	private JButton btnSave;
 	private JButton btnSaveAnother;
 	private JButton btnCancel;
@@ -110,34 +113,49 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		
 		cbBrojila = new JComboBox<Brojilo>();
 		cbBrojila.setFont(defaultFont);
-		addComponent(panelCenter, 0, "Merno mesto:", cbBrojila, true);
+		addComponent(panelCenter, 0, new JLabel("Merno mesto:"), cbBrojila, true);
 		cbBrojila.addItemListener(new CbBrojilaItemListener());
 		
-		tfMesec = makeTextField(panelCenter, 1, "Mesec:", 10);
+		tfMesec = makeTextField(panelCenter, 1, new JLabel("Mesec:"), 10);
 		
-		tfKwNT = makeTextField(panelCenter, 2, "kW niže tarife:", 10);
+		lblKwNT = new JLabel("kW niže tarife:");
+		tfKwNT = makeTextField(panelCenter, 2, lblKwNT, 10);
 		tfKwNT.addFocusListener(zeroDecimalsFocusListener);
-		tfKwVT = makeTextField(panelCenter, 3, "kW višee tarife:", 10);
+		tfKwVT = makeTextField(panelCenter, 3, new JLabel("kW više tarife:"), 10);
 		tfKwVT.addFocusListener(zeroDecimalsFocusListener);
-		tfCenaNT = makeTextField(panelCenter, 4, "Fin. niže tarife:", 15);
+		lblCenaNT = new JLabel("Fin. niže tarife:");
+		tfCenaNT = makeTextField(panelCenter, 4, lblCenaNT, 15);
 		tfCenaNT.addFocusListener(twoDecimalsFocusListener);
-		tfCenaVT = makeTextField(panelCenter, 5, "Fin. više tarife:", 15);
+		tfCenaVT = makeTextField(panelCenter, 5, new JLabel("Fin. više tarife:"), 15);
 		tfCenaVT.addFocusListener(twoDecimalsFocusListener);
-		tfPristup = makeTextField(panelCenter, 6, "Fin. pristup:", 15);
+		tfPristup = makeTextField(panelCenter, 6, new JLabel("Fin. pristup:"), 15);
 		tfPristup.addFocusListener(twoDecimalsFocusListener);
-		tfPodsticaj = makeTextField(panelCenter, 7, "Fin. podsticaj:", 15);
+		tfPodsticaj = makeTextField(panelCenter, 7, new JLabel("Fin. podsticaj:"), 15);
 		tfPodsticaj.addFocusListener(twoDecimalsFocusListener);
-		tfCenaKW = makeTextField(panelCenter, 8, "Reakt. cena 1 kW:", 15);
+		tfCenaKW = makeTextField(panelCenter, 8, new JLabel("Reakt. cena 1 kW:"), 15);
 		tfCenaKW.addFocusListener(threeDigitsCalcFocusLstnr);
 		tfCenaKW.setEnabled(false);
-		tfKwReatkivna = makeTextField(panelCenter, 9, "Reakt. potrošeno kW:", 10);
+		tfKwReatkivna = makeTextField(panelCenter, 9, new JLabel("Reakt. potrošeno kW:"), 10);
 		tfKwReatkivna.addFocusListener(zeroDigitsCalcFocusLstnr);
 		tfKwReatkivna.setEnabled(false);
 		
-		tfCenaReaktivna = makeTextField(panelCenter, 10, "Reakt. ukupna cena:", 15);
+		tfCenaReaktivna = makeTextField(panelCenter, 10, new JLabel("Reakt. ukupna cena:"), 15);
 		tfCenaReaktivna.setEditable(false);
 
 		populateCounters();
+		setFocusTraversalPolicy(new FocusTraversalOnArray(new java.awt.Component[] {cbBrojila, tfMesec, 
+				tfKwNT, tfKwVT, tfCenaNT, tfCenaVT, tfPristup, tfPodsticaj, tfCenaKW, tfKwReatkivna, 
+				btnSave, btnSaveAnother, btnCancel}));
+		traverseByEnter(cbBrojila);
+		traverseByEnter(tfMesec);
+		traverseByEnter(tfKwNT);
+		traverseByEnter(tfKwVT);
+		traverseByEnter(tfCenaNT);
+		traverseByEnter(tfCenaVT);
+		traverseByEnter(tfPristup);
+		traverseByEnter(tfPodsticaj);
+		traverseByEnter(tfCenaKW);
+		traverseByEnter(tfKwReatkivna);
 	}
 	
 	private void populateCounters() {
@@ -162,10 +180,16 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		}
 		cbBrojila.setEditable(false);
 		tfMesec.setText(object.getMesec());
-		tfKwVT.setText(DecimalFormater.formatFromLongSep(object.getKwVT(), 0));
 		tfKwNT.setText(DecimalFormater.formatFromLongSep(object.getKwNT(), 0));
-		tfCenaVT.setText(DecimalFormater.formatFromLongSep(object.getCenaVT(), 2));
 		tfCenaNT.setText(DecimalFormater.formatFromLongSep(object.getCenaNT(), 2));
+		if (VrstaBrojila.SIR_POT_DVO.equals(object.getBrojiloVrsta())) {
+			tfKwVT.setText(DecimalFormater.formatFromLongSep(object.getKwVT(), 0));
+			tfCenaVT.setText(DecimalFormater.formatFromLongSep(object.getCenaVT(), 2));
+		}
+		if (VrstaBrojila.SIR_POT_JED.equals(object.getBrojiloVrsta())) {
+			tfKwVT.setText("");
+			tfCenaVT.setText("");
+		}
 		tfPristup.setText(DecimalFormater.formatFromLongSep(object.getPristup(), 2));
 		tfPodsticaj.setText(DecimalFormater.formatFromLongSep(object.getPodsticaj(), 2));
 		if (VrstaBrojila.MAXIGRAF.equals(object.getBrojiloVrsta())) {
@@ -341,11 +365,40 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 					tfKwReatkivna.setEnabled(false);
 					tfCenaKW.setEnabled(false);
 					tfCenaReaktivna.setEnabled(false);
-				} else if (VrstaBrojila.SIR_POT.equals(cbBrojila.getItemAt(cbBrojila.getSelectedIndex()).getVrstaBrojila())) {
+				} else if (VrstaBrojila.SIR_POT_DVO.equals(cbBrojila.getItemAt(cbBrojila.getSelectedIndex()).getVrstaBrojila())) {
 					tfKwReatkivna.setEnabled(false);
 					tfCenaKW.setEnabled(false);
 					tfCenaReaktivna.setEnabled(false);
 				} else {
+					switch(cbBrojila.getItemAt(cbBrojila.getSelectedIndex()).getVrstaBrojila()) {
+					case SIR_POT_JED:
+						lblKwNT.setText("kW srednje tarife:");
+						lblCenaNT.setText("Fin. srednje tarife:");
+						tfKwVT.setEnabled(false);
+						tfCenaVT.setEnabled(false);
+						tfKwReatkivna.setEnabled(false);
+						tfCenaKW.setEnabled(false);
+						tfCenaReaktivna.setEnabled(false);
+						break;
+					case SIR_POT_DVO:
+						lblKwNT.setText("kW niže tarife:");
+						lblCenaNT.setText("Fin. niže tarife:");
+						tfKwVT.setEnabled(true);
+						tfCenaVT.setEnabled(true);
+						tfKwReatkivna.setEnabled(false);
+						tfCenaKW.setEnabled(false);
+						tfCenaReaktivna.setEnabled(false);
+						break;
+					default:
+						lblKwNT.setText("kW niže tarife:");
+						lblCenaNT.setText("Fin. niže tarife:");
+						tfKwVT.setEnabled(true);
+						tfCenaVT.setEnabled(true);
+						tfKwReatkivna.setEnabled(true);
+						tfCenaKW.setEnabled(true);
+						tfCenaReaktivna.setEnabled(true);
+						break;
+					}
 					tfKwReatkivna.setEnabled(true);
 					tfCenaKW.setEnabled(true);
 					tfCenaReaktivna.setEnabled(true);

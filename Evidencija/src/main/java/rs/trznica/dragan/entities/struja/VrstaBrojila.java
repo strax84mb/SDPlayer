@@ -2,17 +2,24 @@ package rs.trznica.dragan.entities.struja;
 
 public enum VrstaBrojila {
 	
-	SIR_POT("Široke potrošnje"),
-	MAXIGRAF("Niskog napona");
+	SIR_POT_DVO("Široke potrošnje JT", "J"),
+	SIR_POT_JED("Široke potrošnje DT", "D"),
+	MAXIGRAF("Niskog napona", "N");
 	
 	private String description;
+	private String abrev;
 	
-	private VrstaBrojila(String description) {
+	private VrstaBrojila(String description, String abrev) {
 		this.description = description;
+		this.abrev = abrev;
 	}
 	
 	public String getDescription() {
 		return description;
+	}
+	
+	public String getAbrev() {
+		return abrev;
 	}
 	
 	public static VrstaBrojila getForName(String name) {

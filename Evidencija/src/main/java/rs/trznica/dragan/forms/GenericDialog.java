@@ -5,14 +5,19 @@ import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
+import javax.swing.AbstractAction;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JComponent;
 import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.KeyStroke;
 import javax.swing.border.EmptyBorder;
 
 import rs.trznica.dragan.forms.support.ModalResult;
@@ -21,7 +26,9 @@ public abstract class GenericDialog<T> extends JDialog {
 
 	private static final long serialVersionUID = -2517857100125835510L;
 
-	protected Font defaultFont = new Font("Times New Roman", Font.PLAIN, 18);
+	protected final Font defaultFont = new Font("Times New Roman", Font.PLAIN, 18);
+	
+	protected static final String ENTER_PRESSED_KEY = "EnterPressed";
 
 	protected ModalResult modalResult = ModalResult.CANCEL;
 
@@ -47,6 +54,17 @@ public abstract class GenericDialog<T> extends JDialog {
 	
 	protected JDialog getThisForm() {
 		return this;
+	}
+	
+	protected void traverseByEnter(JComponent from) {
+		from.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), ENTER_PRESSED_KEY);
+		from.getActionMap().put(ENTER_PRESSED_KEY, new AbstractAction() {
+			private static final long serialVersionUID = 4115387018615468031L;
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				getFocusTraversalPolicy().getComponentAfter(getThisForm(), from).requestFocus();;
+			}
+		});
 	}
 	
 	protected JPanel makeCenterPanel(int firstRowWidth, int secondRowWidth) {
@@ -82,7 +100,7 @@ public abstract class GenericDialog<T> extends JDialog {
 		return button;
 	}
 	
-	protected JTextField makeTextField(JPanel panel, int row, String label, Integer columns) {
+	protected JTextField makeTextField(JPanel panel, int row, JLabel label, Integer columns) {
 		JTextField textField = new JTextField();
 		if (columns != null) {
 			textField.setColumns(columns);
@@ -91,16 +109,15 @@ public abstract class GenericDialog<T> extends JDialog {
 		return textField;
 	}
 	
-	protected void addComponent(JPanel panel, int row, String label, java.awt.Component component, boolean stretchComponent) {
-		JLabel jLabel = new JLabel(label);
-		jLabel.setFont(defaultFont);
+	protected void addComponent(JPanel panel, int row, JLabel label, java.awt.Component component, boolean stretchComponent) {
+		label.setFont(defaultFont);
 		
 		GridBagConstraints constraints = new GridBagConstraints();
 		constraints.insets = new Insets(0, 0, 5, 5);
 		constraints.anchor = GridBagConstraints.WEST;
 		constraints.gridx = 0;
 		constraints.gridy = row;
-		panel.add(jLabel, constraints);
+		panel.add(label, constraints);
 
 		component.setFont(defaultFont);
 		
