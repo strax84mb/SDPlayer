@@ -55,14 +55,14 @@ public class ReadingsTableModel extends DefaultTableModel {
 					object.getMesec(), 
 					object.getBrojiloString(), 
 					object.getBrojiloVrsta().getDescription(), 
-					DecimalFormater.formatFromLong(object.getKwNT(), 0), 
-					DecimalFormater.formatFromLong(object.getKwVT(), 0), 
 					"", 
-					DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
-					DecimalFormater.formatFromLong(object.getCenaVT(), 2), 
 					"", 
-					DecimalFormater.formatFromLong(object.getPristup(), 2), 
-					DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
+					DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
+					"", 
+					"", 
+					DecimalFormater.formatFromLongSep(object.getCenaNT(), 2), 
+					DecimalFormater.formatFromLongSep(object.getPristup(), 2), 
+					DecimalFormater.formatFromLongSep(object.getPodsticaj(), 2), 
 					"", 
 					"", 
 					object.getId()
@@ -72,14 +72,14 @@ public class ReadingsTableModel extends DefaultTableModel {
 					object.getMesec(), 
 					object.getBrojiloString(), 
 					object.getBrojiloVrsta().getDescription(), 
-					DecimalFormater.formatFromLong(object.getKwNT(), 0), 
-					DecimalFormater.formatFromLong(object.getKwVT(), 0), 
+					DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
+					DecimalFormater.formatFromLongSep(object.getKwVT(), 0), 
 					"", 
-					DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
-					DecimalFormater.formatFromLong(object.getCenaVT(), 2), 
+					DecimalFormater.formatFromLongSep(object.getCenaNT(), 2), 
+					DecimalFormater.formatFromLongSep(object.getCenaVT(), 2), 
 					"", 
-					DecimalFormater.formatFromLong(object.getPristup(), 2), 
-					DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
+					DecimalFormater.formatFromLongSep(object.getPristup(), 2), 
+					DecimalFormater.formatFromLongSep(object.getPodsticaj(), 2), 
 					"", 
 					"", 
 					object.getId()
@@ -89,16 +89,16 @@ public class ReadingsTableModel extends DefaultTableModel {
 					object.getMesec(), 
 					object.getBrojiloString(), 
 					object.getBrojiloVrsta().getDescription(), 
+					DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
+					DecimalFormater.formatFromLongSep(object.getKwVT(), 0), 
 					"", 
+					DecimalFormater.formatFromLongSep(object.getCenaNT(), 2), 
+					DecimalFormater.formatFromLongSep(object.getCenaVT(), 2), 
 					"", 
-					DecimalFormater.formatFromLong(object.getKwNT(), 0), 
-					"", 
-					"", 
-					DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
-					DecimalFormater.formatFromLong(object.getPristup(), 2), 
-					DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
-					DecimalFormater.formatFromLong(object.getKwReaktivna(), 0), 
-					DecimalFormater.formatFromLong(object.getCenaReaktivna(), 2), 
+					DecimalFormater.formatFromLongSep(object.getPristup(), 2), 
+					DecimalFormater.formatFromLongSep(object.getPodsticaj(), 2), 
+					DecimalFormater.formatFromLongSep(object.getKwReaktivna(), 0), 
+					DecimalFormater.formatFromLongSep(object.getCenaReaktivna(), 2), 
 					object.getId()
 			};
 		}
@@ -123,16 +123,16 @@ public class ReadingsTableModel extends DefaultTableModel {
 				"Ukupno:", 
 				"", 
 				"", 
-				DecimalFormater.formatFromLong(object.getKwNT(), 0), 
-				DecimalFormater.formatFromLong(object.getKwVT(), 0), 
-				DecimalFormater.formatFromLong(object.getKwST(), 0), 
-				DecimalFormater.formatFromLong(object.getCenaNT(), 2), 
-				DecimalFormater.formatFromLong(object.getCenaVT(), 2), 
-				DecimalFormater.formatFromLong(object.getCenaST(), 0), 
-				DecimalFormater.formatFromLong(object.getPristup(), 2), 
-				DecimalFormater.formatFromLong(object.getPodsticaj(), 2), 
-				DecimalFormater.formatFromLong(object.getKwReaktivna(), 0), 
-				DecimalFormater.formatFromLong(object.getCenaReaktivna(), 2), 
+				DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
+				DecimalFormater.formatFromLongSep(object.getKwVT(), 0), 
+				DecimalFormater.formatFromLongSep(object.getKwST(), 0), 
+				DecimalFormater.formatFromLongSep(object.getCenaNT(), 2), 
+				DecimalFormater.formatFromLongSep(object.getCenaVT(), 2), 
+				DecimalFormater.formatFromLongSep(object.getCenaST(), 2), 
+				DecimalFormater.formatFromLongSep(object.getPristup(), 2), 
+				DecimalFormater.formatFromLongSep(object.getPodsticaj(), 2), 
+				DecimalFormater.formatFromLongSep(object.getKwReaktivna(), 0), 
+				DecimalFormater.formatFromLongSep(object.getCenaReaktivna(), 2), 
 				0L
 		});
 		hasSummary = true;
@@ -154,10 +154,10 @@ public class ReadingsTableModel extends DefaultTableModel {
 			if (index == getRowCount() - 1) {
 				return null;
 			} else {
-				return (Long) getValueAt(index, 11);
+				return (Long) getValueAt(index, getColumnCount() - 1);
 			}
 		} else {
-			return (Long) getValueAt(index, 11);
+			return (Long) getValueAt(index, getColumnCount() - 1);
 		}
 	}
 	

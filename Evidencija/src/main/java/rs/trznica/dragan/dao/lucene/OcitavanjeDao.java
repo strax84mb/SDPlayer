@@ -59,7 +59,7 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 		ocitavanje.setMesec(doc.get(FIELD_MESEC));
 		ocitavanje.setKwNT(Long.valueOf(doc.get(FIELD_KW_NT)));
 		ocitavanje.setCenaNT(Long.valueOf(doc.get(FIELD_CENA_NT)));
-		if (VrstaBrojila.SIR_POT_DVO.equals(ocitavanje.getBrojiloVrsta())) {
+		if (!VrstaBrojila.SIR_POT_JED.equals(ocitavanje.getBrojiloVrsta())) {
 			ocitavanje.setKwVT(Long.valueOf(doc.get(FIELD_KW_VT)));
 			ocitavanje.setCenaVT(Long.valueOf(doc.get(FIELD_CENA_VT)));
 		}
@@ -84,7 +84,7 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 		doc.add(new StringField(FIELD_MESEC, entity.getMesec(), Store.YES));
 		doc.add(new LongField(FIELD_KW_NT, entity.getKwNT(), ID_LONG_TYPE));
 		doc.add(new LongField(FIELD_CENA_NT, entity.getCenaNT(), ID_LONG_TYPE));
-		if (VrstaBrojila.SIR_POT_DVO.equals(entity.getBrojiloVrsta())) {
+		if (!VrstaBrojila.SIR_POT_JED.equals(entity.getBrojiloVrsta())) {
 			doc.add(new LongField(FIELD_KW_VT, entity.getKwVT(), ID_LONG_TYPE));
 			doc.add(new LongField(FIELD_CENA_VT, entity.getCenaVT(), ID_LONG_TYPE));
 		}
@@ -163,7 +163,7 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 		doc.add(getStringField(FIELD_MESEC, st.nextToken()));
 		doc.add(getLongField(FIELD_KW_NT, st.nextToken()));
 		doc.add(getLongField(FIELD_CENA_NT, st.nextToken()));
-		if (VrstaBrojila.SIR_POT_DVO.name().equals(value)) {
+		if (!VrstaBrojila.SIR_POT_JED.name().equals(value)) {
 			doc.add(getLongField(FIELD_KW_VT, st.nextToken()));
 			doc.add(getLongField(FIELD_CENA_VT, st.nextToken()));
 		}

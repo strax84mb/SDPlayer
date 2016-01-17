@@ -141,7 +141,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		DefaultTableCellRenderer rightSideRend = new DefaultTableCellRenderer();
 		rightSideRend.setHorizontalAlignment(JLabel.RIGHT);
 		for (int i = 0; i < model.getColumnCount(); i++) {
-			model.getColumn(i).setPreferredWidth(75);
+			model.getColumn(i).setPreferredWidth(100);
 			model.getColumn(i).setResizable(true);
 			if (i >= 3) {
 				model.getColumn(i).setCellRenderer(rightSideRend);

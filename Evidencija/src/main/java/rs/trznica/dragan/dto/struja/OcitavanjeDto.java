@@ -132,7 +132,7 @@ public class OcitavanjeDto {
 		entity.setMesec(mesec);
 		entity.setKwNT(DecimalFormater.parseToLong(kwNT, 0));
 		entity.setCenaNT(DecimalFormater.parseToLong(cenaNT, 2));
-		if (VrstaBrojila.SIR_POT_DVO.equals(brojilo.getVrstaBrojila())) {
+		if (!VrstaBrojila.SIR_POT_JED.equals(brojilo.getVrstaBrojila())) {
 			entity.setKwVT(DecimalFormater.parseToLong(kwVT, 0));
 			entity.setCenaVT(DecimalFormater.parseToLong(cenaVT, 2));
 		}

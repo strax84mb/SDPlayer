@@ -182,11 +182,10 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		tfMesec.setText(object.getMesec());
 		tfKwNT.setText(DecimalFormater.formatFromLongSep(object.getKwNT(), 0));
 		tfCenaNT.setText(DecimalFormater.formatFromLongSep(object.getCenaNT(), 2));
-		if (VrstaBrojila.SIR_POT_DVO.equals(object.getBrojiloVrsta())) {
+		if (!VrstaBrojila.SIR_POT_JED.equals(object.getBrojiloVrsta())) {
 			tfKwVT.setText(DecimalFormater.formatFromLongSep(object.getKwVT(), 0));
 			tfCenaVT.setText(DecimalFormater.formatFromLongSep(object.getCenaVT(), 2));
-		}
-		if (VrstaBrojila.SIR_POT_JED.equals(object.getBrojiloVrsta())) {
+		} else {
 			tfKwVT.setText("");
 			tfCenaVT.setText("");
 		}
