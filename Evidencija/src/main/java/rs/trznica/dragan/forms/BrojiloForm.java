@@ -118,6 +118,7 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 				break;
 			}
 		}
+		cbVrstaBrojila.setEditable(false);
 	}
 
 	public ModalResult getModalResult() {

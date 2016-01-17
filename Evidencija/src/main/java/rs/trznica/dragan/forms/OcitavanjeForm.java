@@ -365,10 +365,6 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 					tfKwReatkivna.setEnabled(false);
 					tfCenaKW.setEnabled(false);
 					tfCenaReaktivna.setEnabled(false);
-				} else if (VrstaBrojila.SIR_POT_DVO.equals(cbBrojila.getItemAt(cbBrojila.getSelectedIndex()).getVrstaBrojila())) {
-					tfKwReatkivna.setEnabled(false);
-					tfCenaKW.setEnabled(false);
-					tfCenaReaktivna.setEnabled(false);
 				} else {
 					switch(cbBrojila.getItemAt(cbBrojila.getSelectedIndex()).getVrstaBrojila()) {
 					case SIR_POT_JED:

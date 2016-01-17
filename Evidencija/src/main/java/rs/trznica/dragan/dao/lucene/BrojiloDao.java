@@ -53,5 +53,4 @@ public class BrojiloDao extends GenericLuceneDao<Brojilo>{
 		doc.add(new StringField(FIELD_VRSTA, entity.getVrstaBrojila().name(), Store.YES));
 		return doc;
 	}
-
 }

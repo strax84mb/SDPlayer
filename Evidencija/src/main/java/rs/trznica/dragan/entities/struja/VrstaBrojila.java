@@ -2,8 +2,8 @@ package rs.trznica.dragan.entities.struja;
 
 public enum VrstaBrojila {
 	
-	SIR_POT_DVO("Široke potrošnje JT", "J"),
-	SIR_POT_JED("Široke potrošnje DT", "D"),
+	SIR_POT_JED("Široke potrošnje JT", "J"),
+	SIR_POT_DVO("Široke potrošnje DT", "D"),
 	MAXIGRAF("Niskog napona", "N");
 	
 	private String description;
