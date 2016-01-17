@@ -18,6 +18,11 @@ public class ExportCountersActionListener extends AbstractAction {
 	@Override
 	public void actionPerformed(ActionEvent ev) {
 		try {
+			
+			
+			
+			
+			
 		} catch (Exception e) {
 			new ErrorDialog().showError("Desila se greška prilikom izvoza.");
 		}

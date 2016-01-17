@@ -1,6 +1,7 @@
 package rs.trznica.dragan.dao.lucene;
 
 import java.io.IOException;
+import java.util.StringTokenizer;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
@@ -51,6 +52,35 @@ public class BrojiloDao extends GenericLuceneDao<Brojilo>{
 		}
 		doc.add(new StringField(FIELD_U_FUNKCIJI, storeBoolean(entity.getuFunkciji()), Store.YES));
 		doc.add(new StringField(FIELD_VRSTA, entity.getVrstaBrojila().name(), Store.YES));
+		return doc;
+	}
+
+	@Override
+	protected String getDocumentString(Document doc) {
+		StringBuilder builder = new StringBuilder(getField(doc, FIELD_ID_TEXT));
+		builder.append("|").append(getField(doc, FIELD_BROJ));
+		builder.append("|").append(getField(doc, FIELD_ED));
+		builder.append("|").append(getField(doc, FIELD_OPIS));
+		builder.append("|").append(getField(doc, FIELD_U_FUNKCIJI));
+		builder.append("|").append(getField(doc, FIELD_VRSTA));
+		return builder.toString();
+	}
+
+	@Override
+	protected Document getDocumentFromString(String line) {
+		StringTokenizer st = new StringTokenizer(line, "|");
+		String value = st.nextToken();
+		Document doc = new Document();
+		doc.add(getLongField(FIELD_ID, value));
+		doc.add(getStringField(FIELD_ID_TEXT, value));
+		doc.add(getStringField(FIELD_BROJ, st.nextToken()));
+		doc.add(getStringField(FIELD_ED, st.nextToken()));
+		value = st.nextToken();
+		if (!StringUtils.isEmpty(value)) {
+			doc.add(getStringField(FIELD_OPIS, value));
+		}
+		doc.add(getStringField(FIELD_U_FUNKCIJI, st.nextToken()));
+		doc.add(getStringField(FIELD_VRSTA, st.nextToken()));
 		return doc;
 	}
 }

@@ -1,8 +1,13 @@
 package rs.trznica.dragan.dao.lucene;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.IOException;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -11,8 +16,12 @@ import java.util.stream.Collectors;
 
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
+import org.apache.lucene.document.Field;
+import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.FieldType;
 import org.apache.lucene.document.FieldType.NumericType;
+import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.index.DocValuesType;
 import org.apache.lucene.index.IndexOptions;
@@ -31,6 +40,7 @@ import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.springframework.util.StringUtils;
 
 import rs.trznica.dragan.entities.struja.BasicEntity;
 
@@ -122,6 +132,57 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 		return ret;
 	}
 	
+	public void exportAllToCvs(String csvFilename) throws IOException {
+		IndexSearcher searcher = getSearcher();
+		if (searcher == null) {
+			return;
+		}
+		BufferedWriter writer = Files.newBufferedWriter(Paths.get(csvFilename), Charset.forName("UTF-8"), StandardOpenOption.CREATE_NEW);
+		TopDocs docs = searcher.search(new MatchAllDocsQuery(), Integer.MAX_VALUE);
+		String line = null;
+		for (ScoreDoc sDoc : docs.scoreDocs) {
+			Document doc = searcher.doc(sDoc.doc);
+			line = getDocumentString(doc);
+			writer.write(line);
+			writer.newLine();
+		}
+		searcher.getIndexReader().close();
+		writer.close();
+	}
+	
+	protected String getField(Document doc, String fieldName) {
+		return (StringUtils.isEmpty(doc.get(fieldName))) ? "" : doc.get(fieldName);
+	}
+	
+	protected abstract String getDocumentString(Document doc);
+	
+	public void importAllFromCvs(String csvFilename) throws IOException {
+		IndexWriter writer = getWriter();
+		writer.deleteAll();
+		BufferedReader reader = Files.newBufferedReader(Paths.get(csvFilename), Charset.forName("UTF-8"));
+		String line = null;
+		while (true) {
+			line = reader.readLine();
+			if (StringUtils.isEmpty(line)) {
+				break;
+			}
+			Document doc = getDocumentFromString(line);
+			writer.addDocument(doc);
+		}
+		reader.close();
+		writer.close();
+	}
+	
+	protected Field getLongField(String name, String value) {
+		return new LongField(name, Long.valueOf(value), ID_LONG_TYPE);
+	}
+	
+	protected Field getStringField(String name, String value) {
+		return new StringField(name, value, Store.YES);
+	}
+	
+	protected abstract Document getDocumentFromString(String line);
+
 	public List<T> find(List<Long> ids) throws IOException {
 		IndexSearcher searcher = getSearcher();
 		if (searcher == null) {

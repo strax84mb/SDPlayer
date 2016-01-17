@@ -3,6 +3,7 @@ package rs.trznica.dragan.dao.lucene;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
@@ -126,5 +127,52 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 		searcher.getIndexReader().close();
 		ret.sort(new OcitavanjeComparator());
 		return ret;
+	}
+	
+	@Override
+	protected String getDocumentString(Document doc) {
+		StringBuilder builder = new StringBuilder(getField(doc, FIELD_ID_TEXT));
+		builder.append("|").append(getField(doc, FIELD_BROJILO_ID));
+		builder.append("|").append(getField(doc, FIELD_BROJILO_VRSTA));
+		builder.append("|").append(getField(doc, FIELD_BROJILO_BROJ));
+		builder.append("|").append(getField(doc, FIELD_BROJILO_ED));
+		builder.append("|").append(getField(doc, FIELD_MESEC));
+		builder.append("|").append(getField(doc, FIELD_KW_NT));
+		builder.append("|").append(getField(doc, FIELD_CENA_NT));
+		builder.append("|").append(getField(doc, FIELD_KW_VT));
+		builder.append("|").append(getField(doc, FIELD_CENA_VT));
+		builder.append("|").append(getField(doc, FIELD_PRISTUP));
+		builder.append("|").append(getField(doc, FIELD_PODSTICAJ));
+		builder.append("|").append(getField(doc, FIELD_KW_REAKT));
+		builder.append("|").append(getField(doc, FIELD_CENA_KW));
+		return builder.toString();
+	}
+
+	@Override
+	protected Document getDocumentFromString(String line) {
+		StringTokenizer st = new StringTokenizer(line, "|");
+		String value = st.nextToken();
+		Document doc = new Document();
+		doc.add(getLongField(FIELD_ID, value));
+		doc.add(getStringField(FIELD_ID_TEXT, value));
+		doc.add(getStringField(FIELD_BROJILO_ID, st.nextToken()));
+		value = st.nextToken();
+		doc.add(getStringField(FIELD_BROJILO_VRSTA, value));
+		doc.add(getStringField(FIELD_BROJILO_BROJ, st.nextToken()));
+		doc.add(getStringField(FIELD_BROJILO_ED, st.nextToken()));
+		doc.add(getStringField(FIELD_MESEC, st.nextToken()));
+		doc.add(getLongField(FIELD_KW_NT, st.nextToken()));
+		doc.add(getLongField(FIELD_CENA_NT, st.nextToken()));
+		if (VrstaBrojila.SIR_POT_DVO.name().equals(value)) {
+			doc.add(getLongField(FIELD_KW_VT, st.nextToken()));
+			doc.add(getLongField(FIELD_CENA_VT, st.nextToken()));
+		}
+		doc.add(getLongField(FIELD_PRISTUP, st.nextToken()));
+		doc.add(getLongField(FIELD_PODSTICAJ, st.nextToken()));
+		if (VrstaBrojila.MAXIGRAF.name().equals(value)) {
+			doc.add(getLongField(FIELD_KW_REAKT, st.nextToken()));
+			doc.add(getLongField(FIELD_CENA_KW, st.nextToken()));
+		}
+		return doc;
 	} 
 }

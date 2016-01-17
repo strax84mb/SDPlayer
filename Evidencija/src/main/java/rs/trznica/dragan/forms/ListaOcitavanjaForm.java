@@ -83,8 +83,8 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		leftBox.add(tfToMonth);
 		leftBox.add(Box.createVerticalStrut(5));
 		leftBox.add(createLabel("Brojila:"));
-		loadAllCounters(leftBox);
-		leftBox.add(Box.createVerticalGlue());
+		leftBox.add(loadAllCounters());
+		//leftBox.add(Box.createVerticalGlue());
 		
 		chckbxHideUnfunctional = new JCheckBox("Sakrij brojila van funkcije");
 		chckbxHideUnfunctional.setAlignmentX(LEFT_ALIGNMENT);
@@ -149,21 +149,26 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		}
 	}
 	
-	private void loadAllCounters(Box box) {
+	private JScrollPane loadAllCounters() {
+		JScrollPane sPane = new JScrollPane();
+		sPane.setAlignmentX(LEFT_ALIGNMENT);
 		try {
+			Box countersBox = Box.createVerticalBox();
+			sPane.setViewportView(countersBox);
 			brojila.clear();
 			brojiloDao.findAll().stream()
 					.map(x -> new BrojiloCheckBox(x))
 					.forEach(x -> {
 						brojila.add(x);
 						x.setVisible(x.getBrojilo().getuFunkciji());
-						box.add(x);
+						countersBox.add(x);
 					});
 		} catch (IOException e) {
 			e.printStackTrace();
 			ErrorDialog dlg = new ErrorDialog();
 			dlg.showError("Desila se greška prilikom čitanja svih brojila.");
 		}
+		return sPane;
 	}
 	
 	private JLabel createLabel(String text) {
