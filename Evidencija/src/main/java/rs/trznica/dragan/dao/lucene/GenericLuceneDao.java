@@ -97,7 +97,8 @@ public abstract class GenericLuceneDao<T extends BasicEntity> {
 	public void update(T entity) throws IOException {
 		Document doc = entityToDoc(entity);
 		IndexWriter writer = getWriter();
-		writer.updateDocument(new Term(FIELD_ID_TEXT, entity.getId().toString()), doc);
+		writer.deleteDocuments(new TermQuery(new Term(FIELD_ID_TEXT, entity.getId().toString())));
+		writer.addDocument(doc);
 		writer.commit();
 		writer.close();
 	}

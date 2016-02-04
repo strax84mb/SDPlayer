@@ -67,10 +67,10 @@ public class OcitavanjeValidator implements Validator {
 		if (!validNumber(dto.getPodsticaj(), 2)) {
 			errors.reject("Obavezno je uneti podsticaj.");
 		}
-		if (!validNumber(dto.getKwReaktivna(), 0)) {
+		if (VrstaBrojila.MAXIGRAF.equals(dto.getBrojilo().getVrstaBrojila()) && !validNumber(dto.getKwReaktivna(), 0)) {
 			errors.reject("Obavezno je uneti reaktivne kW.");
 		}
-		if (!validNumber(dto.getCenaKW(), 3)) {
+		if (VrstaBrojila.MAXIGRAF.equals(dto.getBrojilo().getVrstaBrojila()) && !validNumber(dto.getCenaKW(), 3)) {
 			errors.reject("Obavezno je uneti cenu reaktivnog kW.");
 		}
 	}

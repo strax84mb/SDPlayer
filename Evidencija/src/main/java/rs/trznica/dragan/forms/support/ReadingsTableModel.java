@@ -54,7 +54,7 @@ public class ReadingsTableModel extends DefaultTableModel {
 			return new Object[] {
 					object.getMesec(), 
 					object.getBrojiloString(), 
-					object.getBrojiloVrsta().getDescription(), 
+					object.getBrojiloVrsta().getAbrev(), 
 					"", 
 					"", 
 					DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
@@ -71,7 +71,7 @@ public class ReadingsTableModel extends DefaultTableModel {
 			return new Object[] {
 					object.getMesec(), 
 					object.getBrojiloString(), 
-					object.getBrojiloVrsta().getDescription(), 
+					object.getBrojiloVrsta().getAbrev(), 
 					DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
 					DecimalFormater.formatFromLongSep(object.getKwVT(), 0), 
 					"", 
@@ -88,7 +88,7 @@ public class ReadingsTableModel extends DefaultTableModel {
 			return new Object[] {
 					object.getMesec(), 
 					object.getBrojiloString(), 
-					object.getBrojiloVrsta().getDescription(), 
+					object.getBrojiloVrsta().getAbrev(), 
 					DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
 					DecimalFormater.formatFromLongSep(object.getKwVT(), 0), 
 					"", 

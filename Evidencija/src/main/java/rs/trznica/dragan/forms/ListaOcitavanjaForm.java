@@ -141,7 +141,16 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		DefaultTableCellRenderer rightSideRend = new DefaultTableCellRenderer();
 		rightSideRend.setHorizontalAlignment(JLabel.RIGHT);
 		for (int i = 0; i < model.getColumnCount(); i++) {
-			model.getColumn(i).setPreferredWidth(100);
+			switch (i) {
+			case 1:
+				model.getColumn(i).setPreferredWidth(230);
+				break;
+			case 2:
+				model.getColumn(i).setPreferredWidth(50);
+				break;
+			default:
+				model.getColumn(i).setPreferredWidth(100);
+			}
 			model.getColumn(i).setResizable(true);
 			if (i >= 3) {
 				model.getColumn(i).setCellRenderer(rightSideRend);
@@ -192,6 +201,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 	private List<Long> getSelectedCounterIds() {
 		return brojila.stream()
 				.filter(BrojiloCheckBox::isVisible)
+				.filter(BrojiloCheckBox::isSelected)
 				.map(BrojiloCheckBox::getBrojilo)
 				.map(Brojilo::getId)
 				.collect(Collectors.toList());
@@ -313,7 +323,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 				return;
 			}
 			YesNoDialog dlg = new YesNoDialog("Sigurno želite obrisati izabrana očitavanja?");
-			dlg.showDialog(table);
+			dlg.showDialogInCenter();
 			if (ModalResult.NO.equals(dlg.getModalResult())) {
 				return;
 			}

@@ -94,4 +94,10 @@ public class YesNoDialog extends JDialog {
 		setVisible(true);
 	}
 
+	public void showDialogInCenter(){
+		int x = (Toolkit.getDefaultToolkit().getScreenSize().width / 2) - (getWidth() / 2);
+		int y = (Toolkit.getDefaultToolkit().getScreenSize().height / 2) - (getHeight() / 2);
+		setLocation(x, y);
+		setVisible(true);
+	}
 }
