@@ -1,0 +1,1 @@
+start java -Dswing.defaultlaf=javax.swing.plaf.nimbus.NimbusLookAndFeel -Dh2db.path=./H2DB/H2DB -Dxls.blank.table.path="./Mustra" -Dxls.tables.path="./Izvestaji" -jar Evidencija.jar

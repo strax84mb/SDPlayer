@@ -7,7 +7,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
+import org.apache.poi.ss.usermodel.BorderStyle;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
+import org.apache.poi.ss.usermodel.VerticalAlignment;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFCellStyle;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -148,6 +153,33 @@ public class SummaryReporter {
 			cell.setCellValue(Long.valueOf(monthSums[i].getPriceBmb() + monthSums[i].getPriceEd()).doubleValue() / 100d);
 			fillMonthlyCumulativeSum(wb.getSheetAt(i), monthlyTotals.get(i), i);
 		}
+		
+		XSSFSheet sheet = wb.getSheetAt(wb.getNumberOfSheets() - 1);
+		XSSFCellStyle normalStyle = wb.createCellStyle();
+		normalStyle.setAlignment(HorizontalAlignment.CENTER);
+		normalStyle.setVerticalAlignment(VerticalAlignment.CENTER);
+		normalStyle.setBorderBottom(BorderStyle.NONE);
+		normalStyle.setBorderTop(BorderStyle.NONE);
+		normalStyle.setBorderLeft(BorderStyle.NONE);
+		normalStyle.setBorderRight(BorderStyle.NONE);
+
+		int rowIndex = potrosaci.size() + 7;
+		XSSFRow row = sheet.createRow(rowIndex);
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 1, rowIndex + 1, 10, 12));
+		sheet.addMergedRegion(new CellRangeAddress(rowIndex + 2, rowIndex + 2, 10, 12));
+		row = sheet.createRow(rowIndex + 1);
+		cell = row.createCell(10);
+		cell.setCellStyle(normalStyle);
+		cell.setCellValue("Ref. teh. i op. poslova");
+		row.createCell(11);
+		row.createCell(12);
+		row = sheet.createRow(rowIndex + 2);
+		cell = row.createCell(10);
+		cell.setCellStyle(normalStyle);
+		cell.setCellValue("Dragan Dobrijevi\u0107");
+		row.createCell(11);
+		row.createCell(12);
+		
 		// Save File
 		try (FileOutputStream fos = new FileOutputStream(xlsTablesPath + "/zbirni_izvestaj.xlsx")) {
 			wb.write(fos);
@@ -319,6 +351,9 @@ public class SummaryReporter {
 	}
 
 	private String getKmRsString(boolean km, long value) {
+		if (value == 0) {
+			return "";
+		}
 		StringBuilder builder = new StringBuilder(Long.valueOf(value).toString());
 		int length = builder.length();
 		int dots = length / 3;
@@ -332,7 +367,7 @@ public class SummaryReporter {
 				builder.insert(offset + i + (i * 3), '.');
 			}
 		}
-		return builder.append((km) ? " k" : " r").toString();
+		return builder.toString();
 	}
 	
 	private String getMonthString(int month) {

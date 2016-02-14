@@ -11,7 +11,7 @@ import org.junit.Test;
 
 import rs.trznica.dragan.entities.struja.Brojilo;
 
-public class BrojiloDaoTest {
+public class BrojiloDaoTst {
 
 	private BrojiloDao dao;
 	

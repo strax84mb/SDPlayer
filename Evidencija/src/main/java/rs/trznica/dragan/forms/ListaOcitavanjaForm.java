@@ -7,12 +7,15 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.print.PrintService;
 import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
@@ -33,6 +36,7 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import rs.trznica.dragan.dao.lucene.BrojiloDao;
 import rs.trznica.dragan.dao.lucene.OcitavanjeDao;
@@ -40,6 +44,7 @@ import rs.trznica.dragan.entities.struja.Brojilo;
 import rs.trznica.dragan.entities.struja.Ocitavanje;
 import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.forms.support.ReadingsTableModel;
+import rs.trznica.dragan.printables.ReadingsSumPrintable;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -55,9 +60,11 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 	
 	private JTextField tfFromMonth;
 	private JTextField tfToMonth;
+	private JCheckBox chckbxSelectAll;
 	private JCheckBox chckbxHideUnfunctional;
 	private JTable table;
 	private JButton btnSearch;
+	private JButton btnPrintSum;
 	
 	private List<BrojiloCheckBox> brojila = new ArrayList<BrojiloCheckBox>();
 	
@@ -83,8 +90,14 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		leftBox.add(tfToMonth);
 		leftBox.add(Box.createVerticalStrut(5));
 		leftBox.add(createLabel("Brojila:"));
+		
+		chckbxSelectAll = new JCheckBox("Izaberi sve");
+		chckbxSelectAll.setAlignmentX(LEFT_ALIGNMENT);
+		chckbxSelectAll.setFont(defaultFont);
+		chckbxSelectAll.addActionListener(new SelectAllListener());
+		leftBox.add(chckbxSelectAll);
+		
 		leftBox.add(loadAllCounters());
-		//leftBox.add(Box.createVerticalGlue());
 		
 		chckbxHideUnfunctional = new JCheckBox("Sakrij brojila van funkcije");
 		chckbxHideUnfunctional.setAlignmentX(LEFT_ALIGNMENT);
@@ -93,11 +106,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		leftBox.add(chckbxHideUnfunctional);
 		leftBox.add(Box.createVerticalStrut(10));
 		
-		btnSearch = new JButton("Prikaži");
-		btnSearch.setFont(defaultFont);
-		btnSearch.setAlignmentX(LEFT_ALIGNMENT);
-		btnSearch.addActionListener(new BtnSearchActionListener());
-		leftBox.add(btnSearch);
+		leftBox.add(makeLeftButtonBar());
 		
 		JPanel centerPanel = new JPanel(new BorderLayout());
 		centerPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -124,7 +133,28 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		
 		buttonsBox.add(Box.createHorizontalGlue());
 		addButtonToBar("Izmeni", new BtnEditActionListener(), buttonsBox);
-		addButtonToBar("Obriši", new BtnDeleteActionListener(), buttonsBox);
+		addButtonToBar("Obri\u0161i", new BtnDeleteActionListener(), buttonsBox);
+	}
+	
+	private Box makeLeftButtonBar() {
+		Box box = Box.createHorizontalBox();
+		box.setAlignmentX(LEFT_ALIGNMENT);
+		
+		btnSearch = new JButton("Prika\u017Ei");
+		btnSearch.setFont(defaultFont);
+		btnSearch.setAlignmentX(LEFT_ALIGNMENT);
+		btnSearch.addActionListener(new BtnSearchActionListener());
+		box.add(btnSearch);
+		
+		box.add(Box.createHorizontalStrut(10));
+		
+		btnPrintSum = new JButton("Od\u0161tampaj");
+		btnPrintSum.setFont(defaultFont);
+		btnPrintSum.setAlignmentX(LEFT_ALIGNMENT);
+		btnPrintSum.addActionListener(new PrintSumListener());
+		box.add(btnPrintSum);
+		
+		return box;
 	}
 	
 	private JButton addButtonToBar(String text, ActionListener listener, Box box) {
@@ -162,6 +192,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		JScrollPane sPane = new JScrollPane();
 		sPane.setAlignmentX(LEFT_ALIGNMENT);
 		try {
+			ActionListener listener = new CheckIfAllSelectedListener();
 			Box countersBox = Box.createVerticalBox();
 			sPane.setViewportView(countersBox);
 			brojila.clear();
@@ -170,12 +201,13 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 					.forEach(x -> {
 						brojila.add(x);
 						x.setVisible(x.getBrojilo().getuFunkciji());
+						x.addActionListener(listener);
 						countersBox.add(x);
 					});
 		} catch (IOException e) {
 			e.printStackTrace();
 			ErrorDialog dlg = new ErrorDialog();
-			dlg.showError("Desila se greška prilikom čitanja svih brojila.");
+			dlg.showError("Desila se gre\u0161ka prilikom \u010Ditanja svih brojila.");
 		}
 		return sPane;
 	}
@@ -244,7 +276,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				new ErrorDialog().showError("Početni mesec mora biti u formatu yyyy-mm ili izostavljen.");
+				new ErrorDialog().showError("Po\u010Detni mesec mora biti u formatu yyyy-mm ili izostavljen.");
 				tfFromMonth.selectAll();
 				tfFromMonth.requestFocus();
 				return;
@@ -258,7 +290,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				new ErrorDialog().showError("Završni mesec mora biti u formatu yyyy-mm ili izostavljen.");
+				new ErrorDialog().showError("Zavr\u0161ni mesec mora biti u formatu yyyy-mm ili izostavljen.");
 				tfToMonth.selectAll();
 				tfToMonth.requestFocus();
 				return;
@@ -275,7 +307,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 				tableModel.addReadings(result);
 			} catch (Exception e) {
 				e.printStackTrace();
-				new ErrorDialog().showError("Desila se greška prilikom čitanja očitavanja:<br/>" + e.getMessage());
+				new ErrorDialog().showError("Desila se gre\u0161ka prilikom \u010Ditanja o\u010Ditavanja:<br/>" + e.getMessage());
 			}
 		}
 	}
@@ -284,18 +316,18 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		public void actionPerformed(ActionEvent ev) {
 			int rows[] = table.getSelectedRows();
 			if (rows.length == 0) {
-				new ErrorDialog().showError("Morate odabrati neko očitavanje.");
+				new ErrorDialog().showError("Morate odabrati neko o\u010Ditavanje.");
 			} else if (rows.length == 1) {
 				ReadingsTableModel model = (ReadingsTableModel) table.getModel();
 				if (model.tableHasSummaryRow() && rows[0] == model.getRowCount() - 1) {
-					new ErrorDialog().showError("Ne možete menjati sumu svih prikazanih očitavanja.");
+					new ErrorDialog().showError("Ne mo\u017Eete menjati sumu svih prikazanih o\u010Ditavanja.");
 				} else {
 					Long id = ((ReadingsTableModel) table.getModel()).getRowId(rows[0]);
 					Ocitavanje ocitavanje = null;
 					try {
 						ocitavanje = ocitavanjeDao.find(id);
 					} catch (Exception e) {
-						new ErrorDialog().showError("Desila se greška prilikom učitavanja podataka za menjanje.");
+						new ErrorDialog().showError("Desila se gre\u0161ka prilikom u\u010Ditavanja podataka za menjanje.");
 						return;
 					}
 					OcitavanjeForm dlg = ctx.getBean(OcitavanjeForm.class);
@@ -310,7 +342,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 					}
 				}
 			} else {
-				new ErrorDialog().showError("Ne možete menjati više očitavanja odjednom.");
+				new ErrorDialog().showError("Ne mo\u017Eete menjati vi\u0161e o\u010Ditavanja odjednom.");
 			}
 		}
 	}
@@ -322,7 +354,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 				new ErrorDialog().showError("Morate izabrati neki red iz tabele");
 				return;
 			}
-			YesNoDialog dlg = new YesNoDialog("Sigurno želite obrisati izabrana očitavanja?");
+			YesNoDialog dlg = new YesNoDialog("Sigurno \u017Eelite obrisati izabrana o\u010Ditavanja?");
 			dlg.showDialogInCenter();
 			if (ModalResult.NO.equals(dlg.getModalResult())) {
 				return;
@@ -336,12 +368,72 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 				}
 			} catch (Exception e) {
 				e.printStackTrace();
-				new ErrorDialog().showError("Neuspelo brisanje očitavanja sa ID=" + id.toString());
+				new ErrorDialog().showError("Neuspelo brisanje o\u010Ditavanja sa ID=" + id.toString());
 			}
 			model.deleteRows(rows);
 			model.removeSummary();
 			table.clearSelection();
 			table.repaint();
+		}
+	}
+	private class SelectAllListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			brojila.stream().forEach(x -> x.setSelected(chckbxSelectAll.isSelected()));
+		}
+	}
+	private class CheckIfAllSelectedListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			boolean allSelected = brojila.stream()
+					.filter(BrojiloCheckBox::isVisible)
+					.allMatch(BrojiloCheckBox::isSelected);
+			chckbxSelectAll.setSelected(allSelected);
+		}
+	}
+	private class PrintSumListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			ReadingsTableModel model = (ReadingsTableModel) table.getModel();
+			if (!"Ukupno:".equals((String) model.getValueAt(model.getRowCount() - 1, 0))) {
+				new ErrorDialog().showError("Nema ukupnog stanja. Ponovi pretragu.");
+				return;
+			}
+			if (StringUtils.isEmpty(tfFromMonth.getText()) || StringUtils.isEmpty(tfToMonth.getText())) {
+				new ErrorDialog().showError("Obavezno je uneti po\u010Detni i zavr\u0161ni mesec.");
+				return;
+			}
+			
+			PrinterChooserDialog dlg = new PrinterChooserDialog();
+			dlg.setVisible(true);
+			PrintService service = dlg.getReturnValue();
+			dlg.dispose();
+			if (service == null) {
+				return;
+			}
+			
+			PrinterJob job = PrinterJob.getPrinterJob();
+			job.setPrintable(new ReadingsSumPrintable(
+					tfFromMonth.getText(), 
+					tfToMonth.getText(), 
+					(String) model.getValueAt(model.getRowCount() - 1, 3), 
+					(String) model.getValueAt(model.getRowCount() - 1, 4), 
+					(String) model.getValueAt(model.getRowCount() - 1, 5), 
+					(String) model.getValueAt(model.getRowCount() - 1, 6), 
+					(String) model.getValueAt(model.getRowCount() - 1, 7), 
+					(String) model.getValueAt(model.getRowCount() - 1, 8), 
+					(String) model.getValueAt(model.getRowCount() - 1, 11), 
+					(String) model.getValueAt(model.getRowCount() - 1, 12), 
+					(String) model.getValueAt(model.getRowCount() - 1, 9), 
+					(String) model.getValueAt(model.getRowCount() - 1, 10)));
+			
+			try {
+				job.setPrintService(service);
+				job.print();
+			} catch (PrinterException e) {
+				e.printStackTrace();
+				new ErrorDialog().showError("Desila se gre\u0161ka tokom \u0161tampanja:<br/>" + e.getMessage());
+			}
 		}
 	}
 }

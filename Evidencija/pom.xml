@@ -80,4 +80,69 @@
 			<version>3.12</version>
 		</dependency>
 	</dependencies>
+	
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<version>2.4</version>
+				<configuration>
+					<outputDirectory>${project.build.directory}/projectBuild/</outputDirectory>
+					<finalName>Evidencija</finalName>
+					<archive>
+						<manifest>
+							<mainClass>rs.trznica.dragan.conf.ApplicationStarter</mainClass>
+							<addClasspath>true</addClasspath>
+							<classpathPrefix>Evidencija_lib/</classpathPrefix>
+						</manifest>
+					</archive>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<version>2.5.1</version>
+				<executions>
+					<execution>
+						<id>copy-dependencies</id>
+						<phase>package</phase>
+						<goals>
+		    				<goal>copy-dependencies</goal>
+						</goals>
+						<configuration>
+		    				<outputDirectory>${project.build.directory}/projectBuild/Evidencija_lib/</outputDirectory>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>generate-sources</id>
+						<phase>generate-sources</phase>
+						<configuration>
+		    				<tasks>
+	    						<mkdir dir="${project.build.directory}/projectBuild" />
+	    						<mkdir dir="${project.build.directory}/projectBuild/H2DB" />
+	    						<mkdir dir="${project.build.directory}/projectBuild/Izvestaji" />
+	    						<mkdir dir="${project.build.directory}/projectBuild/Mustra" />
+	    						<copy todir="${project.build.directory}/projectBuild/Mustra">
+	    							<fileset dir="buildRes" includes="blank.xlsx" />
+	    						</copy>
+	    						<copy todir="${project.build.directory}/projectBuild">
+	    							<fileset dir="buildRes" includes="*" excludes="blank.xlsx" />
+	    						</copy>
+		    				</tasks>
+						</configuration>
+						<goals>
+		    				<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
 </project>

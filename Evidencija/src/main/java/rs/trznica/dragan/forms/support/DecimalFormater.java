@@ -67,4 +67,8 @@ public abstract class DecimalFormater {
 	public static Double parseToDouble(String value) {
 		return Double.valueOf(value.replaceAll("\\.", "").replaceAll(",", "."));
 	}
+
+	public static Long parseToLongSep(String value) {
+		return Long.valueOf(value.replaceAll("\\.", "").replaceAll("\\,", ""));
+	}
 }
