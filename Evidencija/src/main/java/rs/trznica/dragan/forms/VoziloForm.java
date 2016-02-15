@@ -264,7 +264,7 @@ public class VoziloForm extends JDialog {
 		gbc_cbxUUpotrebi.gridy = 5;
 		panelCenter.add(cbxUUpotrebi, gbc_cbxUUpotrebi);
 
-		cbxKoristiKM = new JCheckBox("Meri pređene kilometre");
+		cbxKoristiKM = new JCheckBox("Meri pre\u0111ene kilometre");
 		cbxKoristiKM.setSelected(true);
 		cbxKoristiKM.setFont(defaultFont);
 		GridBagConstraints gbc_cbxKoristiKM = new GridBagConstraints();

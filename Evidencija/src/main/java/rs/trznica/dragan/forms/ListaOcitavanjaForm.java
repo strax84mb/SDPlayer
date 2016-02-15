@@ -42,6 +42,7 @@ import rs.trznica.dragan.dao.lucene.BrojiloDao;
 import rs.trznica.dragan.dao.lucene.OcitavanjeDao;
 import rs.trznica.dragan.entities.struja.Brojilo;
 import rs.trznica.dragan.entities.struja.Ocitavanje;
+import rs.trznica.dragan.entities.support.BrojiloComparator;
 import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.forms.support.ReadingsTableModel;
 import rs.trznica.dragan.printables.ReadingsSumPrintable;
@@ -197,6 +198,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 			sPane.setViewportView(countersBox);
 			brojila.clear();
 			brojiloDao.findAll().stream()
+					.sorted(new BrojiloComparator())
 					.map(x -> new BrojiloCheckBox(x))
 					.forEach(x -> {
 						brojila.add(x);

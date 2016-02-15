@@ -76,7 +76,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		ocitavanjeDao = this.ctx.getBean(OcitavanjeDao.class);
 		brojiloDao = this.ctx.getBean(BrojiloDao.class);
 		setModal(true);
-		setTitle("Očitavanje");
+		setTitle("O\u010Ditavanje");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 		setBounds(100, 100, 450, 550);
 		setResizable(false);
@@ -84,7 +84,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		JPanel panelTop = new JPanel();
 		getContentPane().add(panelTop, BorderLayout.NORTH);
 		
-		JLabel lblTitle = new JLabel("Očitavanje mernog mesta");
+		JLabel lblTitle = new JLabel("O\u010Ditavanje mernog mesta");
 		lblTitle.setFont(new Font("Times New Roman", Font.PLAIN, 20));
 		panelTop.add(lblTitle);
 		
@@ -100,7 +100,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		btnSaveAnother = makeButton("Snimi i ne zatvori", new BtnSaveAnotherActionListener());
 		panelBottom.add(btnSaveAnother);
 		panelBottom.add(Box.createHorizontalStrut(15));
-		btnCancel = makeButton("Otkaži", new BtnCancelActionListener());
+		btnCancel = makeButton("Otka\u017Ei", new BtnCancelActionListener());
 		panelBottom.add(btnCancel);
 		panelBottom.add(Box.createHorizontalGlue());
 		
@@ -121,12 +121,12 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		lblKwNT = new JLabel("kW niže tarife:");
 		tfKwNT = makeTextField(panelCenter, 2, lblKwNT, 10);
 		tfKwNT.addFocusListener(zeroDecimalsFocusListener);
-		tfKwVT = makeTextField(panelCenter, 3, new JLabel("kW više tarife:"), 10);
+		tfKwVT = makeTextField(panelCenter, 3, new JLabel("kW vi\u0161e tarife:"), 10);
 		tfKwVT.addFocusListener(zeroDecimalsFocusListener);
 		lblCenaNT = new JLabel("Fin. niže tarife:");
 		tfCenaNT = makeTextField(panelCenter, 4, lblCenaNT, 15);
 		tfCenaNT.addFocusListener(twoDecimalsFocusListener);
-		tfCenaVT = makeTextField(panelCenter, 5, new JLabel("Fin. više tarife:"), 15);
+		tfCenaVT = makeTextField(panelCenter, 5, new JLabel("Fin. vi\u0161e tarife:"), 15);
 		tfCenaVT.addFocusListener(twoDecimalsFocusListener);
 		tfPristup = makeTextField(panelCenter, 6, new JLabel("Fin. pristup:"), 15);
 		tfPristup.addFocusListener(twoDecimalsFocusListener);
@@ -135,7 +135,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		tfCenaKW = makeTextField(panelCenter, 8, new JLabel("Reakt. cena 1 kW:"), 15);
 		tfCenaKW.addFocusListener(threeDigitsCalcFocusLstnr);
 		tfCenaKW.setEnabled(false);
-		tfKwReatkivna = makeTextField(panelCenter, 9, new JLabel("Reakt. potrošeno kW:"), 10);
+		tfKwReatkivna = makeTextField(panelCenter, 9, new JLabel("Reakt. potro\u0161eno kW:"), 10);
 		tfKwReatkivna.addFocusListener(zeroDigitsCalcFocusLstnr);
 		tfKwReatkivna.setEnabled(false);
 		
@@ -165,7 +165,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		} catch (IOException e) {
 			e.printStackTrace();
 			ErrorDialog err = new ErrorDialog();
-			err.showError("Desila se greška tokom čitanja svih mernih mesta: " + e.getMessage());
+			err.showError("Desila se gre\u0161ka tokom \u010Ditanja svih mernih mesta: " + e.getMessage());
 		}
 		
 	}
@@ -234,7 +234,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 						ocitavanje = ocitavanjeDao.save(ocitavanje);
 						System.out.println(ocitavanje.getId());
 					} else {
-						YesNoDialog dlg = new YesNoDialog("Sigurno želite snimiti unešene izmene?");
+						YesNoDialog dlg = new YesNoDialog("Sigurno \u017Eelite snimiti une\u0161ene izmene?");
 						dlg.showDialogInCenter(getThisForm());
 						if (!ModalResult.YES.equals(dlg.getModalResult())) {
 							throw new ChangeNotAcceptedException();
@@ -251,7 +251,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					ErrorDialog dialog = new ErrorDialog();
-					dialog.showError("Desila se greška prilikom snimanja.\n" + e1.getMessage());
+					dialog.showError("Desila se gre\u0161ka prilikom snimanja.\n" + e1.getMessage());
 				}
 			}
 		}
@@ -297,7 +297,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					ErrorDialog dialog = new ErrorDialog();
-					dialog.showError("Desila se greška prilikom snimanja.\n" + e1.getMessage());
+					dialog.showError("Desila se gre\u0161ka prilikom snimanja.\n" + e1.getMessage());
 				}
 			}
 		}
@@ -305,7 +305,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 	private class BtnCancelActionListener extends AbstractAction {
 		private static final long serialVersionUID = 6728713737378259271L;
 		public BtnCancelActionListener() {
-			putValue(NAME, "Otkaži");
+			putValue(NAME, "Otka\u017Ei");
 		}
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -376,8 +376,8 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 						tfCenaReaktivna.setEnabled(false);
 						break;
 					case SIR_POT_DVO:
-						lblKwNT.setText("kW niže tarife:");
-						lblCenaNT.setText("Fin. niže tarife:");
+						lblKwNT.setText("kW ni\u017Ee tarife:");
+						lblCenaNT.setText("Fin. ni\u017Ee tarife:");
 						tfKwVT.setEnabled(true);
 						tfCenaVT.setEnabled(true);
 						tfKwReatkivna.setEnabled(false);
@@ -385,8 +385,8 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 						tfCenaReaktivna.setEnabled(false);
 						break;
 					default:
-						lblKwNT.setText("kW niže tarife:");
-						lblCenaNT.setText("Fin. niže tarife:");
+						lblKwNT.setText("kW ni\u017Ee tarife:");
+						lblCenaNT.setText("Fin. ni\u017Ee tarife:");
 						tfKwVT.setEnabled(true);
 						tfCenaVT.setEnabled(true);
 						tfKwReatkivna.setEnabled(true);

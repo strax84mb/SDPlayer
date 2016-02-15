@@ -170,7 +170,7 @@ public class VoziloListaForm extends JInternalFrame {
 			if (potrosac.getTeretnjak()) {
 				builder.append("Teretno vozilo<br/><br/>");
 			} else {
-				builder.append("Putničko vozilo<br/><br/>");
+				builder.append("Putni\u010Dko vozilo<br/><br/>");
 			}
 			builder.append("Reg. oznaka: ").append(potrosac.getRegOznaka()).append("<br/>");
 			builder.append("Marka: ").append(potrosac.getMarka()).append("<br/>");
@@ -212,7 +212,7 @@ public class VoziloListaForm extends JInternalFrame {
 		}
 		public void actionPerformed(ActionEvent e) {
 			if (potrosaci.getSelectedValue() != null) {
-				YesNoDialog dialog = new YesNoDialog("Jeste li sigurni da želite obrisati potrošača?");
+				YesNoDialog dialog = new YesNoDialog("Jeste li sigurni da \u017Eelite obrisati potro\u0161a\u010Da?");
 				dialog.showDialogInCenter(getThisFrame());
 				if (dialog.getModalResult() == ModalResult.YES) {
 					potrosacDao.delete(potrosaci.getSelectedValue());

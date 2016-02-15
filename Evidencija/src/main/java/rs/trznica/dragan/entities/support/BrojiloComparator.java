@@ -8,7 +8,11 @@ public class BrojiloComparator implements Comparator<Brojilo> {
 
 	@Override
 	public int compare(Brojilo o1, Brojilo o2) {
-		return o1.getBroj().compareTo(o2.getBroj());
+		if (o1.getVrstaBrojila().compareTo(o2.getVrstaBrojila()) == 0) {
+			return o1.getBroj().compareTo(o2.getBroj());
+		} else {
+			return o1.getVrstaBrojila().compareTo(o2.getVrstaBrojila());
+		}
 	}
 
 }

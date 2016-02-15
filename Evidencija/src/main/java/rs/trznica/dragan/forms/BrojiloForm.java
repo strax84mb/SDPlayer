@@ -150,7 +150,7 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 						brojilo = brojiloDao.save(brojilo);
 						System.out.println(brojilo.getId());
 					} else {
-						YesNoDialog dlg = new YesNoDialog("Sigurno želite snimiti unešene izmene?");
+						YesNoDialog dlg = new YesNoDialog("Sigurno \u017Eelite snimiti une\u0161ene izmene?");
 						dlg.showDialogInCenter(getThisForm());
 						if (!ModalResult.YES.equals(dlg.getModalResult())) {
 							throw new ChangeNotAcceptedException();
@@ -167,7 +167,7 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 				} catch (Exception e1) {
 					e1.printStackTrace();
 					ErrorDialog dialog = new ErrorDialog();
-					dialog.showError("Desila se greška prilikom snimanja.\n" + e1.getMessage());
+					dialog.showError("Desila se gre\u0161ka prilikom snimanja.\n" + e1.getMessage());
 				}
 			}
 		}

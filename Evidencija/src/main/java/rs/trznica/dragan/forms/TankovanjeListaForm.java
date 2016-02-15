@@ -111,7 +111,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 			new Object[][] {
 			},
 			new String[] {
-				"Datum", "Potrošač", "Za mesec", "Količina", "Cena litre", "Ukupna cena", "ID"
+				"Datum", "Potro\u0161a\u010D", "Za mesec", "Koli\u010Dina", "Cena litre", "Ukupna cena", "ID"
 			}
 		) {
 			private static final long serialVersionUID = -4076593013718122690L;
@@ -218,7 +218,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 		btnChange.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		panelLeftCommands.add(btnChange);
 		
-		JButton btnDelete = new JButton("Obriši");
+		JButton btnDelete = new JButton("Obri\u0161i");
 		btnDelete.addActionListener(new BtnDeleteActionListener());
 		btnDelete.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		panelLeftCommands.add(btnDelete);
@@ -231,7 +231,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 		Component horizontalGlue = Box.createHorizontalGlue();
 		bottomPanel.add(horizontalGlue);
 		
-		JButton btnReport = new JButton("Izveštaj");
+		JButton btnReport = new JButton("Izve\u0161taj");
 		btnReport.addActionListener(new BtnReportActionListener());
 		btnReport.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		bottomPanel.add(btnReport);
@@ -239,7 +239,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 		Component horizontalStrut = Box.createHorizontalStrut(10);
 		bottomPanel.add(horizontalStrut);
 		
-		JButton btnSumReport = new JButton("Zbirni izveštaj");
+		JButton btnSumReport = new JButton("Zbirni izve\u0161taj");
 		btnSumReport.addActionListener(new BtnSumReportActionListener());
 		btnSumReport.setFont(new Font("Times New Roman", Font.PLAIN, 16));
 		bottomPanel.add(btnSumReport);
@@ -371,18 +371,18 @@ public class TankovanjeListaForm extends JInternalFrame {
 			try {
 				sdf.parse(tfStartFrom.getText());
 			} catch (ParseException e) {
-				new ErrorDialog().showError("Moraš uneti početni mesec.");
+				new ErrorDialog().showError("Mora\u0161 uneti po\u010Detni mesec.");
 				return;
 			}
 			try {
 				sdf.parse(tfEndsWith.getText());
 			} catch (ParseException e) {
-				new ErrorDialog().showError("Moraš uneti završni mesec.");
+				new ErrorDialog().showError("Mora\u0161 uneti zavr\u0161ni mesec.");
 				return;
 			}
 			List<Long> ids = getChosenIds();
 			if (ids.size() == 0) {
-				new ErrorDialog().showError("Moraš izabrati vozilo za koje će se ispisati izveštaj.");
+				new ErrorDialog().showError("Mora\u0161 izabrati vozilo za koje \u0107e se ispisati izve\u0161taj.");
 				return;
 			}
 			try {
@@ -391,9 +391,9 @@ public class TankovanjeListaForm extends JInternalFrame {
 				}
 				new ErrorDialog().showError("Gotovo.");
 			} catch (IOException e) {
-				new ErrorDialog().showError("Desila se greška tokom čitanja/pisanja datoteka.");
+				new ErrorDialog().showError("Desila se gre\u0161ka tokom \u010Ditanja/pisanja datoteka.");
 			} catch (ParseException e) {
-				new ErrorDialog().showError("Desila se greška prilikom obrade podataka.");
+				new ErrorDialog().showError("Desila se gre\u0161ka prilikom obrade podataka.");
 			}
 		}
 	}
@@ -404,13 +404,13 @@ public class TankovanjeListaForm extends JInternalFrame {
 			try {
 				sdf.parse(tfStartFrom.getText());
 			} catch (ParseException e) {
-				new ErrorDialog().showError("Moraš uneti početni mesec.");
+				new ErrorDialog().showError("Mora\u0161 uneti po\u010Detni mesec.");
 				return;
 			}
 			try {
 				sdf.parse(tfEndsWith.getText());
 			} catch (ParseException e) {
-				new ErrorDialog().showError("Moraš uneti završni mesec.");
+				new ErrorDialog().showError("Mora\u0161 uneti završni mesec.");
 				return;
 			}
 			try {
@@ -418,10 +418,10 @@ public class TankovanjeListaForm extends JInternalFrame {
 				new ErrorDialog().showError("Gotovo.");
 			} catch (IOException e) {
 				e.printStackTrace();
-				new ErrorDialog().showError("Desila se greška tokom čitanja/pisanja datoteka.");
+				new ErrorDialog().showError("Desila se gre\u0161ka tokom \u010Ditanja/pisanja datoteka.");
 			} catch (Exception e) {
 				e.printStackTrace();
-				new ErrorDialog().showError("Desila se greška prilikom obrade podataka.");
+				new ErrorDialog().showError("Desila se gre\u0161ka prilikom obrade podataka.");
 			}
 		}
 	}
@@ -454,7 +454,7 @@ public class TankovanjeListaForm extends JInternalFrame {
 		public void actionPerformed(ActionEvent ev) {
 			if (table.getSelectedRow() != -1) {
 				Long id = (Long) table.getModel().getValueAt(table.getSelectedRow(), 6);
-				YesNoDialog dlg = new YesNoDialog("Da li želiš da obrišeš izabrano tankovanje?");
+				YesNoDialog dlg = new YesNoDialog("Da li \u017Eeli\u0161 da obri\u0161e\u0161 izabrano tankovanje?");
 				dlg.setVisible(true);
 				if (ModalResult.YES.equals(dlg.getModalResult())) {
 					tankovanjeDao.delete(id);
