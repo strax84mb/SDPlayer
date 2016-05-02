@@ -132,25 +132,25 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 	@Override
 	protected String getDocumentString(Document doc) {
 		StringBuilder builder = new StringBuilder(getField(doc, FIELD_ID_TEXT));
-		builder.append("|").append(getField(doc, FIELD_BROJILO_ID));
-		builder.append("|").append(getField(doc, FIELD_BROJILO_VRSTA));
-		builder.append("|").append(getField(doc, FIELD_BROJILO_BROJ));
-		builder.append("|").append(getField(doc, FIELD_BROJILO_ED));
-		builder.append("|").append(getField(doc, FIELD_MESEC));
-		builder.append("|").append(getField(doc, FIELD_KW_NT));
-		builder.append("|").append(getField(doc, FIELD_CENA_NT));
-		builder.append("|").append(getField(doc, FIELD_KW_VT));
-		builder.append("|").append(getField(doc, FIELD_CENA_VT));
-		builder.append("|").append(getField(doc, FIELD_PRISTUP));
-		builder.append("|").append(getField(doc, FIELD_PODSTICAJ));
-		builder.append("|").append(getField(doc, FIELD_KW_REAKT));
-		builder.append("|").append(getField(doc, FIELD_CENA_KW));
+		builder.append("\t").append(getField(doc, FIELD_BROJILO_ID));
+		builder.append("\t").append(getField(doc, FIELD_BROJILO_VRSTA));
+		builder.append("\t").append(getField(doc, FIELD_BROJILO_BROJ));
+		builder.append("\t").append(getField(doc, FIELD_BROJILO_ED));
+		builder.append("\t").append(getField(doc, FIELD_MESEC));
+		builder.append("\t").append(getField(doc, FIELD_KW_NT));
+		builder.append("\t").append(getField(doc, FIELD_CENA_NT));
+		builder.append("\t").append(getField(doc, FIELD_KW_VT));
+		builder.append("\t").append(getField(doc, FIELD_CENA_VT));
+		builder.append("\t").append(getField(doc, FIELD_PRISTUP));
+		builder.append("\t").append(getField(doc, FIELD_PODSTICAJ));
+		builder.append("\t").append(getField(doc, FIELD_KW_REAKT));
+		builder.append("\t").append(getField(doc, FIELD_CENA_KW));
 		return builder.toString();
 	}
 
 	@Override
 	protected Document getDocumentFromString(String line) {
-		StringTokenizer st = new StringTokenizer(line, "|");
+		StringTokenizer st = new StringTokenizer(line, "\t");
 		String value = st.nextToken();
 		Document doc = new Document();
 		doc.add(getLongField(FIELD_ID, value));

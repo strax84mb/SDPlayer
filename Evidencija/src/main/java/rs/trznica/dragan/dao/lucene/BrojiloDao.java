@@ -58,17 +58,17 @@ public class BrojiloDao extends GenericLuceneDao<Brojilo>{
 	@Override
 	protected String getDocumentString(Document doc) {
 		StringBuilder builder = new StringBuilder(getField(doc, FIELD_ID_TEXT));
-		builder.append("|").append(getField(doc, FIELD_BROJ));
-		builder.append("|").append(getField(doc, FIELD_ED));
-		builder.append("|").append(getField(doc, FIELD_OPIS));
-		builder.append("|").append(getField(doc, FIELD_U_FUNKCIJI));
-		builder.append("|").append(getField(doc, FIELD_VRSTA));
+		builder.append("\t").append(getField(doc, FIELD_BROJ));
+		builder.append("\t").append(getField(doc, FIELD_ED));
+		builder.append("\t").append(getField(doc, FIELD_OPIS));
+		builder.append("\t").append(getField(doc, FIELD_U_FUNKCIJI));
+		builder.append("\t").append(getField(doc, FIELD_VRSTA));
 		return builder.toString();
 	}
 
 	@Override
 	protected Document getDocumentFromString(String line) {
-		StringTokenizer st = new StringTokenizer(line, "|");
+		StringTokenizer st = new StringTokenizer(line, "\t");
 		String value = st.nextToken();
 		Document doc = new Document();
 		doc.add(getLongField(FIELD_ID, value));

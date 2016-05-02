@@ -26,6 +26,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 
+import rs.trznica.dragan.forms.actions.ExportCountersActionListener;
+
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class ApplicationFrame extends JFrame {
@@ -37,14 +39,15 @@ public class ApplicationFrame extends JFrame {
 	private JPanel contentPane;
 	private JMenuBar menuBar;
 
-	@Autowired
 	private ApplicationContext ctx;
 	private JDesktopPane desktopPane;
 
 	/**
 	 * Create the frame.
 	 */
-	public ApplicationFrame() {
+	@Autowired
+	public ApplicationFrame(ApplicationContext ctx) {
+		this.ctx = ctx;
 		setFont(defaultFont);
 		setTitle("Evidencija");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -70,6 +73,8 @@ public class ApplicationFrame extends JFrame {
 		addMenuItem(mnElectricity, new ListajBrojilaAction(), KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK);
 		addMenuItem(mnElectricity, new NovoOcitavanjeAction(), KeyEvent.VK_O, KeyEvent.ALT_DOWN_MASK);
 		addMenuItem(mnElectricity, new ListaOcitavanjaAction(), KeyEvent.VK_O, KeyEvent.CTRL_DOWN_MASK);
+		mnElectricity.addSeparator();
+		addMenuItem(mnElectricity, new ExportCountersActionListener(ctx), null, null);
 		
 		java.awt.Component horizontalGlue = Box.createHorizontalGlue();
 		menuBar.add(horizontalGlue);
@@ -97,7 +102,9 @@ public class ApplicationFrame extends JFrame {
 		JMenuItem item = new JMenuItem();
 		item.setAction(action);
 		item.setFont(defaultFont);
-		item.setAccelerator(KeyStroke.getKeyStroke(key, mask));
+		if ((key != null) && (mask != null)) {
+			item.setAccelerator(KeyStroke.getKeyStroke(key, mask));
+		}
 		menu.add(item);
 		return item;
 	}
@@ -225,7 +232,6 @@ public class ApplicationFrame extends JFrame {
 			} catch (PropertyVetoException e) {
 				e.printStackTrace();
 			}
-			// TODO Implement
 		}
 	}
 }
