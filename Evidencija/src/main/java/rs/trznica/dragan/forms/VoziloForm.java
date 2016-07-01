@@ -32,6 +32,7 @@ import org.springframework.validation.DataBinder;
 
 import rs.trznica.dragan.dao.PotrosacDao;
 import rs.trznica.dragan.dto.tankovanje.PotrosacDto;
+import rs.trznica.dragan.dto.tankovanje.VoziloDodatnoDto;
 import rs.trznica.dragan.entities.support.GorivoType;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.forms.support.ModalResult;
@@ -45,6 +46,7 @@ public class VoziloForm extends JDialog {
 	private static final long serialVersionUID = -7441354109420247986L;
 
 	private Font defaultFont = new Font("Times New Roman", Font.PLAIN, 18);
+	private ApplicationContext ctx;
 
 	private JCheckBox cbxVozilo;
 	private JCheckBox cbxTeretnjak;
@@ -54,8 +56,10 @@ public class VoziloForm extends JDialog {
 	private JTextField tfMarka;
 	private JTextField tfRegOznaka;
 	private JComboBox<GorivoType> cbGorivo;
-
+	private JButton btnAdditional;
+	
 	private Long entityId = null;
+	private VoziloDodatnoDto dodatno = new VoziloDodatnoDto();
 
 	private ModalResult modalResult = ModalResult.CANCEL;
 
@@ -101,6 +105,13 @@ public class VoziloForm extends JDialog {
 		}
 		cbxUUpotrebi.setSelected(consumer.getAktivan());
 		cbxKoristiKM.setSelected(consumer.getMeriKm());
+		dodatno.setPodrucje(consumer.getPodrucje());
+		dodatno.setBrojSedista(consumer.getBrojSedista());
+		dodatno.setNosivost(consumer.getNosivost());
+		dodatno.setrBNaloga(consumer.getrBNaloga());
+		dodatno.setSnagaMotora(consumer.getSnagaMotora());
+		dodatno.setTezina(consumer.getTezina());
+		dodatno.setVozaci(consumer.getVozaci());
 	}
 
 	/**
@@ -108,12 +119,13 @@ public class VoziloForm extends JDialog {
 	 */
 	@Autowired
 	public VoziloForm(ApplicationContext ctx) {
+		this.ctx = ctx;
 		potrosacDao = ctx.getBean(PotrosacDao.class);
 		setModal(true);
 		setTitle("Potro\u0161a\u010D");
 		getContentPane().setFont(defaultFont);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setBounds(100, 100, 450, 309);
+		setBounds(100, 100, 450, 380);
 		
 		JPanel panelTop = new JPanel();
 		getContentPane().add(panelTop, BorderLayout.NORTH);
@@ -159,121 +171,41 @@ public class VoziloForm extends JDialog {
 		
 		cbxVozilo = new JCheckBox("Potro\u0161a\u010D je vozilo");
 		cbxVozilo.addItemListener(new CbxVoziloItemListener());
-		cbxVozilo.setFont(defaultFont);
-		GridBagConstraints gbc_cbxVozilo = new GridBagConstraints();
-		gbc_cbxVozilo.anchor = GridBagConstraints.WEST;
-		gbc_cbxVozilo.insets = new Insets(0, 0, 5, 5);
-		gbc_cbxVozilo.gridx = 0;
-		gbc_cbxVozilo.gridy = 0;
-		panelCenter.add(cbxVozilo, gbc_cbxVozilo);
-		
 		cbxTeretnjak = new JCheckBox("Vozilo je teretnjak");
-		cbxTeretnjak.setFont(defaultFont);
 		cbxTeretnjak.setEnabled(false);
-		GridBagConstraints gbc_cbxTeretnjak = new GridBagConstraints();
-		gbc_cbxTeretnjak.insets = new Insets(0, 0, 5, 0);
-		gbc_cbxTeretnjak.anchor = GridBagConstraints.WEST;
-		gbc_cbxTeretnjak.gridx = 1;
-		gbc_cbxTeretnjak.gridy = 0;
-		panelCenter.add(cbxTeretnjak, gbc_cbxTeretnjak);
+		addComponentRow(cbxVozilo, cbxTeretnjak, panelCenter, 0);
 		
 		JLabel lblGorivo = new JLabel("Gorivo:");
-		lblGorivo.setFont(defaultFont);
-		GridBagConstraints gbc_lblGorivo = new GridBagConstraints();
-		gbc_lblGorivo.anchor = GridBagConstraints.WEST;
-		gbc_lblGorivo.insets = new Insets(0, 0, 5, 5);
-		gbc_lblGorivo.gridx = 0;
-		gbc_lblGorivo.gridy = 1;
-		panelCenter.add(lblGorivo, gbc_lblGorivo);
-		
 		cbGorivo = new JComboBox<GorivoType>();
-		cbGorivo.setFont(defaultFont);
-		GridBagConstraints gbc_cbGorivo = new GridBagConstraints();
-		gbc_cbGorivo.insets = new Insets(0, 0, 5, 0);
-		gbc_cbGorivo.fill = GridBagConstraints.HORIZONTAL;
-		gbc_cbGorivo.gridx = 1;
-		gbc_cbGorivo.gridy = 1;
-		panelCenter.add(cbGorivo, gbc_cbGorivo);
+		addComponentRow(lblGorivo, cbGorivo, panelCenter, 1);
 		
 		JLabel lblTip = new JLabel("Tip:");
-		lblTip.setFont(defaultFont);
-		GridBagConstraints gbc_lblTip = new GridBagConstraints();
-		gbc_lblTip.anchor = GridBagConstraints.WEST;
-		gbc_lblTip.insets = new Insets(0, 0, 5, 5);
-		gbc_lblTip.gridx = 0;
-		gbc_lblTip.gridy = 2;
-		panelCenter.add(lblTip, gbc_lblTip);
-		
 		tfTip = new JTextField();
-		tfTip.setFont(defaultFont);
-		GridBagConstraints gbc_tfTip = new GridBagConstraints();
-		gbc_tfTip.fill = GridBagConstraints.HORIZONTAL;
-		gbc_tfTip.insets = new Insets(0, 0, 5, 0);
-		gbc_tfTip.gridx = 1;
-		gbc_tfTip.gridy = 2;
-		panelCenter.add(tfTip, gbc_tfTip);
-		tfTip.setColumns(10);
+		addComponentRow(lblTip, tfTip, panelCenter, 2);
 		
 		JLabel lblMarka = new JLabel("Marka:");
-		lblMarka.setFont(defaultFont);
-		GridBagConstraints gbc_lblMarka = new GridBagConstraints();
-		gbc_lblMarka.anchor = GridBagConstraints.WEST;
-		gbc_lblMarka.insets = new Insets(0, 0, 5, 5);
-		gbc_lblMarka.gridx = 0;
-		gbc_lblMarka.gridy = 3;
-		panelCenter.add(lblMarka, gbc_lblMarka);
-		
 		tfMarka = new JTextField();
 		tfMarka.setEnabled(false);
-		tfMarka.setFont(defaultFont);
-		GridBagConstraints gbc_tfMarka = new GridBagConstraints();
-		gbc_tfMarka.insets = new Insets(0, 0, 5, 0);
-		gbc_tfMarka.fill = GridBagConstraints.HORIZONTAL;
-		gbc_tfMarka.gridx = 1;
-		gbc_tfMarka.gridy = 3;
-		panelCenter.add(tfMarka, gbc_tfMarka);
+		addComponentRow(lblMarka, tfMarka, panelCenter, 3);
 		tfMarka.setColumns(10);
 		
 		JLabel lblRegOznaka = new JLabel("Reg. oznaka:");
-		lblRegOznaka.setFont(defaultFont);
-		GridBagConstraints gbc_lblRegOznaka = new GridBagConstraints();
-		gbc_lblRegOznaka.anchor = GridBagConstraints.WEST;
-		gbc_lblRegOznaka.insets = new Insets(0, 0, 5, 5);
-		gbc_lblRegOznaka.gridx = 0;
-		gbc_lblRegOznaka.gridy = 4;
-		panelCenter.add(lblRegOznaka, gbc_lblRegOznaka);
-		
 		tfRegOznaka = new JTextField();
 		tfRegOznaka.setEnabled(false);
-		tfRegOznaka.setFont(defaultFont);
-		GridBagConstraints gbc_tfRegOznaka = new GridBagConstraints();
-		gbc_tfRegOznaka.insets = new Insets(0, 0, 5, 0);
-		gbc_tfRegOznaka.fill = GridBagConstraints.HORIZONTAL;
-		gbc_tfRegOznaka.gridx = 1;
-		gbc_tfRegOznaka.gridy = 4;
-		panelCenter.add(tfRegOznaka, gbc_tfRegOznaka);
+		addComponentRow(lblRegOznaka, tfRegOznaka, panelCenter, 4);
 		tfRegOznaka.setColumns(10);
 
 		cbxUUpotrebi = new JCheckBox("U upotrebi");
 		cbxUUpotrebi.setSelected(true);
-		cbxUUpotrebi.setFont(defaultFont);
-		GridBagConstraints gbc_cbxUUpotrebi = new GridBagConstraints();
-		gbc_cbxUUpotrebi.anchor = GridBagConstraints.WEST;
-		gbc_cbxUUpotrebi.insets = new Insets(0, 0, 5, 5);
-		gbc_cbxUUpotrebi.gridx = 0;
-		gbc_cbxUUpotrebi.gridy = 5;
-		panelCenter.add(cbxUUpotrebi, gbc_cbxUUpotrebi);
-
 		cbxKoristiKM = new JCheckBox("Meri pre\u0111ene kilometre");
 		cbxKoristiKM.setSelected(true);
-		cbxKoristiKM.setFont(defaultFont);
-		GridBagConstraints gbc_cbxKoristiKM = new GridBagConstraints();
-		gbc_cbxKoristiKM.insets = new Insets(0, 0, 5, 0);
-		gbc_cbxKoristiKM.fill = GridBagConstraints.HORIZONTAL;
-		gbc_cbxKoristiKM.gridx = 1;
-		gbc_cbxKoristiKM.gridy = 5;
-		panelCenter.add(cbxKoristiKM, gbc_cbxKoristiKM);
+		addComponentRow(cbxUUpotrebi, cbxKoristiKM, panelCenter, 5);
 
+		btnAdditional = new JButton("Dodatni podaci");
+		btnAdditional.addActionListener(new BtnAdditionalActionListener());
+		btnAdditional.setEnabled(false);
+		addComponentRow(null, btnAdditional, panelCenter, 6);
+		
 		for (GorivoType gorivo : GorivoType.values()) {
 			cbGorivo.addItem(gorivo);
 		}
@@ -281,17 +213,45 @@ public class VoziloForm extends JDialog {
 		setFocusTraversalPolicy(new FocusTraversalOnArray(new Component[]{cbxVozilo, cbxTeretnjak, cbGorivo, tfTip, tfMarka, tfRegOznaka, btnOk, btnCancel}));
 	}
 
+	private void addComponentRow(Component leftComp, Component rightComp, JPanel panel, int row) {
+		GridBagConstraints constraints = null;
+		if (leftComp != null) {
+			leftComp.setFont(defaultFont);
+			constraints = new GridBagConstraints();
+			constraints.anchor = GridBagConstraints.WEST;
+			constraints.insets = new Insets(0, 0, 5, 5);
+			constraints.gridx = 0;
+			constraints.gridy = row;
+			panel.add(leftComp, constraints);
+		}
+		if (rightComp != null) {
+			rightComp.setFont(defaultFont);
+			constraints = new GridBagConstraints();
+			constraints.insets = new Insets(0, 0, 5, 0);
+			if (JTextField.class.isAssignableFrom(rightComp.getClass()) || JComboBox.class.isAssignableFrom(rightComp.getClass())) {
+				constraints.fill = GridBagConstraints.HORIZONTAL;
+			} else {
+				constraints.anchor = GridBagConstraints.WEST;
+			}
+			constraints.gridx = 1;
+			constraints.gridy = row;
+			panel.add(rightComp, constraints);
+		}
+	}
+	
 	private class CbxVoziloItemListener implements ItemListener {
 		public void itemStateChanged(ItemEvent ev) {
 			if (ev.getStateChange() == ItemEvent.SELECTED) {
 				cbxTeretnjak.setEnabled(true);
 				tfMarka.setEnabled(true);
 				tfRegOznaka.setEnabled(true);
+				btnAdditional.setEnabled(true);
 			} else if (ev.getStateChange() == ItemEvent.DESELECTED) {
 				cbxTeretnjak.setEnabled(false);
 				cbxTeretnjak.setSelected(false);
 				tfMarka.setEnabled(false);
 				tfRegOznaka.setEnabled(false);
+				btnAdditional.setEnabled(false);
 			}
 		}
 	}
@@ -310,6 +270,14 @@ public class VoziloForm extends JDialog {
 			new PotrosacValidator().validate(dto, result);
 			if (result.getErrorCount() == 0) {
 				Potrosac consumer = dto.createNewEntity();
+				consumer.setPodrucje(dodatno.getPodrucje());
+				consumer.setBrojSedista(dodatno.getBrojSedista());
+				consumer.setSnagaMotora(dodatno.getSnagaMotora());
+				consumer.setTezina(dodatno.getTezina());
+				consumer.setNosivost(dodatno.getNosivost());
+				consumer.setrBNaloga(dodatno.getrBNaloga());
+				consumer.setVozaci(dodatno.getVozaci());
+				// Set id
 				consumer.setId(entityId);
 				potrosacDao.save(consumer);
 				setModalResult(ModalResult.OK);
@@ -319,6 +287,17 @@ public class VoziloForm extends JDialog {
 				ErrorDialog dialog = new ErrorDialog();
 				dialog.showErrors(result);
 			}
+		}
+	}
+	private class BtnAdditionalActionListener implements ActionListener {
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			VoziloDodatnoForm form = ctx.getBean(VoziloDodatnoForm.class);
+			form.setVisible(true);
+			if (ModalResult.OK.equals(form.getModalResult())) {
+				dodatno = form.getReturnValue();
+			}
+			form.dispose();
 		}
 	}
 }

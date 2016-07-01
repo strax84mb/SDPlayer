@@ -1,6 +1,7 @@
 package rs.trznica.dragan.forms;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
@@ -10,6 +11,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 
 import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -29,6 +31,15 @@ public abstract class GenericDialog<T> extends JDialog {
 	protected final Font defaultFont = new Font("Times New Roman", Font.PLAIN, 18);
 	
 	protected static final String ENTER_PRESSED_KEY = "EnterPressed";
+	protected static final String ESC_PRESSED_KEY = "EscapePressed";
+	
+	//private Long entityId = null;
+
+	protected Action traversalByEnterAction = new TraversalByEnterAction();
+	protected Action traversalByEscapeAction = new TraversalByEscapeAction();
+	
+	//private JButton btnSave;
+	//private JButton btnCancel;
 
 	protected ModalResult modalResult = ModalResult.CANCEL;
 
@@ -56,15 +67,26 @@ public abstract class GenericDialog<T> extends JDialog {
 		return this;
 	}
 	
+	protected void traverseByEnter(JComponent components[]) {
+		for (JComponent comp : components) {
+			traverseByEnter(comp);
+		}
+	}
+	
 	protected void traverseByEnter(JComponent from) {
 		from.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), ENTER_PRESSED_KEY);
-		from.getActionMap().put(ENTER_PRESSED_KEY, new AbstractAction() {
-			private static final long serialVersionUID = 4115387018615468031L;
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				getFocusTraversalPolicy().getComponentAfter(getThisForm(), from).requestFocus();;
-			}
-		});
+		from.getActionMap().put(ENTER_PRESSED_KEY, traversalByEnterAction);
+	}
+	
+	protected void traverseBackByEscape(JComponent from) {
+		from.getInputMap().put(KeyStroke.getKeyStroke(KeyEvent.VK_ESCAPE, 0), ESC_PRESSED_KEY);
+		from.getActionMap().put(ESC_PRESSED_KEY, traversalByEscapeAction);
+	}
+	
+	protected void traverseBackByEscape(JComponent components[]) {
+		for (JComponent comp : components) {
+			traverseBackByEscape(comp);
+		}
 	}
 	
 	protected JPanel makeCenterPanel(int firstRowWidth, int secondRowWidth) {
@@ -79,7 +101,38 @@ public abstract class GenericDialog<T> extends JDialog {
 		panelCenter.setLayout(gbl_panelCenter);
 		return panelCenter;
 	}
-	
+	/*
+	protected JPanel makeButtonPanel(String saveLabel, JButton buttons[], String cancelLabel) {
+		JPanel panelBottom = new JPanel();
+		panelBottom.setBorder(new EmptyBorder(0, 0, 5, 0));
+		panelBottom.setLayout(new BoxLayout(panelBottom, BoxLayout.X_AXIS));
+		
+		panelBottom.add(Box.createHorizontalGlue());
+		JButton btnOk = makeButton("Snimi", new BtnOkActionListener());
+		panelBottom.add(btnOk);
+		if (buttons != null && buttons.length > 0) {
+			
+			
+			
+			
+			
+		}
+		
+		
+		
+		panelBottom.add(Box.createHorizontalStrut(20));
+		JButton btnCancel = makeButton("Otka\u017Ei", new BtnCancelActionListener());
+		panelBottom.add(btnCancel);
+		panelBottom.add(Box.createHorizontalGlue());
+		
+		
+		
+		
+		
+		
+		
+	}
+	*/
 	protected JCheckBox makeCheckBox(JPanel panel, int row, String label) {
 		JCheckBox checkBox = new JCheckBox(label);
 		checkBox.setFont(defaultFont);
@@ -133,5 +186,25 @@ public abstract class GenericDialog<T> extends JDialog {
 		constraints.gridy = row;
 		panel.add(component, constraints);
 	}
+	
+	protected class TraversalByEnterAction extends AbstractAction {
+
+		private static final long serialVersionUID = 6015706579962226369L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			getFocusTraversalPolicy().getComponentAfter(getThisForm(), (Component) e.getSource()).requestFocus();
+		}
+	} 
+
+	protected class TraversalByEscapeAction extends AbstractAction {
+
+		private static final long serialVersionUID = 5544340206950110088L;
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			getFocusTraversalPolicy().getComponentAfter(getThisForm(), (Component) e.getSource()).requestFocus();
+		}
+	} 
 }
 

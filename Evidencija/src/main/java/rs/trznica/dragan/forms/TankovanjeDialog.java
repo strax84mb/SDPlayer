@@ -118,7 +118,7 @@ public class TankovanjeDialog extends GenericDialog<Tankovanje> {
 		}
 	}
 
-	private void autowireFields(ApplicationContext ctx) {
+	protected void autowireFields(ApplicationContext ctx) {
 		potrosacDao = ctx.getBean(PotrosacDao.class);
 		tankovanjeDao = ctx.getBean(TankovanjeDao.class);
 	}

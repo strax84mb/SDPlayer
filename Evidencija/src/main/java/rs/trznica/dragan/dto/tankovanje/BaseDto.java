@@ -1,6 +1,10 @@
 package rs.trznica.dragan.dto.tankovanje;
 
-public abstract class BaseDto {
+public abstract class BaseDto<T> {
 
-	protected abstract Object createEntityFromData();
+	public abstract T createEntityFromData();
+	
+	protected String trim(String value) {
+		return (value == null) ? null : value.trim();
+	}
 }

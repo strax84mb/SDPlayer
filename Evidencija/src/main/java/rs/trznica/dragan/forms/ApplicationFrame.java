@@ -68,6 +68,10 @@ public class ApplicationFrame extends JFrame {
 		addMenuItem(mnFillups, new NewFillupAction(), KeyEvent.VK_T, KeyEvent.ALT_DOWN_MASK);
 		addMenuItem(mnFillups, new ListFillUpsAction(), KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK);
 		
+		JMenu mnTravels = addMenu("Putni nalozi");
+		addMenuItem(mnTravels, new NewTravelAction(), KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK);
+		addMenuItem(mnTravels, new ListTravelsAction(), KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
+
 		JMenu mnElectricity = addMenu("Struja");
 		addMenuItem(mnElectricity, new NovoBrojiloAction(), KeyEvent.VK_M, KeyEvent.ALT_DOWN_MASK);
 		addMenuItem(mnElectricity, new ListajBrojilaAction(), KeyEvent.VK_M, KeyEvent.CTRL_DOWN_MASK);
@@ -232,6 +236,22 @@ public class ApplicationFrame extends JFrame {
 			} catch (PropertyVetoException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	private class NewTravelAction extends AbstractAction {
+		private static final long serialVersionUID = -2074054015958500807L;
+		public NewTravelAction() {
+			putValue(NAME, "Unos putnog naloga");
+		}
+		public void actionPerformed(ActionEvent ev) {
+		}
+	}
+	private class ListTravelsAction extends AbstractAction {
+		private static final long serialVersionUID = 1150046457539236240L;
+		public ListTravelsAction() {
+			putValue(NAME, "Lista putnih naloga");
+		}
+		public void actionPerformed(ActionEvent ev) {
 		}
 	}
 }

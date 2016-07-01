@@ -41,6 +41,27 @@ public class Potrosac {
 
 	@Column(nullable = false, name = "meri_km")
 	private Boolean meriKm = true;
+	
+	@Column(nullable = true, name = "podrucje")
+	private String podrucje;
+	
+	@Column(nullable = false, name = "broj_sedista")
+	private Integer brojSedista = 0;
+
+	@Column(nullable = false, name = "snaga_motora")
+	private Integer snagaMotora = 0;
+	
+	@Column(nullable = false, name = "tezina")
+	private Integer tezina = 0;
+	
+	@Column(nullable = false, name = "nosivost")
+	private Integer nosivost = 0;
+	
+	@Column(nullable = false, name = "rb_naloga")
+	private Integer rBNaloga = 0;
+	
+	@Column(nullable = true, name = "vozaci")
+	private String vozaci;
 
 	public Long getId() {
 		return id;
@@ -112,6 +133,62 @@ public class Potrosac {
 
 	public void setMeriKm(Boolean meriKm) {
 		this.meriKm = meriKm;
+	}
+
+	public String getPodrucje() {
+		return podrucje;
+	}
+
+	public void setPodrucje(String podrucje) {
+		this.podrucje = podrucje;
+	}
+
+	public Integer getBrojSedista() {
+		return brojSedista;
+	}
+
+	public void setBrojSedista(Integer brojSedista) {
+		this.brojSedista = brojSedista;
+	}
+
+	public Integer getSnagaMotora() {
+		return snagaMotora;
+	}
+
+	public void setSnagaMotora(Integer snagaMotora) {
+		this.snagaMotora = snagaMotora;
+	}
+
+	public Integer getTezina() {
+		return tezina;
+	}
+
+	public void setTezina(Integer tezina) {
+		this.tezina = tezina;
+	}
+
+	public Integer getNosivost() {
+		return nosivost;
+	}
+
+	public void setNosivost(Integer nosivost) {
+		this.nosivost = nosivost;
+	}
+
+	public Integer getrBNaloga() {
+		return rBNaloga;
+	}
+
+	public void setrBNaloga(Integer rBNaloga) {
+		this.rBNaloga = rBNaloga;
+	}
+
+	public String getVozaci() {
+		return vozaci;
+	}
+
+	public void setVozaci(String vozaci) {
+		this.vozaci = vozaci;
 	}
 
 	@Override
