@@ -40,6 +40,7 @@ import rs.trznica.dragan.dto.tankovanje.PutniNalogDto;
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.forms.support.ModalResult;
+import rs.trznica.dragan.printables.CargoIssuePrintable;
 import rs.trznica.dragan.printables.PassengerIssuePrintable;
 import rs.trznica.dragan.validator.tankovanje.PutniNalogValidator;
 
@@ -217,7 +218,16 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 		dlg.setVisible(true);
 		if (dlg.getReturnValue() != null) {
 			if (vozilo.getTeretnjak()) {
-				
+				PrintRequestAttributeSet attrs = new HashPrintRequestAttributeSet();
+				attrs.add(new MediaPrintableArea(1f, 0.5f, 
+						MediaSize.ISO.A4.getX(MediaSize.INCH)-0.5f, 
+						MediaSize.ISO.A4.getY(MediaSize.INCH)-0.5f, 
+						MediaSize.INCH));
+				attrs.add(OrientationRequested.LANDSCAPE);
+				DocPrintJob job = dlg.getReturnValue().createPrintJob();
+				SimpleDoc doc = new SimpleDoc(new CargoIssuePrintable(vozilo, nalog), 
+						DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
+				job.print(doc, attrs);
 			} else {
 				PrintRequestAttributeSet attrs = new HashPrintRequestAttributeSet();
 				attrs.add(new MediaPrintableArea(1f, 0.5f, 
