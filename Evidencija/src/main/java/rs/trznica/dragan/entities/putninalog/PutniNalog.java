@@ -2,30 +2,50 @@ package rs.trznica.dragan.entities.putninalog;
 
 import java.util.Date;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+
+@Entity
 public class PutniNalog {
 
+	@Id
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 	
+	@Column(nullable = false, name = "redni_broj")
 	private Integer redniBroj;
 	
+	@Column(nullable = false, name = "vozilo_id")
 	private Long voziloId;
 	
+	@Column(nullable = false, name = "vozac", length = 40)
 	private String vozac;
 	
+	@Column(nullable = false, name = "relacija", length = 100)
 	private String relacija;
 	
+	@Column(nullable = false)
 	private Date datum;
 	
+	@Column(nullable = false, name = "vrsta_prevoza", length = 2)
 	private String vrstaPrevoza;
 	
+	@Column(nullable = false, name = "korisnik", length = 40)
 	private String korisnik;
 	
+	@Column(nullable = false, name = "posada", length = 150)
 	private String posada;
 	
+	@Column(nullable = false, name = "ro", length = 10)
 	private String ro;
 	
+	@Column(nullable = false, name = "adresa_garaze", length = 60)
 	private String adresaGaraze;
 	
+	@Column(nullable = false, name = "mesto", length = 30)
 	private String mesto;
 
 	public Long getId() {

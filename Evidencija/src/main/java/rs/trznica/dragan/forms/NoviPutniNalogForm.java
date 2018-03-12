@@ -141,7 +141,8 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 			newEntity.setId(getEntityId());
 		}
 		try {
-			PutniNalog nalog = putniNalogDao.save(newEntity);
+			PutniNalog nalog = //putniNalogDao.save(newEntity);
+					new PutniNalog();
 			setReturnValue(nalog);
 			modalResult = ModalResult.OK;
 		} catch (Exception e) {

@@ -3,5 +3,6 @@
      <persistence-unit name="QuickStart">
           <class>rs.trznica.dragan.entities.tankovanje.Potrosac</class>
           <class>rs.trznica.dragan.entities.tankovanje.Tankovanje</class>
+          <class>rs.trznica.dragan.entities.putninalog.PutniNalog</class>
      </persistence-unit>
 </persistence>

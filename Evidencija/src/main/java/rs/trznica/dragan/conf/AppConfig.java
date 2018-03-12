@@ -18,7 +18,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 @Configuration
-@PropertySource({"classpath:database.properties"})
+@PropertySource({"classpath:application.yml"})
 @EnableJpaRepositories(basePackages = "rs.trznica.dragan.dao")
 @EnableTransactionManagement
 public class AppConfig {
@@ -52,7 +52,7 @@ public class AppConfig {
 		LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 		factoryBean.setDataSource(dataSource);
 		factoryBean.setPersistenceProvider(new HibernatePersistenceProvider());
-		factoryBean.setPackagesToScan("rs.trznica.dragan.entities.tankovanje");
+		factoryBean.setPackagesToScan(new String []{"rs.trznica.dragan.entities.tankovanje", "rs.trznica.dragan.entities.putninalog"});
 		factoryBean.setJpaProperties(hibernateProperties());
 		return factoryBean;
 	}
