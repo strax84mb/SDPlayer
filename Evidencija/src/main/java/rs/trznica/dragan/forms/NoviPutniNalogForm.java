@@ -28,18 +28,19 @@ import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
 import org.springframework.validation.Validator;
 
 import rs.trznica.dragan.dao.PotrosacDao;
-import rs.trznica.dragan.dao.PutniNalogDao;
+import rs.trznica.dragan.dao.lucene.PutniNalogDao;
 import rs.trznica.dragan.dto.tankovanje.BaseDto;
 import rs.trznica.dragan.dto.tankovanje.PutniNalogDto;
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
+import rs.trznica.dragan.forms.support.DateUtils;
 import rs.trznica.dragan.forms.support.ModalResult;
+import rs.trznica.dragan.forms.support.StringUtils;
 import rs.trznica.dragan.printables.CargoIssuePrintable;
 import rs.trznica.dragan.printables.PassengerIssuePrintable;
 import rs.trznica.dragan.validator.tankovanje.PutniNalogValidator;
@@ -105,7 +106,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 		tfVrstaPrevoza.setText("Sopstvene potrebe");
 		tfKorisnik = makeTextField(contentPanel, 6, new JLabel("Korisnik"), null);
 		tfKorisnik.setText("A. D. \"Tr\u017Enica\"");
-		tfPosada = makeTextField(contentPanel, 7, new JLabel("Korisnik"), null);
+		tfPosada = makeTextField(contentPanel, 7, new JLabel("Posada"), null);
 		tfRO = makeTextField(contentPanel, 8, new JLabel("Radna org."), null);
 		tfRO.setText("A. D. \"Tr\u017Enica\"");
 		tfAdresaGaraze = makeTextField(contentPanel, 9, new JLabel("Adresa gara\u017Ee"), null);
@@ -141,8 +142,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 			newEntity.setId(getEntityId());
 		}
 		try {
-			PutniNalog nalog = //putniNalogDao.save(newEntity);
-					new PutniNalog();
+			PutniNalog nalog = putniNalogDao.save(newEntity);
 			setReturnValue(nalog);
 			modalResult = ModalResult.OK;
 		} catch (Exception e) {
@@ -167,10 +167,10 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 		tfVrstaPrevoza.setText(nalog.getVrstaPrevoza());
 		tfKorisnik.setText(nalog.getKorisnik());
 		tfPosada.setText(nalog.getPosada());
-		tfRO.setText(nalog.getRo());
+		tfRO.setText(nalog.getRegOznaka());
 		tfAdresaGaraze.setText(nalog.getAdresaGaraze());
 		tfMesto.setText(nalog.getMesto());
-		dcDatum.setDate(nalog.getDatum());
+		dcDatum.setDate(DateUtils.toDate(nalog.getDatum()));
 	}
 
 	@Override
@@ -179,7 +179,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 		properties.put("xPos", 100);
 		properties.put("yPos", 100);
 		properties.put("width", 450);
-		properties.put("height", 380);
+		properties.put("height", 530);
 		return properties;
 	}
 
@@ -193,9 +193,11 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 	
 	private void repopulateDrivers(String vozaciString) {
 		cbVozac.removeAllItems();
-		String vozaci[] = vozaciString.split("\n");
-		for (String vozac : vozaci) {
-			cbVozac.addItem(vozac);
+		if (StringUtils.isNotEmpty(vozaciString)) {
+			String vozaci[] = vozaciString.split("\n");
+			for (String vozac : vozaci) {
+				cbVozac.addItem(vozac);
+			}
 		}
 		cbVozac.setSelectedItem(null);
 	}
@@ -214,11 +216,10 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 				return;
 			}
 		}
-		Potrosac vozilo = potrosacDao.findOne(nalog.getVoziloId());
 		PrinterChooserDialog dlg = new PrinterChooserDialog();
 		dlg.setVisible(true);
 		if (dlg.getReturnValue() != null) {
-			if (vozilo.getTeretnjak()) {
+			if (PutniNalog.TERETNI.equals(nalog.getNamenaVozila())) {
 				PrintRequestAttributeSet attrs = new HashPrintRequestAttributeSet();
 				attrs.add(new MediaPrintableArea(1f, 0.5f, 
 						MediaSize.ISO.A4.getX(MediaSize.INCH)-0.5f, 
@@ -226,7 +227,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 						MediaSize.INCH));
 				attrs.add(OrientationRequested.LANDSCAPE);
 				DocPrintJob job = dlg.getReturnValue().createPrintJob();
-				SimpleDoc doc = new SimpleDoc(new CargoIssuePrintable(vozilo, nalog), 
+				SimpleDoc doc = new SimpleDoc(new CargoIssuePrintable(nalog), 
 						DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
 				job.print(doc, attrs);
 			} else {
@@ -237,7 +238,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 						MediaSize.INCH));
 				attrs.add(OrientationRequested.PORTRAIT);
 				DocPrintJob job = dlg.getReturnValue().createPrintJob();
-				SimpleDoc doc = new SimpleDoc(new PassengerIssuePrintable(vozilo, nalog), 
+				SimpleDoc doc = new SimpleDoc(new PassengerIssuePrintable(nalog), 
 						DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
 				job.print(doc, attrs);
 			}
@@ -269,7 +270,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 					repopulateDrivers(vozilo.getVozaci());
 					tfRedniBroj.setText(String.valueOf(vozilo.getrBNaloga() + 1));
 					if (vozilo.getTeretnjak()) {
-						if (StringUtils.isEmpty(tfRelacija.getText()) || "".equals(tfRelacija.getText().trim())) {
+						if (StringUtils.isEmpty(tfRelacija.getText())) {
 							tfRelacija.setText("Lokal");
 						}
 						tfPosada.setEnabled(true);

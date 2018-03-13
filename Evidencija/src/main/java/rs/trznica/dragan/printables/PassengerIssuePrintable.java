@@ -16,16 +16,14 @@ import java.util.Calendar;
 import javax.imageio.ImageIO;
 
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
-import rs.trznica.dragan.entities.tankovanje.Potrosac;
+import rs.trznica.dragan.forms.support.DateUtils;
 
 public class PassengerIssuePrintable implements Printable {
 
 	private PutniNalog putniNalog;
-	private Potrosac vozilo;
 	private BufferedImage img;
 	
-	public PassengerIssuePrintable(Potrosac vozilo, PutniNalog putniNalog) throws IOException {
-		this.vozilo = vozilo;
+	public PassengerIssuePrintable(PutniNalog putniNalog) throws IOException {
 		this.putniNalog = putniNalog;
 		this.img = ImageIO.read(new File("Putnicki1.bmp"));
 	}
@@ -48,12 +46,12 @@ public class PassengerIssuePrintable implements Printable {
 		g2d.setFont(new Font("Times New Roman", Font.PLAIN, 24));
 		g2d.setColor(Color.BLACK);
 		FontMetrics fm = g2d.getFontMetrics(g2d.getFont());
-		g2d.drawString(vozilo.getMarka() + " " + vozilo.getTip(), 180, 440);
-		g2d.drawString(vozilo.getSnagaMotora().toString(), 195, 480);
-		g2d.drawString(vozilo.getBrojSedista().toString(), 535, 480);
-		g2d.drawString(vozilo.getRegOznaka(), 135, 523);
+		g2d.drawString(putniNalog.getMarkaVozila() + " " + putniNalog.getTipVozila(), 180, 440);
+		g2d.drawString(putniNalog.getSnagaMotora().toString(), 195, 480);
+		g2d.drawString(putniNalog.getBrojSedista().toString(), 535, 480);
+		g2d.drawString(putniNalog.getRegOznaka(), 135, 523);
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(putniNalog.getDatum());
+		cal.setTime(DateUtils.toDate(putniNalog.getDatum()));
 		String temp = String.valueOf(cal.get(Calendar.MONTH) + 1);
 		if(temp.length() == 1) temp = "0" + temp;
 		temp = String.valueOf(cal.get(Calendar.DAY_OF_MONTH)) + "." + temp + ".";
@@ -70,7 +68,7 @@ public class PassengerIssuePrintable implements Printable {
 		g2d.setFont(new Font("Times New Roman", Font.PLAIN, 45));
 		g2d.drawString(putniNalog.getRedniBroj().toString(), 810, 60);
 		g2d.setFont(new Font("Times New Roman", Font.BOLD, 30));
-		g2d.drawString(putniNalog.getRo(), 185, 63);
+		g2d.drawString(putniNalog.getRegOznaka(), 185, 63);
 		g2d.setFont(new Font("Times New Roman", Font.BOLD, 24));
 		g2d.drawString(putniNalog.getMesto(), 185, 110);
 		g2d.drawString(putniNalog.getAdresaGaraze(), 185, 197);

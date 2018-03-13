@@ -18,16 +18,14 @@ import javax.imageio.ImageIO;
 import org.springframework.util.StringUtils;
 
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
-import rs.trznica.dragan.entities.tankovanje.Potrosac;
+import rs.trznica.dragan.forms.support.DateUtils;
 
 public class CargoIssuePrintable implements Printable {
 
 	private PutniNalog putniNalog;
-	private Potrosac vozilo;
 	private BufferedImage img;
 	
-	public CargoIssuePrintable(Potrosac vozilo, PutniNalog putniNalog) throws IOException {
-		this.vozilo = vozilo;
+	public CargoIssuePrintable(PutniNalog putniNalog) throws IOException {
 		this.putniNalog = putniNalog;
 		this.img = ImageIO.read(new File("Teretni1.bmp"));
 	}
@@ -55,19 +53,19 @@ public class CargoIssuePrintable implements Printable {
 		int width = fm.stringWidth(temp);
 		g2d.drawString(temp, 1410 - (width / 2), 88);
 		g2d.drawString(putniNalog.getRelacija(), 927, 492);
-		temp = vozilo.getMarka();
+		temp = putniNalog.getMarkaVozila();
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 970 - (width / 2), 665);
-		temp = vozilo.getTip();
+		temp = putniNalog.getTipVozila();
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 970 - (width / 2), 700);
-		temp = vozilo.getNosivost().toString();
+		temp = putniNalog.getNosivost();
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 1145 - (width / 2), 700);
-		temp = vozilo.getTezina().toString();
+		temp = putniNalog.getTezina();
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 1234 - (width / 2), 700);
-		temp = vozilo.getPodrucje();
+		temp = "SU";
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 1540 - (width / 2), 700);
 		g2d.setFont(new Font("Times New Roman", Font.PLAIN, 40));
@@ -88,12 +86,12 @@ public class CargoIssuePrintable implements Printable {
 			}
 		} 
 		fm = g2d.getFontMetrics(g2d.getFont());
-		temp = vozilo.getRegOznaka();
+		temp = putniNalog.getRegOznaka();
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 1380 - (width / 2), 702);
 		g2d.drawString(putniNalog.getMesto() + ",", 1010, 201);
 		Calendar cal = Calendar.getInstance();
-		cal.setTime(putniNalog.getDatum());
+		cal.setTime(DateUtils.toDate(putniNalog.getDatum()));
 		temp = String.valueOf(cal.get(Calendar.MONTH) + 1);
 		if(temp.length() == 1) temp = "0" + temp;
 		temp = String.valueOf(cal.get(Calendar.DAY_OF_MONTH)) + 

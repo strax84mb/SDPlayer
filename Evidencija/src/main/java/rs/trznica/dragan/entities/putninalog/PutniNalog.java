@@ -1,75 +1,117 @@
 package rs.trznica.dragan.entities.putninalog;
 
-import java.util.Date;
+import rs.trznica.dragan.entities.struja.BasicEntity;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+public class PutniNalog extends BasicEntity {
+	
+	public static final String PUTNICKI = "P";
+	public static final String TERETNI = "T";
 
-@Entity
-public class PutniNalog {
+	private Long redniBroj;
+	
+	// Moze biti P ili T
+	private String namenaVozila;
+	
+	private String tipVozila;
+	
+	private String markaVozila;
 
-	@Id
-	@GeneratedValue(strategy=GenerationType.AUTO)
-	private Long id;
+	private String regOznaka;
 	
-	@Column(nullable = false, name = "redni_broj")
-	private Integer redniBroj;
+	private Integer snagaMotora;
 	
-	@Column(nullable = false, name = "vozilo_id")
-	private Long voziloId;
+	private Integer brojSedista;
 	
-	@Column(nullable = false, name = "vozac", length = 40)
+	private String tezina;
+	
+	private String nosivost;
+	
 	private String vozac;
 	
-	@Column(nullable = false, name = "relacija", length = 100)
 	private String relacija;
 	
-	@Column(nullable = false)
-	private Date datum;
+	private String datum;
 	
-	@Column(nullable = false, name = "vrsta_prevoza", length = 2)
 	private String vrstaPrevoza;
 	
-	@Column(nullable = false, name = "korisnik", length = 40)
 	private String korisnik;
 	
-	@Column(nullable = false, name = "posada", length = 150)
 	private String posada;
 	
-	@Column(nullable = false, name = "ro", length = 10)
-	private String ro;
-	
-	@Column(nullable = false, name = "adresa_garaze", length = 60)
 	private String adresaGaraze;
 	
-	@Column(nullable = false, name = "mesto", length = 30)
 	private String mesto;
 
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public Integer getRedniBroj() {
+	public Long getRedniBroj() {
 		return redniBroj;
 	}
 
-	public void setRedniBroj(Integer redniBroj) {
+	public void setRedniBroj(Long redniBroj) {
 		this.redniBroj = redniBroj;
 	}
 
-	public Long getVoziloId() {
-		return voziloId;
+	public String getNamenaVozila() {
+		return namenaVozila;
 	}
 
-	public void setVoziloId(Long voziloId) {
-		this.voziloId = voziloId;
+	public void setNamenaVozila(String namenaVozila) {
+		this.namenaVozila = namenaVozila;
+	}
+
+	public String getTipVozila() {
+		return tipVozila;
+	}
+
+	public void setTipVozila(String tipVozila) {
+		this.tipVozila = tipVozila;
+	}
+
+	public String getMarkaVozila() {
+		return markaVozila;
+	}
+
+	public void setMarkaVozila(String markaVozila) {
+		this.markaVozila = markaVozila;
+	}
+
+	public String getRegOznaka() {
+		return regOznaka;
+	}
+
+	public void setRegOznaka(String regOznaka) {
+		this.regOznaka = regOznaka;
+	}
+
+	public Integer getSnagaMotora() {
+		return snagaMotora;
+	}
+
+	public void setSnagaMotora(Integer snagaMotora) {
+		this.snagaMotora = snagaMotora;
+	}
+
+	public Integer getBrojSedista() {
+		return brojSedista;
+	}
+
+	public void setBrojSedista(Integer brojSedista) {
+		this.brojSedista = brojSedista;
+	}
+
+	public String getTezina() {
+		return tezina;
+	}
+
+	public void setTezina(String tezina) {
+		this.tezina = tezina;
+	}
+
+	public String getNosivost() {
+		return nosivost;
+	}
+
+	public void setNosivost(String nosivost) {
+		this.nosivost = nosivost;
 	}
 
 	public String getVozac() {
@@ -88,11 +130,11 @@ public class PutniNalog {
 		this.relacija = relacija;
 	}
 
-	public Date getDatum() {
+	public String getDatum() {
 		return datum;
 	}
 
-	public void setDatum(Date datum) {
+	public void setDatum(String datum) {
 		this.datum = datum;
 	}
 
@@ -120,14 +162,6 @@ public class PutniNalog {
 		this.posada = posada;
 	}
 
-	public String getRo() {
-		return ro;
-	}
-
-	public void setRo(String ro) {
-		this.ro = ro;
-	}
-
 	public String getAdresaGaraze() {
 		return adresaGaraze;
 	}
@@ -143,4 +177,5 @@ public class PutniNalog {
 	public void setMesto(String mesto) {
 		this.mesto = mesto;
 	}
+
 }

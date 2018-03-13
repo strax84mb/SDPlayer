@@ -77,7 +77,7 @@ public class ApplicationFrame extends JFrame {
 		formActionFactory.listFrameItem(mnFillups, TankovanjeListaForm.class, "Lista tankovanja", KeyEvent.VK_T, KeyEvent.CTRL_DOWN_MASK);
 		
 		JMenu mnTravels = addMenu("Putni nalozi");
-		formActionFactory.newDialogItem(mnTravels, JDialog.class, "Unos putnog naloga", KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK);
+		formActionFactory.newDialogItem(mnTravels, NoviPutniNalogForm.class, "Unos putnog naloga", KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK);
 		formActionFactory.listFrameItem(mnTravels, JInternalFrame.class, "Lista putnih naloga", KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
 
 		JMenu mnElectricity = addMenu("Struja");
