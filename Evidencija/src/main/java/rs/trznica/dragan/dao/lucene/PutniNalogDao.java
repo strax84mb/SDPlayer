@@ -12,13 +12,13 @@ import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.LongField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.Term;
+import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
-import org.apache.lucene.search.BooleanClause.Occur;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -64,8 +64,8 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		nalog.setRegOznaka(doc.get(FIELD_PN_RO));
 		nalog.setSnagaMotora(Integer.valueOf(doc.get(FIELD_PN_SNAGA_MOTORA)));
 		nalog.setBrojSedista(Integer.valueOf(doc.get(FIELD_PN_BROJ_SEDISTA)));
-		nalog.setTezina(doc.get(FIELD_PN_TEZINA));
-		nalog.setNosivost(doc.get(FIELD_PN_NOSIVOST));
+		nalog.setTezina(Integer.valueOf(doc.get(FIELD_PN_TEZINA)));
+		nalog.setNosivost(Integer.valueOf(doc.get(FIELD_PN_NOSIVOST)));
 		nalog.setVozac(doc.get(FIELD_PN_VOZAC));
 		nalog.setRelacija(doc.get(FIELD_PN_RELACIJA));
 		nalog.setDatum(doc.get(FIELD_PN_DATUM));
@@ -100,8 +100,8 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 			doc.add(new StringField(FIELD_PN_KORISNIK, entity.getKorisnik(), Store.YES));
 		}
 		if (PutniNalog.TERETNI.equals(entity.getNamenaVozila())) {
-			doc.add(new StringField(FIELD_PN_TEZINA, entity.getTezina(), Store.YES));
-			doc.add(new StringField(FIELD_PN_NOSIVOST, entity.getNosivost(), Store.YES));
+			doc.add(new StringField(FIELD_PN_TEZINA, entity.getTezina().toString(), Store.YES));
+			doc.add(new StringField(FIELD_PN_NOSIVOST, entity.getNosivost().toString(), Store.YES));
 			doc.add(new StringField(FIELD_PN_POSADA, entity.getPosada(), Store.YES));
 		}
 		return doc;

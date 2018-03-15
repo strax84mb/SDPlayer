@@ -5,7 +5,6 @@ import java.util.Date;
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.forms.support.DateUtils;
-import rs.trznica.dragan.forms.support.DecimalFormater;
 
 public class PutniNalogDto extends BaseDto<PutniNalog> {
 
@@ -101,8 +100,8 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 		nalog.setMarkaVozila(vozilo.getMarka());
 		nalog.setRegOznaka(regOznaka);
 		if (vozilo.getTeretnjak()) {
-			nalog.setTezina(DecimalFormater.formatFromLong(vozilo.getTezina().longValue(), 3));
-			nalog.setNosivost(DecimalFormater.formatFromLong(vozilo.getNosivost().longValue(), 3));
+			nalog.setTezina(vozilo.getTezina());
+			nalog.setNosivost(vozilo.getNosivost());
 			nalog.setPosada(posada);
 		} else {
 			nalog.setSnagaMotora(vozilo.getSnagaMotora());

@@ -59,10 +59,10 @@ public class CargoIssuePrintable implements Printable {
 		temp = putniNalog.getTipVozila();
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 970 - (width / 2), 700);
-		temp = putniNalog.getNosivost();
+		temp = putniNalog.getNosivost().toString();
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 1145 - (width / 2), 700);
-		temp = putniNalog.getTezina();
+		temp = putniNalog.getTezina().toString();
 		width = fm.stringWidth(temp);
 		g2d.drawString(temp, 1234 - (width / 2), 700);
 		temp = "SU";

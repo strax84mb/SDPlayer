@@ -24,9 +24,9 @@ public class PutniNalog extends BasicEntity {
 	
 	private Integer brojSedista;
 	
-	private String tezina;
+	private Integer tezina;
 	
-	private String nosivost;
+	private Integer nosivost;
 	
 	private String vozac;
 	
@@ -108,19 +108,19 @@ public class PutniNalog extends BasicEntity {
 		this.brojSedista = brojSedista;
 	}
 
-	public String getTezina() {
+	public Integer getTezina() {
 		return tezina;
 	}
 
-	public void setTezina(String tezina) {
+	public void setTezina(Integer tezina) {
 		this.tezina = tezina;
 	}
 
-	public String getNosivost() {
+	public Integer getNosivost() {
 		return nosivost;
 	}
 
-	public void setNosivost(String nosivost) {
+	public void setNosivost(Integer nosivost) {
 		this.nosivost = nosivost;
 	}
 
@@ -186,6 +186,11 @@ public class PutniNalog extends BasicEntity {
 
 	public void setMesto(String mesto) {
 		this.mesto = mesto;
+	}
+
+	@Override
+	public String toString() {
+		return redniBroj + " - " + datum + " - " + vozac;
 	}
 
 }

@@ -13,12 +13,12 @@ public class DescriptionLabel extends JLabel {
 		setVisible(false);
 	}
 	
-	public void show(String text) {
+	public void showText(String text) {
 		setText("<html>" + text.replaceAll("\n", "<br/>") + "</html>");
 		setVisible(true);
 	}
 	
-	public void hide() {
+	public void hideText() {
 		setVisible(false);
 	}
 }

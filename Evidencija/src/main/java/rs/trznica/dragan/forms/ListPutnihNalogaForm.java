@@ -10,13 +10,16 @@ import java.util.List;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 
 import org.slf4j.Logger;
@@ -58,7 +61,7 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 	
 	private JPanel upperPanel;
 	private DescriptionLabel descriptionLabel;
-	private JTable table;
+	private JList<PutniNalog> lista;
 	
 	@Autowired
 	public ListPutnihNalogaForm(ApplicationContext ctx) {
@@ -94,8 +97,10 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 		upperPanel.add(searchBox, BorderLayout.EAST);
 		getContentPane().add(upperPanel, BorderLayout.NORTH);
 		// Setup center components
-		table = new JTable();
-		JScrollPane scrollPane = new JScrollPane(table);
+		lista = new JList<>();
+		lista.setFont(defaultFont);
+		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		JScrollPane scrollPane = new JScrollPane(lista);
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		// Setup bottom panel
 		btnPrint = new JButton(new PrintAction());
@@ -111,6 +116,17 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 		descriptionLabel = new DescriptionLabel();
 		descriptionLabel.setFont(defaultFont);
 		getContentPane().add(descriptionLabel, BorderLayout.EAST);
+		disableBottomButtons();
+	}
+	
+	private void populateList(List<PutniNalog> nalozi) {
+		DefaultListModel<PutniNalog> model = (DefaultListModel<PutniNalog>) lista.getModel();
+		model.clear();
+		for (PutniNalog nalog : nalozi) {
+			model.addElement(nalog);
+		}
+		lista.setSelectedIndex(-1);
+		disableBottomButtons();
 	}
 	
 	private JComboBox<Potrosac> listVehicles() {
@@ -186,7 +202,7 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 					return;
 				}
 			}
-			// TODO Fill table
+			populateList(nalozi);
 		}
 		
 		private boolean startAfterEnd() {
@@ -239,7 +255,39 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			if (lista.getSelectedIndex() == -1) {
+				new ErrorDialog().showError("Nijedan putni nalog nije izabran!");
+				return;
+			}
+			PutniNalog nalog = lista.getSelectedValue();
+			try {
+				putniNalogDao.delete(nalog.getId());
+			} catch (IOException e1) {
+				LOG.error("Greska prilikom brisanja!", e1);
+				new ErrorDialog().showError("Gre\u0161ka prilikom brisanja!<br/>Brisanje nije uspelo.");
+				return;
+			}
+			DefaultListModel<PutniNalog> model = (DefaultListModel<PutniNalog>) lista.getModel();
+			model.removeElementAt(lista.getSelectedIndex());
+			lista.setSelectedIndex(-1);
+			lista.repaint();
+			disableBottomButtons();
 		}
 	}
+	
+	private void disableBottomButtons() {
+		bottomButtonsEnabled(false);
+		descriptionLabel.hideText();
+	}
+	
+	private void enableBottomButtons() {
+		bottomButtonsEnabled(true);
+	}
+	
+	private void bottomButtonsEnabled(boolean enabled) {
+		btnPrint.setEnabled(enabled);
+		btnEdit.setEnabled(enabled);
+		btnDelete.setEnabled(enabled);
+	}
+	
 }
