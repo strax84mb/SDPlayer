@@ -193,7 +193,7 @@ public class Potrosac {
 
 	@Override
 	public String toString() {
-		return (Boolean.TRUE.equals(vozilo)) ? regOznaka + " - " + marka + " " + tip : tip ;
+		return (Boolean.TRUE.equals(vozilo)) ? id + " - " + regOznaka + " - " + marka + " " + tip : id + " - " + tip ;
 	}
 
 }

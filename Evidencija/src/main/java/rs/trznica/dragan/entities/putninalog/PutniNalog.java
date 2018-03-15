@@ -9,6 +9,8 @@ public class PutniNalog extends BasicEntity {
 
 	private Long redniBroj;
 	
+	private Long idVozila;
+	
 	// Moze biti P ili T
 	private String namenaVozila;
 	
@@ -48,6 +50,14 @@ public class PutniNalog extends BasicEntity {
 
 	public void setRedniBroj(Long redniBroj) {
 		this.redniBroj = redniBroj;
+	}
+
+	public Long getIdVozila() {
+		return idVozila;
+	}
+
+	public void setIdVozila(Long idVozila) {
+		this.idVozila = idVozila;
 	}
 
 	public String getNamenaVozila() {

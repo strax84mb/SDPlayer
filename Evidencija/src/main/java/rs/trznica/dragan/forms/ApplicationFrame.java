@@ -2,17 +2,12 @@ package rs.trznica.dragan.forms;
 
 import java.awt.BorderLayout;
 import java.awt.Font;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
-import java.beans.PropertyVetoException;
 
-import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
 import javax.swing.JDesktopPane;
-import javax.swing.JDialog;
 import javax.swing.JFrame;
-import javax.swing.JInternalFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -78,7 +73,7 @@ public class ApplicationFrame extends JFrame {
 		
 		JMenu mnTravels = addMenu("Putni nalozi");
 		formActionFactory.newDialogItem(mnTravels, NoviPutniNalogForm.class, "Unos putnog naloga", KeyEvent.VK_N, KeyEvent.ALT_DOWN_MASK);
-		formActionFactory.listFrameItem(mnTravels, JInternalFrame.class, "Lista putnih naloga", KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
+		formActionFactory.listFrameItem(mnTravels, ListPutnihNalogaForm.class, "Lista putnih naloga", KeyEvent.VK_N, KeyEvent.CTRL_DOWN_MASK);
 
 		JMenu mnElectricity = addMenu("Struja");
 		formActionFactory.newDialogItem(mnElectricity, BrojiloForm.class, "Unos mernog mesta", KeyEvent.VK_M, KeyEvent.ALT_DOWN_MASK);
