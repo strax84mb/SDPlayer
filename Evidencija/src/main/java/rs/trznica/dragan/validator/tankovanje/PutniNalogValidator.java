@@ -52,7 +52,7 @@ public class PutniNalogValidator implements Validator {
 				err.reject("Mora\u0161 uneti korisnika prevoza.");
 			}
 		}
-		if (StringUtils.isEmpty(dto.getRegOznaka())) {
+		if (StringUtils.isEmpty(dto.getRadnaOrganizacija())) {
 			err.reject("Mora\u0161 uneti radnu organizaciju.");
 		}
 		if (StringUtils.isEmpty(dto.getAdresaGaraze())) {

@@ -25,9 +25,9 @@ public class CargoIssuePrintable implements Printable {
 	private PutniNalog putniNalog;
 	private BufferedImage img;
 	
-	public CargoIssuePrintable(PutniNalog putniNalog) throws IOException {
+	public CargoIssuePrintable(PutniNalog putniNalog, String resourceDir) throws IOException {
 		this.putniNalog = putniNalog;
-		this.img = ImageIO.read(new File("Teretni1.bmp"));
+		this.img = ImageIO.read(new File(resourceDir + "/Teretni1.bmp"));
 	}
 	
 	@Override

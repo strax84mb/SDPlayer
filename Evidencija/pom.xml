@@ -131,9 +131,11 @@
 	    						<mkdir dir="${project.build.directory}/projectBuild/Mustra" />
 	    						<copy todir="${project.build.directory}/projectBuild/Mustra">
 	    							<fileset dir="buildRes" includes="blank.xlsx" />
+	    							<fileset dir="buildRes" includes="*.bmp" />
 	    						</copy>
 	    						<copy todir="${project.build.directory}/projectBuild">
-	    							<fileset dir="buildRes" includes="*" excludes="blank.xlsx" />
+	    							<fileset dir="buildRes" includes="*.properties" />
+	    							<fileset dir="buildRes" includes="*.bat" />
 	    						</copy>
 		    				</tasks>
 						</configuration>

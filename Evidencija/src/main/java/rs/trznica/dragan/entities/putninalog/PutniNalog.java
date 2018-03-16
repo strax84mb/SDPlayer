@@ -41,6 +41,8 @@ public class PutniNalog extends BasicEntity {
 	
 	private String posada;
 	
+	private String radnaOrganizacija;
+	
 	private String adresaGaraze;
 	
 	private String mesto;
@@ -171,6 +173,14 @@ public class PutniNalog extends BasicEntity {
 
 	public void setPosada(String posada) {
 		this.posada = posada;
+	}
+
+	public String getRadnaOrganizacija() {
+		return radnaOrganizacija;
+	}
+
+	public void setRadnaOrganizacija(String radnaOrganizacija) {
+		this.radnaOrganizacija = radnaOrganizacija;
 	}
 
 	public String getAdresaGaraze() {

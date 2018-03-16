@@ -59,6 +59,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 	
 	private PutniNalogDao putniNalogDao;
 	private PotrosacDao potrosacDao;
+	private String resourceDir;
 	
 	private JComboBox<Potrosac> cbVozila;
 	private JTextField tfRedniBroj;
@@ -124,6 +125,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 	protected void autowireFields(ApplicationContext ctx) {
 		putniNalogDao = getContext().getBean(PutniNalogDao.class);
 		potrosacDao = getContext().getBean(PotrosacDao.class);
+		resourceDir = ctx.getEnvironment().getProperty("xls.blank.table.path");
 	}
 
 	@Override
@@ -232,7 +234,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 						MediaSize.INCH));
 				attrs.add(OrientationRequested.LANDSCAPE);
 				DocPrintJob job = dlg.getReturnValue().createPrintJob();
-				SimpleDoc doc = new SimpleDoc(new CargoIssuePrintable(nalog), 
+				SimpleDoc doc = new SimpleDoc(new CargoIssuePrintable(nalog, resourceDir), 
 						DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
 				job.print(doc, attrs);
 			} else {
@@ -243,7 +245,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 						MediaSize.INCH));
 				attrs.add(OrientationRequested.PORTRAIT);
 				DocPrintJob job = dlg.getReturnValue().createPrintJob();
-				SimpleDoc doc = new SimpleDoc(new PassengerIssuePrintable(nalog), 
+				SimpleDoc doc = new SimpleDoc(new PassengerIssuePrintable(nalog, resourceDir), 
 						DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
 				job.print(doc, attrs);
 			}
@@ -285,7 +287,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 					}
 					try {
 						Integer lastRb = putniNalogDao.getLastRB(vozilo.getId());
-						if (lastRb == null) {
+						if (lastRb == 0) {
 							lastRb = vozilo.getId().intValue() * 10000;
 						}
 						tfRedniBroj.setText(String.valueOf(lastRb + 1));

@@ -50,6 +50,7 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 	private static final String FILED_PN_VRSTA_PREVOZA = "vrstaPrevoza";
 	private static final String FIELD_PN_KORISNIK = "korisnik";
 	private static final String FIELD_PN_POSADA = "posada";
+	private static final String FIELD_PN_RADNA_ORG = "radnaOrganizacija";
 	private static final String FIELD_PN_ADRESA = "adresaGaraze";
 	private static final String FIELD_PN_MESTO = "mesto";
 	
@@ -73,6 +74,7 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		nalog.setRelacija(doc.get(FIELD_PN_RELACIJA));
 		nalog.setDatum(doc.get(FIELD_PN_DATUM));
 		nalog.setVrstaPrevoza(doc.get(FILED_PN_VRSTA_PREVOZA));
+		nalog.setRadnaOrganizacija(doc.get(FIELD_PN_RADNA_ORG));
 		nalog.setAdresaGaraze(doc.get(FIELD_PN_ADRESA));
 		nalog.setMesto(doc.get(FIELD_PN_MESTO));
 		if (PutniNalog.PUTNICKI.equals(namena)) {
@@ -104,6 +106,7 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		doc.add(new StringField(FIELD_PN_DATUM, entity.getDatum(), Store.YES));
 		doc.add(new SortedDocValuesField(FIELD_PN_DATUM, new BytesRef(entity.getDatum())));
 		doc.add(new StringField(FILED_PN_VRSTA_PREVOZA, entity.getVrstaPrevoza(), Store.YES));
+		doc.add(new StringField(FIELD_PN_RADNA_ORG, entity.getRadnaOrganizacija(), Store.YES));
 		doc.add(new StringField(FIELD_PN_ADRESA, entity.getAdresaGaraze(), Store.YES));
 		doc.add(new StringField(FIELD_PN_MESTO, entity.getMesto(), Store.YES));
 		if (PutniNalog.PUTNICKI.equals(entity.getNamenaVozila())) {
@@ -133,6 +136,7 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		builder.append("\t").append(getField(doc, FIELD_PN_RELACIJA));
 		builder.append("\t").append(getField(doc, FIELD_PN_DATUM));
 		builder.append("\t").append(getField(doc, FILED_PN_VRSTA_PREVOZA));
+		builder.append("\t").append(getField(doc, FIELD_PN_RADNA_ORG));
 		builder.append("\t").append(getField(doc, FIELD_PN_ADRESA));
 		builder.append("\t").append(getField(doc, FIELD_PN_MESTO));
 		if (PutniNalog.PUTNICKI.equals(getField(doc, FIELD_PN_NAMENA))) {
@@ -166,6 +170,7 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		doc.add(getStringField(FIELD_PN_RELACIJA, st.nextToken()));
 		doc.add(getStringField(FIELD_PN_DATUM, st.nextToken()));
 		doc.add(getStringField(FILED_PN_VRSTA_PREVOZA, st.nextToken()));
+		doc.add(getStringField(FIELD_PN_RADNA_ORG, st.nextToken()));
 		doc.add(getStringField(FIELD_PN_ADRESA, st.nextToken()));
 		doc.add(getStringField(FIELD_PN_MESTO, st.nextToken()));
 		if (PutniNalog.PUTNICKI.equals(namenaVozila)) {

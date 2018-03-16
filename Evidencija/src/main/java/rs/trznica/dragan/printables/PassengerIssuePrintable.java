@@ -23,9 +23,9 @@ public class PassengerIssuePrintable implements Printable {
 	private PutniNalog putniNalog;
 	private BufferedImage img;
 	
-	public PassengerIssuePrintable(PutniNalog putniNalog) throws IOException {
+	public PassengerIssuePrintable(PutniNalog putniNalog, String resourceDir) throws IOException {
 		this.putniNalog = putniNalog;
-		this.img = ImageIO.read(new File("Putnicki1.bmp"));
+		this.img = ImageIO.read(new File(resourceDir + "/Putnicki1.bmp"));
 	}
 	
 	@Override
@@ -68,7 +68,7 @@ public class PassengerIssuePrintable implements Printable {
 		g2d.setFont(new Font("Times New Roman", Font.PLAIN, 45));
 		g2d.drawString(putniNalog.getRedniBroj().toString(), 810, 60);
 		g2d.setFont(new Font("Times New Roman", Font.BOLD, 30));
-		g2d.drawString(putniNalog.getRegOznaka(), 185, 63);
+		g2d.drawString(putniNalog.getRadnaOrganizacija(), 185, 63);
 		g2d.setFont(new Font("Times New Roman", Font.BOLD, 24));
 		g2d.drawString(putniNalog.getMesto(), 185, 110);
 		g2d.drawString(putniNalog.getAdresaGaraze(), 185, 197);

@@ -7,6 +7,15 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
+import javax.print.DocFlavor;
+import javax.print.DocPrintJob;
+import javax.print.PrintException;
+import javax.print.SimpleDoc;
+import javax.print.attribute.HashPrintRequestAttributeSet;
+import javax.print.attribute.PrintRequestAttributeSet;
+import javax.print.attribute.standard.MediaPrintableArea;
+import javax.print.attribute.standard.MediaSize;
+import javax.print.attribute.standard.OrientationRequested;
 import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.Box;
@@ -18,7 +27,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
@@ -37,6 +45,9 @@ import rs.trznica.dragan.dao.lucene.PutniNalogDao;
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.forms.support.DescriptionLabel;
+import rs.trznica.dragan.forms.support.ModalResult;
+import rs.trznica.dragan.printables.CargoIssuePrintable;
+import rs.trznica.dragan.printables.PassengerIssuePrintable;
 
 import com.toedter.calendar.JDateChooser;
 
@@ -210,7 +221,7 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 		
 		private boolean startAfterEnd() {
 			Date start = dcStart.getDate();
-			Date end = dcStart.getDate();
+			Date end = dcEnd.getDate();
 			if (start == null || end == null) {
 				return false;
 			} else {
@@ -218,6 +229,36 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 			}
 		}
 		
+	}
+	
+	private void printIssue() throws IOException, PrintException {
+		PutniNalog nalog = lista.getSelectedValue();
+		String resourceDir = ctx.getEnvironment().getProperty("xls.blank.table.path");
+		PrinterChooserDialog dlg = new PrinterChooserDialog();
+		dlg.setVisible(true);
+		if (PutniNalog.PUTNICKI.equals(nalog.getNamenaVozila())) {
+			PrintRequestAttributeSet attrs = new HashPrintRequestAttributeSet();
+			attrs.add(new MediaPrintableArea(1f, 0.5f, 
+					MediaSize.ISO.A4.getX(MediaSize.INCH)-0.5f, 
+					MediaSize.ISO.A4.getY(MediaSize.INCH)-0.5f, 
+					MediaSize.INCH));
+			attrs.add(OrientationRequested.PORTRAIT);
+			DocPrintJob job = dlg.getReturnValue().createPrintJob();
+			SimpleDoc doc = new SimpleDoc(new PassengerIssuePrintable(nalog, resourceDir), 
+					DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
+			job.print(doc, attrs);
+		} else {
+			PrintRequestAttributeSet attrs = new HashPrintRequestAttributeSet();
+			attrs.add(new MediaPrintableArea(1f, 0.5f, 
+					MediaSize.ISO.A4.getX(MediaSize.INCH)-0.5f, 
+					MediaSize.ISO.A4.getY(MediaSize.INCH)-0.5f, 
+					MediaSize.INCH));
+			attrs.add(OrientationRequested.LANDSCAPE);
+			DocPrintJob job = dlg.getReturnValue().createPrintJob();
+			SimpleDoc doc = new SimpleDoc(new CargoIssuePrintable(nalog, resourceDir), 
+					DocFlavor.SERVICE_FORMATTED.PRINTABLE, null);
+			job.print(doc, attrs);
+		}
 	}
 	
 	private class PrintAction extends AbstractAction {
@@ -230,7 +271,16 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			if (lista.getSelectedIndex() == -1) {
+				new ErrorDialog().showError("Nijedan putni nalog nije izabran!");
+				return;
+			}
+			try {
+				printIssue();
+			} catch (IOException | PrintException ex) {
+				LOG.error("Greska prilikom stampanja!", ex);
+				new ErrorDialog().showError("Gre\u0161ka prilikom \u0161tampanja!");
+			}
 		}
 	}
 	
@@ -244,7 +294,18 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
+			if (lista.getSelectedIndex() == -1) {
+				new ErrorDialog().showError("Nijedan putni nalog nije izabran!");
+				return;
+			}
+			PutniNalog nalog = lista.getSelectedValue();
+			NoviPutniNalogForm dlg = ctx.getBean(NoviPutniNalogForm.class);
+			dlg.editObject(nalog);
+			dlg.setVisible(true);
+			if (ModalResult.OK.equals(dlg.getModalResult())) {
+				btnShow.doClick();
+				
+			}
 		}
 	}
 	

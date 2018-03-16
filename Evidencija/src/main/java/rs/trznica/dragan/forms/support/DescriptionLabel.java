@@ -52,6 +52,7 @@ public class DescriptionLabel extends JLabel {
 		builder.append("<tr><td>").append("<b>Datum:</b>").append("</td><td>")
 				.append(DateUtils.getReadableDate(nalog.getDatum())).append("</td></tr>");
 		builder.append("<tr><td>").append("<b>Vrsta prevoza:</b>").append("</td><td>").append(nalog.getVrstaPrevoza()).append("</td></tr>");
+		builder.append("<tr><td>").append("<b>Radna org.:</b>").append("</td><td>").append(nalog.getRadnaOrganizacija()).append("</td></tr>");
 		builder.append("<tr><td>").append("<b>Adresa gara\u017Ee:</b>").append("</td><td>")
 				.append(nalog.getAdresaGaraze()).append("</td></tr>");
 		builder.append("<tr><td>").append("<b>Mesto:</b>").append("</td><td>").append(nalog.getMesto()).append("</td></tr>");

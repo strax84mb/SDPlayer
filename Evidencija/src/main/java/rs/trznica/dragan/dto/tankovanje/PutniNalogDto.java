@@ -24,7 +24,7 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 	
 	private String posada;
 	
-	private String regOznaka;
+	private String radnaOrganizacija;
 	
 	private String adresaGaraze;
 	
@@ -32,7 +32,7 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 
 	public PutniNalogDto(String redniBroj, Potrosac vozilo, String vozac,
 			String relacija, Date datum, String vrstaPrevoza, String korisnik,
-			String posada, String regOznaka, String adresaGaraze, String mesto) {
+			String posada, String radnaOrganizacija, String adresaGaraze, String mesto) {
 		super();
 		this.redniBroj = redniBroj;
 		this.vozilo = vozilo;
@@ -42,7 +42,7 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 		this.vrstaPrevoza = vrstaPrevoza;
 		this.korisnik = korisnik;
 		this.posada = posada;
-		this.regOznaka = regOznaka;
+		this.radnaOrganizacija = radnaOrganizacija;
 		this.adresaGaraze = adresaGaraze;
 		this.mesto = mesto;
 	}
@@ -79,8 +79,8 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 		return posada;
 	}
 
-	public String getRegOznaka() {
-		return regOznaka;
+	public String getRadnaOrganizacija() {
+		return radnaOrganizacija;
 	}
 
 	public String getAdresaGaraze() {
@@ -99,7 +99,7 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 		nalog.setNamenaVozila(vozilo.getTeretnjak() ? PutniNalog.TERETNI : PutniNalog.PUTNICKI);
 		nalog.setTipVozila(vozilo.getTip());
 		nalog.setMarkaVozila(vozilo.getMarka());
-		nalog.setRegOznaka(regOznaka);
+		nalog.setRegOznaka(vozilo.getRegOznaka());
 		if (vozilo.getTeretnjak()) {
 			nalog.setTezina(vozilo.getTezina());
 			nalog.setNosivost(vozilo.getNosivost());
@@ -113,6 +113,7 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 		nalog.setRelacija(relacija);
 		nalog.setDatum(DateUtils.toTimestamp(datum));
 		nalog.setVrstaPrevoza(vrstaPrevoza);
+		nalog.setRadnaOrganizacija(radnaOrganizacija);
 		nalog.setAdresaGaraze(adresaGaraze);
 		nalog.setMesto(mesto);
 		return nalog;
