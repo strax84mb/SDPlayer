@@ -23,6 +23,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +52,8 @@ import com.toedter.calendar.JDateChooser;
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
+	
+	private static final Logger LOG = LoggerFactory.getLogger(NoviPutniNalogForm.class);
 
 	private static final long serialVersionUID = -6515551917024945896L;
 	
@@ -113,6 +117,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 		tfAdresaGaraze.setText("Matije Gupca 50");
 		tfMesto = makeTextField(contentPanel, 10, new JLabel("Mesto"), null);
 		tfMesto.setText("Subotica");
+		signalFinishedCreating();
 	}
 
 	@Override
@@ -264,11 +269,10 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 	public class CbVozilaItemListener implements ItemListener {
 		@Override
 		public void itemStateChanged(ItemEvent ev) {
-			if (ev.getStateChange() == ItemEvent.SELECTED) {
+			if (isFinishedCreating() && ev.getStateChange() == ItemEvent.SELECTED) {
 				Potrosac vozilo = (Potrosac) ev.getItem();
 				if (vozilo != null) {
 					repopulateDrivers(vozilo.getVozaci());
-					tfRedniBroj.setText(String.valueOf(vozilo.getrBNaloga() + 1));
 					if (vozilo.getTeretnjak()) {
 						if (StringUtils.isEmpty(tfRelacija.getText())) {
 							tfRelacija.setText("Lokal");
@@ -278,6 +282,18 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 					} else {
 						tfPosada.setEnabled(false);
 						tfKorisnik.setEnabled(true);
+					}
+					try {
+						Integer lastRb = putniNalogDao.getLastRB(vozilo.getId());
+						if (lastRb == null) {
+							lastRb = vozilo.getId().intValue() * 10000;
+						}
+						tfRedniBroj.setText(String.valueOf(lastRb + 1));
+					} catch (IOException e) {
+						LOG.error("Greska prilikom citanja najveceg rednog broja za vozilo!", e);
+						tfRedniBroj.setText("");
+						new ErrorDialog().showError("Gre\u0161ka prilikom \u010Ditanja najve\u0107eg rednog broja za vozilo!");
+						
 					}
 				}
 			}

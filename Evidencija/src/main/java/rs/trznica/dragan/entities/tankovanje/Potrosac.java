@@ -57,9 +57,6 @@ public class Potrosac {
 	@Column(nullable = false, name = "nosivost")
 	private Integer nosivost = 0;
 	
-	@Column(nullable = false, name = "rb_naloga")
-	private Integer rBNaloga = 0;
-	
 	@Column(nullable = true, name = "vozaci")
 	private String vozaci;
 
@@ -173,14 +170,6 @@ public class Potrosac {
 
 	public void setNosivost(Integer nosivost) {
 		this.nosivost = nosivost;
-	}
-
-	public Integer getrBNaloga() {
-		return rBNaloga;
-	}
-
-	public void setrBNaloga(Integer rBNaloga) {
-		this.rBNaloga = rBNaloga;
 	}
 
 	public String getVozaci() {

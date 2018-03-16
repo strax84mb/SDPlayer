@@ -1,6 +1,7 @@
 package rs.trznica.dragan.entities.putninalog;
 
 import rs.trznica.dragan.entities.struja.BasicEntity;
+import rs.trznica.dragan.forms.support.DateUtils;
 
 public class PutniNalog extends BasicEntity {
 	
@@ -190,7 +191,6 @@ public class PutniNalog extends BasicEntity {
 
 	@Override
 	public String toString() {
-		return redniBroj + " - " + datum + " - " + vozac;
+		return redniBroj + " - " + DateUtils.getReadableDate(datum) + " - " + vozac;
 	}
-
 }

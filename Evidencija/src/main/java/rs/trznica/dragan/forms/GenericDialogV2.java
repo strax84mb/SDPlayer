@@ -35,6 +35,8 @@ public abstract class GenericDialogV2<T> extends GenericDialog<T> {
 	private JButton btnCancel;
 	private JPanel panelBottom;
 
+	private Boolean finishedCreating;
+	
 	protected ApplicationContext getContext() {
 		return ctx;
 	}
@@ -84,6 +86,7 @@ public abstract class GenericDialogV2<T> extends GenericDialog<T> {
 		super();
 		this.ctx = ctx;
 		autowireFields(ctx);
+		finishedCreating = false;
 		
 		setModal(true);
 		getContentPane().setFont(defaultFont);
@@ -122,6 +125,14 @@ public abstract class GenericDialogV2<T> extends GenericDialog<T> {
 		contentPanel.setLayout(gbl_panelCenter);
 
 		setUpCenterPanel(contentPanel);
+	}
+	
+	protected Boolean isFinishedCreating() {
+		return finishedCreating;
+	}
+	
+	protected void signalFinishedCreating() {
+		this.finishedCreating = true;
 	}
 	
 	protected JButton[] makeAdditionalButtons() {

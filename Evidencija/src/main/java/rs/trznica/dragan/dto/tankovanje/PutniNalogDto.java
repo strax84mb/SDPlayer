@@ -95,6 +95,7 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 	public PutniNalog createEntityFromData() {
 		PutniNalog nalog = new PutniNalog();
 		nalog.setRedniBroj(Long.valueOf(redniBroj));
+		nalog.setIdVozila(vozilo.getId());
 		nalog.setNamenaVozila(vozilo.getTeretnjak() ? PutniNalog.TERETNI : PutniNalog.PUTNICKI);
 		nalog.setTipVozila(vozilo.getTip());
 		nalog.setMarkaVozila(vozilo.getMarka());

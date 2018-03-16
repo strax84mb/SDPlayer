@@ -18,9 +18,11 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
+import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.border.EmptyBorder;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -97,9 +99,10 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 		upperPanel.add(searchBox, BorderLayout.EAST);
 		getContentPane().add(upperPanel, BorderLayout.NORTH);
 		// Setup center components
-		lista = new JList<>();
+		lista = new JList<>(new DefaultListModel<PutniNalog>());
 		lista.setFont(defaultFont);
 		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		lista.getSelectionModel().addListSelectionListener(new MySelectionHandler());
 		JScrollPane scrollPane = new JScrollPane(lista);
 		getContentPane().add(scrollPane, BorderLayout.CENTER);
 		// Setup bottom panel
@@ -290,4 +293,19 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 		btnDelete.setEnabled(enabled);
 	}
 	
+	private class MySelectionHandler implements ListSelectionListener {
+
+		@Override
+		public void valueChanged(ListSelectionEvent e) {
+			if (!e.getValueIsAdjusting()) {
+				if (lista.getSelectedIndex() == -1) {
+					disableBottomButtons();
+				} else {
+					PutniNalog nalog = lista.getSelectedValue();
+					descriptionLabel.showText(nalog);
+					enableBottomButtons();
+				}
+			}
+		}
+	}
 }

@@ -10,15 +10,21 @@ import java.util.StringTokenizer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.LongField;
+import org.apache.lucene.document.SortedDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
 import org.apache.lucene.search.BooleanQuery;
 import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.Sort;
+import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.SortField.Type;
 import org.apache.lucene.search.TermQuery;
 import org.apache.lucene.search.TermRangeQuery;
 import org.apache.lucene.search.TopDocs;
+import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
@@ -58,22 +64,27 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		nalog.setId(Long.valueOf(doc.get(FIELD_ID)));
 		nalog.setRedniBroj(Long.valueOf(doc.get(FIELD_PN_REDNI_BROJ)));
 		nalog.setIdVozila(Long.valueOf(doc.get(FIELD_PN_ID_VOZILA)));
-		nalog.setNamenaVozila(doc.get(FIELD_PN_NAMENA));
+		String namena = doc.get(FIELD_PN_NAMENA);
+		nalog.setNamenaVozila(namena);
 		nalog.setTipVozila(doc.get(FIELD_PN_TIP));
 		nalog.setMarkaVozila(doc.get(FIELD_PN_MARKA));
 		nalog.setRegOznaka(doc.get(FIELD_PN_RO));
-		nalog.setSnagaMotora(Integer.valueOf(doc.get(FIELD_PN_SNAGA_MOTORA)));
-		nalog.setBrojSedista(Integer.valueOf(doc.get(FIELD_PN_BROJ_SEDISTA)));
-		nalog.setTezina(Integer.valueOf(doc.get(FIELD_PN_TEZINA)));
-		nalog.setNosivost(Integer.valueOf(doc.get(FIELD_PN_NOSIVOST)));
 		nalog.setVozac(doc.get(FIELD_PN_VOZAC));
 		nalog.setRelacija(doc.get(FIELD_PN_RELACIJA));
 		nalog.setDatum(doc.get(FIELD_PN_DATUM));
 		nalog.setVrstaPrevoza(doc.get(FILED_PN_VRSTA_PREVOZA));
-		nalog.setKorisnik(doc.get(FIELD_PN_KORISNIK));
-		nalog.setPosada(doc.get(FIELD_PN_POSADA));
 		nalog.setAdresaGaraze(doc.get(FIELD_PN_ADRESA));
 		nalog.setMesto(doc.get(FIELD_PN_MESTO));
+		if (PutniNalog.PUTNICKI.equals(namena)) {
+			nalog.setSnagaMotora(Integer.valueOf(doc.get(FIELD_PN_SNAGA_MOTORA)));
+			nalog.setBrojSedista(Integer.valueOf(doc.get(FIELD_PN_BROJ_SEDISTA)));
+			nalog.setKorisnik(doc.get(FIELD_PN_KORISNIK));
+		}
+		if (PutniNalog.TERETNI.equals(namena)) {
+			nalog.setTezina(Integer.valueOf(doc.get(FIELD_PN_TEZINA)));
+			nalog.setNosivost(Integer.valueOf(doc.get(FIELD_PN_NOSIVOST)));
+			nalog.setPosada(doc.get(FIELD_PN_POSADA));
+		}
 		return nalog;
 	}
 
@@ -83,7 +94,7 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		doc.add(new LongField(FIELD_ID, entity.getId(), ID_LONG_TYPE));
 		doc.add(new StringField(FIELD_ID_TEXT, entity.getId().toString(), Store.YES));
 		doc.add(new StringField(FIELD_PN_ID_VOZILA, entity.getIdVozila().toString(), Store.YES));
-		doc.add(new StringField(FIELD_PN_REDNI_BROJ, entity.getRedniBroj().toString(), Store.YES));
+		doc.add(new StringField(FIELD_PN_REDNI_BROJ, paddZeros(entity.getRedniBroj().toString()), Store.YES));
 		doc.add(new StringField(FIELD_PN_NAMENA, entity.getNamenaVozila(), Store.YES));
 		doc.add(new StringField(FIELD_PN_TIP, entity.getTipVozila(), Store.YES));
 		doc.add(new StringField(FIELD_PN_MARKA, entity.getMarkaVozila(), Store.YES));
@@ -91,6 +102,7 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		doc.add(new StringField(FIELD_PN_VOZAC, entity.getVozac(), Store.YES));
 		doc.add(new StringField(FIELD_PN_RELACIJA, entity.getRelacija(), Store.YES));
 		doc.add(new StringField(FIELD_PN_DATUM, entity.getDatum(), Store.YES));
+		doc.add(new SortedDocValuesField(FIELD_PN_DATUM, new BytesRef(entity.getDatum())));
 		doc.add(new StringField(FILED_PN_VRSTA_PREVOZA, entity.getVrstaPrevoza(), Store.YES));
 		doc.add(new StringField(FIELD_PN_ADRESA, entity.getAdresaGaraze(), Store.YES));
 		doc.add(new StringField(FIELD_PN_MESTO, entity.getMesto(), Store.YES));
@@ -171,7 +183,8 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 	
 	public List<PutniNalog> getAll(Long vehicleId) throws IOException {
 		IndexSearcher searcher = getSearcher();
-		TopDocs docs = searcher.search(new TermQuery(new Term(FIELD_PN_ID_VOZILA, vehicleId.toString())), Integer.MAX_VALUE);
+		TopDocs docs = searcher.search(new TermQuery(new Term(FIELD_PN_ID_VOZILA, vehicleId.toString())), 
+				Integer.MAX_VALUE, new Sort(new SortField(FIELD_PN_DATUM, Type.STRING, true)));
 		List<PutniNalog> nalozi = new ArrayList<>();
 		for (ScoreDoc scoreDoc : docs.scoreDocs) {
 			nalozi.add(docToEntity(searcher.doc(scoreDoc.doc)));
@@ -202,5 +215,29 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 		}
 		searcher.getIndexReader().close();
 		return nalozi;
+	}
+	
+	private String paddZeros(String rb) {
+		return String.format("%07d", Integer.parseInt(rb));
+	}
+	
+	public Integer getLastRB(Long vehicleId) throws IOException {
+		IndexSearcher searcher = getSearcher();
+		if (searcher == null) {
+			return null;
+		}
+		Query query = new TermQuery(new Term(FIELD_PN_ID_VOZILA, vehicleId.toString()));
+		Sort sort = new Sort();
+		sort.setSort(new SortField(FIELD_PN_POSADA, Type.STRING, true));
+		TopDocs docs = searcher.search(query, 1, sort);
+		String rb = null;
+		if (docs.scoreDocs.length > 0) {
+			rb = searcher.doc(
+					docs.scoreDocs[0]
+							.doc)
+					.get(FIELD_PN_REDNI_BROJ);
+		}
+		searcher.getIndexReader().close();
+		return rb == null ? 0 : Integer.parseInt(rb);
 	}
 }

@@ -1,16 +1,25 @@
 package rs.trznica.dragan.dto.tankovanje;
 
 
+@SuppressWarnings("rawtypes")
 public class VoziloDodatnoDto extends BaseDto {
 
+	private boolean teretnjak;
 	private String podrucje;
 	private Integer brojSedista = 0;
 	private Integer snagaMotora = 0;
 	private Integer tezina = 0;
 	private Integer nosivost = 0;
-	private Integer rBNaloga = 0;
 	private String vozaci;
 	
+	public boolean isTeretnjak() {
+		return teretnjak;
+	}
+
+	public void setTeretnjak(boolean teretnjak) {
+		this.teretnjak = teretnjak;
+	}
+
 	public String getPodrucje() {
 		return podrucje;
 	}
@@ -49,14 +58,6 @@ public class VoziloDodatnoDto extends BaseDto {
 
 	public void setNosivost(Integer nosivost) {
 		this.nosivost = nosivost;
-	}
-
-	public Integer getrBNaloga() {
-		return rBNaloga;
-	}
-
-	public void setrBNaloga(Integer rBNaloga) {
-		this.rBNaloga = rBNaloga;
 	}
 
 	public String getVozaci() {

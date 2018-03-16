@@ -40,4 +40,16 @@ public abstract class DateUtils {
 			return null;
 		}
 	}
+	
+	public static String getReadableDate(String timestamp) {
+		if (StringUtils.isNotEmpty(timestamp)) {
+			if (timestamp.length() != 8) {
+				return "Neispravan datum";
+			} else {
+				return timestamp.substring(6) + "." + timestamp.substring(4, 6) + "." + timestamp.substring(0, 4) + ".";
+			}
+		} else {
+			return "Nema datuma";
+		}
+	}
 }

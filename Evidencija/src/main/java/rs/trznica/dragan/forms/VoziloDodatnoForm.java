@@ -36,14 +36,29 @@ public class VoziloDodatnoForm extends GenericDialog<VoziloDodatnoDto> {
 	private JTextField tfSnagaMotora;
 	private JTextField tfTezina;
 	private JTextField tfNosivost;
-	private JTextField tfRBNaloga;
 	private JTextArea taVozaci;
 	
 	private JButton btnSave;
 	private JButton btnCancel;
 	
+	private boolean teretnjak = false;
+	
 	@Override
 	public void editObject(VoziloDodatnoDto object) {
+		teretnjak = object.isTeretnjak();
+		tfPodrucje.setText(object.getPodrucje());
+		if (object.isTeretnjak()) {
+			tfTezina.setText(object.getTezina() == null ? "" : object.getTezina().toString());
+			tfNosivost.setText(object.getNosivost() == null ? "" : object.getNosivost().toString());
+			tfBrojSedista.setEnabled(false);
+			tfSnagaMotora.setEnabled(false);
+		} else {
+			tfBrojSedista.setText(object.getBrojSedista() == null ? "" : object.getBrojSedista().toString());
+			tfSnagaMotora.setText(object.getSnagaMotora() == null ? "" : object.getSnagaMotora().toString());
+			tfTezina.setEnabled(false);
+			tfNosivost.setEnabled(false);
+		}
+		taVozaci.setText(object.getVozaci());
 	}
 	
 	@Autowired
@@ -68,7 +83,6 @@ public class VoziloDodatnoForm extends GenericDialog<VoziloDodatnoDto> {
 		tfSnagaMotora = makeTextField(panelCenter, 2, new JLabel("Snaga motora"), 4);
 		tfTezina = makeTextField(panelCenter, 3, new JLabel("Te\u017Eina u kg"), 10);
 		tfNosivost = makeTextField(panelCenter, 4, new JLabel("Nosivost u kg"), 10);
-		tfRBNaloga = makeTextField(panelCenter, 5, new JLabel("Redni broj naloga"), 10);
 		taVozaci = new JTextArea(0, 0);
 		taVozaci.setFont(defaultFont);
 		JScrollPane scPane = new JScrollPane();
@@ -113,11 +127,13 @@ public class VoziloDodatnoForm extends GenericDialog<VoziloDodatnoDto> {
 					throw new Exception("Podru\u010Dje mora biti navedeno.");
 				}
 				dto.setPodrucje(tfPodrucje.getText().trim());
-				dto.setBrojSedista(checkNumericValue(tfBrojSedista.getText(), "Broj sedi\u0161ta mora biti ceo pozitivan broj ili nula."));
-				dto.setSnagaMotora(checkNumericValue(tfSnagaMotora.getText(), "Snaga motora mora biti ceo pozitivan broj ili nula."));
-				dto.setTezina(checkNumericValue(tfTezina.getText(), "Te\u017Eina u kg mora biti ceo pozitivan broj ili nula."));
-				dto.setNosivost(checkNumericValue(tfNosivost.getText(), "Nosivost u kg mora biti ceo pozitivan broj ili nula."));
-				dto.setrBNaloga(checkNumericValue(tfRBNaloga.getText(), "Redni broj poslednjeg naloga mora biti ceo pozitivan broj ili nula."));
+				if (teretnjak) {
+					dto.setTezina(checkNumericValue(tfTezina.getText(), "Te\u017Eina u kg mora biti ceo pozitivan broj ili nula."));
+					dto.setNosivost(checkNumericValue(tfNosivost.getText(), "Nosivost u kg mora biti ceo pozitivan broj ili nula."));
+				} else {
+					dto.setBrojSedista(checkNumericValue(tfBrojSedista.getText(), "Broj sedi\u0161ta mora biti ceo pozitivan broj ili nula."));
+					dto.setSnagaMotora(checkNumericValue(tfSnagaMotora.getText(), "Snaga motora mora biti ceo pozitivan broj ili nula."));
+				}
 				dto.setVozaci(taVozaci.getText().trim());
 				
 				setReturnValue(dto);

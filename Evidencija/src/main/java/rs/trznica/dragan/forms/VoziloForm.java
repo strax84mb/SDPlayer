@@ -105,10 +105,10 @@ public class VoziloForm extends JDialog {
 		}
 		cbxUUpotrebi.setSelected(consumer.getAktivan());
 		cbxKoristiKM.setSelected(consumer.getMeriKm());
+		dodatno.setTeretnjak(consumer.getTeretnjak());
 		dodatno.setPodrucje(consumer.getPodrucje());
 		dodatno.setBrojSedista(consumer.getBrojSedista());
 		dodatno.setNosivost(consumer.getNosivost());
-		dodatno.setrBNaloga(consumer.getrBNaloga());
 		dodatno.setSnagaMotora(consumer.getSnagaMotora());
 		dodatno.setTezina(consumer.getTezina());
 		dodatno.setVozaci(consumer.getVozaci());
@@ -275,7 +275,6 @@ public class VoziloForm extends JDialog {
 				consumer.setSnagaMotora(dodatno.getSnagaMotora());
 				consumer.setTezina(dodatno.getTezina());
 				consumer.setNosivost(dodatno.getNosivost());
-				consumer.setrBNaloga(dodatno.getrBNaloga());
 				consumer.setVozaci(dodatno.getVozaci());
 				// Set id
 				consumer.setId(entityId);
@@ -293,6 +292,8 @@ public class VoziloForm extends JDialog {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			VoziloDodatnoForm form = ctx.getBean(VoziloDodatnoForm.class);
+			dodatno.setTeretnjak(cbxTeretnjak.isSelected());
+			form.editObject(dodatno);
 			form.setVisible(true);
 			if (ModalResult.OK.equals(form.getModalResult())) {
 				dodatno = form.getReturnValue();

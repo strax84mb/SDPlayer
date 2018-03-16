@@ -41,11 +41,11 @@ public class PutniNalogValidator implements Validator {
 		if (StringUtils.isEmpty(dto.getRelacija())) {
 			err.reject("Mora\u0161 uneti relaciju.");
 		}
-		if (dto.getDatum() != null) {
+		if (dto.getDatum() == null) {
 			err.reject("Mora\u0161 uneti datum.");
 		}
 		if (StringUtils.isEmpty(dto.getVrstaPrevoza())) {
-			err.reject("");
+			err.reject("Mora\u0161 uneti vrstu prevoza.");
 		}
 		if (!dto.getVozilo().getTeretnjak()) {
 			if (StringUtils.isEmpty(dto.getKorisnik())) {
