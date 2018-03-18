@@ -229,7 +229,7 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 	public Integer getLastRB(Long vehicleId) throws IOException {
 		IndexSearcher searcher = getSearcher();
 		if (searcher == null) {
-			return null;
+			return 0;
 		}
 		Query query = new TermQuery(new Term(FIELD_PN_ID_VOZILA, vehicleId.toString()));
 		Sort sort = new Sort();
