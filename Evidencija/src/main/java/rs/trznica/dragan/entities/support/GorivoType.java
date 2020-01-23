@@ -2,7 +2,8 @@ package rs.trznica.dragan.entities.support;
 
 public enum GorivoType {
 	BMB("BMB"),
-	ED("Evro dizel");
+	ED("Evro dizel"),
+	AD("Aditivirani dizel");
 
 	private String label;
 

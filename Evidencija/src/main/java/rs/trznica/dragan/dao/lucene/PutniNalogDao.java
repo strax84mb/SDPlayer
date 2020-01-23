@@ -1,12 +1,5 @@
 package rs.trznica.dragan.dao.lucene;
 
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
-
 import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field.Store;
 import org.apache.lucene.document.LongField;
@@ -14,22 +7,20 @@ import org.apache.lucene.document.SortedDocValuesField;
 import org.apache.lucene.document.StringField;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.search.BooleanClause.Occur;
-import org.apache.lucene.search.BooleanQuery;
-import org.apache.lucene.search.IndexSearcher;
-import org.apache.lucene.search.Query;
-import org.apache.lucene.search.ScoreDoc;
-import org.apache.lucene.search.Sort;
-import org.apache.lucene.search.SortField;
+import org.apache.lucene.search.*;
 import org.apache.lucene.search.SortField.Type;
-import org.apache.lucene.search.TermQuery;
-import org.apache.lucene.search.TermRangeQuery;
-import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.util.BytesRef;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Repository;
-
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
+
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.StringTokenizer;
 
 @Repository
 public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
@@ -232,13 +223,11 @@ public class PutniNalogDao extends GenericLuceneDao<PutniNalog> {
 			return 0;
 		}
 		Query query = new TermQuery(new Term(FIELD_PN_ID_VOZILA, vehicleId.toString()));
-		Sort sort = new Sort();
-		sort.setSort(new SortField(FIELD_PN_POSADA, Type.STRING, true));
-		TopDocs docs = searcher.search(query, 1, sort);
+		TopDocs docs = searcher.search(query, 10000/*, sort*/);
 		String rb = null;
 		if (docs.scoreDocs.length > 0) {
 			rb = searcher.doc(
-					docs.scoreDocs[0]
+					docs.scoreDocs[docs.scoreDocs.length-1]
 							.doc)
 					.get(FIELD_PN_REDNI_BROJ);
 		}

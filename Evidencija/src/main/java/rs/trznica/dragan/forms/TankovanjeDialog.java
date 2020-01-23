@@ -132,7 +132,7 @@ public class TankovanjeDialog extends GenericDialog<Tankovanje> {
 		setModal(true);
 		setTitle("Tankovanje");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
-		setBounds(100, 100, 396, 375);
+		setBounds(100, 100, 600, 375);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setBorder(new EmptyBorder(10, 10, 10, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
