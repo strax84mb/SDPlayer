@@ -8,8 +8,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import rs.trznica.dragan.entities.support.GorivoType;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 @Entity
 public class Potrosac {
 
@@ -59,126 +67,6 @@ public class Potrosac {
 	
 	@Column(nullable = true, name = "vozaci")
 	private String vozaci;
-
-	public Long getId() {
-		return id;
-	}
-
-	public void setId(Long id) {
-		this.id = id;
-	}
-
-	public String getRegOznaka() {
-		return regOznaka;
-	}
-
-	public void setRegOznaka(String regOznaka) {
-		this.regOznaka = regOznaka;
-	}
-
-	public String getMarka() {
-		return marka;
-	}
-
-	public void setMarka(String marka) {
-		this.marka = marka;
-	}
-
-	public String getTip() {
-		return tip;
-	}
-
-	public void setTip(String tip) {
-		this.tip = tip;
-	}
-
-	public Boolean getVozilo() {
-		return vozilo;
-	}
-
-	public void setVozilo(Boolean vozilo) {
-		this.vozilo = vozilo;
-	}
-
-	public Boolean getTeretnjak() {
-		return teretnjak;
-	}
-
-	public void setTeretnjak(Boolean teretnjak) {
-		this.teretnjak = teretnjak;
-	}
-
-	public GorivoType getGorivo() {
-		return gorivo;
-	}
-
-	public void setGorivo(GorivoType gorivo) {
-		this.gorivo = gorivo;
-	}
-
-	public Boolean getAktivan() {
-		return aktivan;
-	}
-
-	public void setAktivan(Boolean aktivan) {
-		this.aktivan = aktivan;
-	}
-
-	public Boolean getMeriKm() {
-		return meriKm;
-	}
-
-	public void setMeriKm(Boolean meriKm) {
-		this.meriKm = meriKm;
-	}
-
-	public String getPodrucje() {
-		return podrucje;
-	}
-
-	public void setPodrucje(String podrucje) {
-		this.podrucje = podrucje;
-	}
-
-	public Integer getBrojSedista() {
-		return brojSedista;
-	}
-
-	public void setBrojSedista(Integer brojSedista) {
-		this.brojSedista = brojSedista;
-	}
-
-	public Integer getSnagaMotora() {
-		return snagaMotora;
-	}
-
-	public void setSnagaMotora(Integer snagaMotora) {
-		this.snagaMotora = snagaMotora;
-	}
-
-	public Integer getTezina() {
-		return tezina;
-	}
-
-	public void setTezina(Integer tezina) {
-		this.tezina = tezina;
-	}
-
-	public Integer getNosivost() {
-		return nosivost;
-	}
-
-	public void setNosivost(Integer nosivost) {
-		this.nosivost = nosivost;
-	}
-
-	public String getVozaci() {
-		return vozaci;
-	}
-
-	public void setVozaci(String vozaci) {
-		this.vozaci = vozaci;
-	}
 
 	@Override
 	public String toString() {

@@ -125,7 +125,7 @@ public class OcitavanjeDao extends GenericLuceneDao<Ocitavanje> {
 			ret.add(docToEntity(searcher.doc(scoreDoc.doc)));
 		}
 		searcher.getIndexReader().close();
-		ret.sort(new OcitavanjeComparator());
+		//ret.sort(new OcitavanjeComparator());
 		return ret;
 	}
 	

@@ -1,24 +1,5 @@
 package rs.trznica.dragan.forms;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.FocusAdapter;
-import java.awt.event.FocusEvent;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.io.IOException;
-
-import javax.swing.AbstractAction;
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -28,12 +9,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
-
-import rs.trznica.dragan.dao.lucene.BrojiloDao;
-import rs.trznica.dragan.dao.lucene.OcitavanjeDao;
+import rs.trznica.dragan.dao.BrojiloRepository;
+import rs.trznica.dragan.dao.OcitavanjeRepository;
 import rs.trznica.dragan.dto.struja.OcitavanjeDto;
-import rs.trznica.dragan.entities.struja.Brojilo;
-import rs.trznica.dragan.entities.struja.Ocitavanje;
+import rs.trznica.dragan.entities.struja.BrojiloSql;
+import rs.trznica.dragan.entities.struja.OcitavanjeSql;
 import rs.trznica.dragan.entities.struja.VrstaBrojila;
 import rs.trznica.dragan.entities.support.BrojiloComparator;
 import rs.trznica.dragan.forms.support.DecimalFormater;
@@ -41,19 +21,28 @@ import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.validator.exceptions.ChangeNotAcceptedException;
 import rs.trznica.dragan.validator.struja.OcitavanjeValidator;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
+public class OcitavanjeForm extends GenericDialog<OcitavanjeSql> {
 
 	private static final long serialVersionUID = 1808096789221427421L;
 
 	private ApplicationContext ctx;
-	private OcitavanjeDao ocitavanjeDao;
-	private BrojiloDao brojiloDao;
-	
+	private OcitavanjeRepository ocitavanjeRepository;
+	private BrojiloRepository brojiloRepository;
+
 	private Long entityId = null;
 	
-	private JComboBox<Brojilo> cbBrojila;
+	private JComboBox<BrojiloSql> cbBrojila;
 	private JTextField tfMesec;
 	private JTextField tfKwVT;
 	private JTextField tfKwNT;
@@ -73,8 +62,8 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 	@Autowired
 	public OcitavanjeForm(ApplicationContext ctx) {
 		this.ctx = ctx;
-		ocitavanjeDao = this.ctx.getBean(OcitavanjeDao.class);
-		brojiloDao = this.ctx.getBean(BrojiloDao.class);
+		ocitavanjeRepository = this.ctx.getBean(OcitavanjeRepository.class);
+		brojiloRepository = this.ctx.getBean(BrojiloRepository.class);
 		setModal(true);
 		setTitle("O\u010Ditavanje");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -111,7 +100,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		CalculateFocusListener zeroDigitsCalcFocusLstnr = new CalculateFocusListener(0);
 		CalculateFocusListener threeDigitsCalcFocusLstnr = new CalculateFocusListener(3);
 		
-		cbBrojila = new JComboBox<Brojilo>();
+		cbBrojila = new JComboBox<BrojiloSql>();
 		cbBrojila.setFont(defaultFont);
 		addComponent(panelCenter, 0, new JLabel("Merno mesto:"), cbBrojila, true);
 		cbBrojila.addItemListener(new CbBrojilaItemListener());
@@ -161,8 +150,8 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 	private void populateCounters() {
 		try {
 			cbBrojila.removeAllItems();
-			brojiloDao.findAll().stream().sorted(new BrojiloComparator()).forEach(x -> cbBrojila.addItem(x));
-		} catch (IOException e) {
+			brojiloRepository.findAll().stream().sorted(new BrojiloComparator()).forEach(x -> cbBrojila.addItem(x));
+		} catch (Exception e) {
 			e.printStackTrace();
 			ErrorDialog err = new ErrorDialog();
 			err.showError("Desila se gre\u0161ka tokom \u010Ditanja svih mernih mesta: " + e.getMessage());
@@ -171,7 +160,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 	}
 	
 	@Override
-	public void editObject(Ocitavanje object) {
+	public void editObject(OcitavanjeSql object) {
 		for (int i = 0; i < cbBrojila.getItemCount(); i++) {
 			if (cbBrojila.getItemAt(i).getId().equals(object.getBrojiloId())) {
 				cbBrojila.setSelectedIndex(i);
@@ -193,7 +182,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		tfPodsticaj.setText(DecimalFormater.formatFromLongSep(object.getPodsticaj(), 2));
 		if (VrstaBrojila.MAXIGRAF.equals(object.getBrojiloVrsta())) {
 			tfKwReatkivna.setText(DecimalFormater.formatFromLongSep(object.getKwReaktivna(), 0));
-			tfCenaKW.setText(DecimalFormater.formatFromLongSep(object.getCenaKW(), 3));
+			tfCenaKW.setText(DecimalFormater.formatFromLongSep(object.getCenaReaktivna(), 3));
 			tfKwReatkivna.setEnabled(true);
 			tfCenaKW.setEnabled(true);
 		} else {
@@ -211,7 +200,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			OcitavanjeDto dto = new OcitavanjeDto(
-					(Brojilo) cbBrojila.getSelectedItem(), 
+					(BrojiloSql) cbBrojila.getSelectedItem(),
 					tfMesec.getText(), 
 					tfKwVT.getText(), 
 					tfKwNT.getText(), 
@@ -229,9 +218,9 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 				dialog.showErrors(result);
 			} else {
 				try {
-					Ocitavanje ocitavanje = dto.getEntity();
+					OcitavanjeSql ocitavanje = dto.getEntity();
 					if (entityId == null) {
-						ocitavanje = ocitavanjeDao.save(ocitavanje);
+						ocitavanje = ocitavanjeRepository.save(ocitavanje);
 						System.out.println(ocitavanje.getId());
 					} else {
 						YesNoDialog dlg = new YesNoDialog("Sigurno \u017Eelite snimiti une\u0161ene izmene?");
@@ -240,7 +229,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 							throw new ChangeNotAcceptedException();
 						}
 						ocitavanje.setId(entityId);
-						ocitavanjeDao.update(ocitavanje);
+						ocitavanjeRepository.save(ocitavanje);
 					}
 					setReturnValue(ocitavanje);
 					modalResult = ModalResult.OK;
@@ -264,7 +253,7 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			OcitavanjeDto dto = new OcitavanjeDto(
-					(Brojilo) cbBrojila.getSelectedItem(), 
+					(BrojiloSql) cbBrojila.getSelectedItem(),
 					tfMesec.getText(), 
 					tfKwVT.getText(), 
 					tfKwNT.getText(), 
@@ -281,8 +270,8 @@ public class OcitavanjeForm extends GenericDialog<Ocitavanje> {
 				dialog.showErrors(result);
 			} else {
 				try {
-					Ocitavanje ocitavanje = dto.getEntity();
-					ocitavanje = ocitavanjeDao.save(ocitavanje);
+					OcitavanjeSql ocitavanje = dto.getEntity();
+					ocitavanje = ocitavanjeRepository.save(ocitavanje);
 					setReturnValue(ocitavanje);
 					cbBrojila.setSelectedIndex(-1);
 					tfCenaNT.setText("");

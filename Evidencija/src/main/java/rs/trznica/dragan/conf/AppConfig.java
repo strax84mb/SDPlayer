@@ -52,7 +52,9 @@ public class AppConfig {
 		LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
 		factoryBean.setDataSource(dataSource);
 		factoryBean.setPersistenceProvider(new HibernatePersistenceProvider());
-		factoryBean.setPackagesToScan(new String []{"rs.trznica.dragan.entities.tankovanje", "rs.trznica.dragan.entities.putninalog"});
+		factoryBean.setPackagesToScan(new String []{"rs.trznica.dragan.entities.tankovanje",
+				"rs.trznica.dragan.entities.putninalog",
+				"rs.trznica.dragan.entities.struja"});
 		factoryBean.setJpaProperties(hibernateProperties());
 		return factoryBean;
 	}

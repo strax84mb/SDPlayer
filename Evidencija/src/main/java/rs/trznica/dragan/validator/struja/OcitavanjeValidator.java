@@ -31,7 +31,7 @@ public class OcitavanjeValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		if (!supports(obj.getClass())) {
-			errors.reject("Pogrešan objekat u kodu!");
+			errors.reject("Pogre\u0161an objekat u kodu!");
 			return;
 		}
 		OcitavanjeDto dto = (OcitavanjeDto) obj;
@@ -50,16 +50,16 @@ public class OcitavanjeValidator implements Validator {
 			errors.reject("Obavezno je uneti mesec u formatu yyyy-MM (npr. 2015-10).");
 		}
 		if (!validNumber(dto.getKwNT(), 0)) {
-			errors.reject("Obavezno je uneti potrošene kW niže tarife.");
+			errors.reject("Obavezno je uneti potro\u0161ene kW ni\u017Ee tarife.");
 		}
 		if (!VrstaBrojila.SIR_POT_JED.equals(dto.getBrojilo().getVrstaBrojila()) && !validNumber(dto.getKwVT(), 0)) {
-			errors.reject("Obavezno je uneti potrošene kW više tarife.");
+			errors.reject("Obavezno je uneti potro\u0161ene kW vi\u0161e tarife.");
 		}
 		if (!validNumber(dto.getCenaNT(), 2)) {
-			errors.reject("Obavezno je uneti cenu niže tarife.");
+			errors.reject("Obavezno je uneti cenu ni\u017Ee tarife.");
 		}
 		if (!VrstaBrojila.SIR_POT_JED.equals(dto.getBrojilo().getVrstaBrojila()) && !validNumber(dto.getCenaVT(), 2)) {
-			errors.reject("Obavezno je uneti cenu više tarife.");
+			errors.reject("Obavezno je uneti cenu vi\u0161e tarife.");
 		}
 		if (!validNumber(dto.getPristup(), 2)) {
 			errors.reject("Obavezno je uneti pristup.");

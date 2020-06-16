@@ -1,11 +1,10 @@
 package rs.trznica.dragan.forms.support;
 
-import java.util.List;
+import rs.trznica.dragan.entities.struja.OcitavanjeSql;
+import rs.trznica.dragan.entities.support.OcitavanjeSuma;
 
 import javax.swing.table.DefaultTableModel;
-
-import rs.trznica.dragan.entities.struja.Ocitavanje;
-import rs.trznica.dragan.entities.support.OcitavanjeSuma;
+import java.util.List;
 
 public class ReadingsTableModel extends DefaultTableModel {
 
@@ -47,13 +46,22 @@ public class ReadingsTableModel extends DefaultTableModel {
 	public void clearAll() {
 		setRowCount(0);
 	}
-	
-	private Object[] makeRowData(Ocitavanje object) {
+
+	private String brojiloToString(OcitavanjeSql oc) {
+		return new StringBuilder(oc.getBrojiloED())
+				.append(" - ")
+				.append(oc.getBrojiloBroj())
+				.append(" - ")
+				.append(oc.getBrojiloVrsta().getAbrev())
+				.toString();
+	}
+
+	private Object[] makeRowData(OcitavanjeSql object) {
 		switch (object.getBrojiloVrsta()) {
 		case SIR_POT_JED:
 			return new Object[] {
 					object.getMesec(), 
-					object.getBrojiloString(), 
+					brojiloToString(object),
 					object.getBrojiloVrsta().getAbrev(), 
 					"", 
 					"", 
@@ -69,8 +77,8 @@ public class ReadingsTableModel extends DefaultTableModel {
 			};
 		case SIR_POT_DVO:
 			return new Object[] {
-					object.getMesec(), 
-					object.getBrojiloString(), 
+					object.getMesec(),
+					brojiloToString(object),
 					object.getBrojiloVrsta().getAbrev(), 
 					DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
 					DecimalFormater.formatFromLongSep(object.getKwVT(), 0), 
@@ -86,8 +94,8 @@ public class ReadingsTableModel extends DefaultTableModel {
 			};
 		default:
 			return new Object[] {
-					object.getMesec(), 
-					object.getBrojiloString(), 
+					object.getMesec(),
+					brojiloToString(object),
 					object.getBrojiloVrsta().getAbrev(), 
 					DecimalFormater.formatFromLongSep(object.getKwNT(), 0), 
 					DecimalFormater.formatFromLongSep(object.getKwVT(), 0), 
@@ -104,11 +112,11 @@ public class ReadingsTableModel extends DefaultTableModel {
 		}
 	}
 	
-	public void addReading(Ocitavanje object) {
+	public void addReading(OcitavanjeSql object) {
 		addRow(makeRowData(object));
 	}
 	
-	public boolean replaceReading(int rowIndex, Ocitavanje object) {
+	public boolean replaceReading(int rowIndex, OcitavanjeSql object) {
 		if (hasSummary && rowIndex == getRowCount() - 1) {
 			return false;
 		} else {
@@ -138,9 +146,9 @@ public class ReadingsTableModel extends DefaultTableModel {
 		hasSummary = true;
 	}
 	
-	public void addReadings(List<Ocitavanje> objects) {
+	public void addReadings(List<OcitavanjeSql> objects) {
 		OcitavanjeSuma suma = new OcitavanjeSuma();
-		Ocitavanje temp;
+		OcitavanjeSql temp;
 		for (int i = 0; i < objects.size(); i++) {
 			temp = objects.get(i);
 			suma.addReading(temp);

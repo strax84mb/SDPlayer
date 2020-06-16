@@ -1,30 +1,27 @@
 package rs.trznica.dragan.forms;
 
-import java.io.IOException;
-
-import javax.swing.DefaultListModel;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
-
-import rs.trznica.dragan.dao.lucene.BrojiloDao;
-import rs.trznica.dragan.dao.lucene.OcitavanjeDao;
-import rs.trznica.dragan.entities.struja.Brojilo;
+import rs.trznica.dragan.dao.BrojiloRepository;
+import rs.trznica.dragan.dao.OcitavanjeRepository;
+import rs.trznica.dragan.entities.struja.BrojiloSql;
 import rs.trznica.dragan.entities.support.BrojiloComparator;
 import rs.trznica.dragan.forms.support.ModalResult;
 
+import javax.swing.*;
+
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class ListaBrojilaForm extends GenericListForm<Brojilo> {
+public class ListaBrojilaForm extends GenericListForm<BrojiloSql> {
 
 	private static final long serialVersionUID = -1223471707194373003L;
 
 	private ApplicationContext ctx;
-	private BrojiloDao brojiloDao;
-	private OcitavanjeDao ocitavanjeDao;
+	private BrojiloRepository brojiloRepository;
+	private OcitavanjeRepository ocitavanjeRepository;
 	
 	@Autowired
 	public ListaBrojilaForm(ApplicationContext ctx) {
@@ -34,17 +31,17 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 	@Override
 	protected void autowireFields(ApplicationContext ctx) {
 		this.ctx = ctx;
-		brojiloDao = ctx.getBean(BrojiloDao.class);
-		ocitavanjeDao = ctx.getBean(OcitavanjeDao.class);
+		brojiloRepository = ctx.getBean(BrojiloRepository.class);
+		ocitavanjeRepository = ctx.getBean(OcitavanjeRepository.class);
 	}
 
 	@Override
 	protected void populateList() {
 		try {
-			DefaultListModel<Brojilo> model = (DefaultListModel<Brojilo>)getObjectList().getModel();
+			DefaultListModel<BrojiloSql> model = (DefaultListModel<BrojiloSql>)getObjectList().getModel();
 			model.removeAllElements();
-			brojiloDao.findAll().stream().sorted(new BrojiloComparator()).forEach(x -> model.addElement(x));
-		} catch (IOException e) {
+			brojiloRepository.findAll().stream().sorted(new BrojiloComparator()).forEach(x -> model.addElement(x));
+		} catch (Exception e) {
 			e.printStackTrace();
 			ErrorDialog dlg = new ErrorDialog();
 			dlg.showError("Desila se gre\u0161ka prilikom \u010Ditanja svih mernih mesta.");
@@ -52,9 +49,9 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 	}
 
 	@Override
-	protected StringBuilder objectToHtmlBody(Brojilo object) {
+	protected StringBuilder objectToHtmlBody(BrojiloSql object) {
 		StringBuilder builder = new StringBuilder("<p>");
-		if (!object.getuFunkciji()) {
+		if (!object.getUFunkciji()) {
 			builder.append("<b>Nije u funkciji</b><br/>");
 		}
 		builder.append("Broj: ").append(object.getBroj()).append("<br/>");
@@ -84,9 +81,9 @@ public class ListaBrojilaForm extends GenericListForm<Brojilo> {
 	@Override
 	protected ModalResult performDeleteAction() {
 		try {
-			Long brojiloId = getObjectList().getSelectedValue().getId();
-			if (ocitavanjeDao.countReadingsForCounter(brojiloId) == 0) {
-				brojiloDao.delete(getObjectList().getSelectedValue().getId());
+			BrojiloSql selected = getObjectList().getSelectedValue();
+			if (ocitavanjeRepository.countByBrojiloId(selected.getId()) == 0) {
+				brojiloRepository.delete(selected.getId());
 			} else {
 				throw new Exception("Postoje o\u010Ditavanja za izabrano merno mesto.<br/>Prvo to treba obrisati.");
 			}

@@ -15,12 +15,12 @@ public class TankovanjeValidator implements Validator {
 
 	public void validate(Object obj, Errors err) {
 		if (!supports(obj.getClass())) {
-			err.reject("Pogrešan objekat u kodu!");
+			err.reject("Pogre\u0161an objekat u kodu!");
 			return;
 		}
 		TankovanjeDto dto = (TankovanjeDto) obj;
 		if (dto.getPotrosacId() == null) {
-			err.reject("Obavezno je izabrati potrošač.");
+			err.reject("Obavezno je izabrati potro\u0161a\u010D.");
 		}
 		if (dto.getDatum() == null) {
 			err.reject("Obavezno je uneti datum tankovanja.");
@@ -36,7 +36,7 @@ public class TankovanjeValidator implements Validator {
 				throw new NumberFormatException();
 			}
 		} catch (Exception e) {
-			err.reject("Količina mora biti veća od nule.");
+			err.reject("Koli\u010Dina mora biti ve\u0107a od nule.");
 		}
 		try {
 			Double num = DecimalFormater.parseToDouble(dto.getJedCena());
@@ -44,7 +44,7 @@ public class TankovanjeValidator implements Validator {
 				throw new NumberFormatException();
 			}
 		} catch (Exception e) {
-			err.reject("Cena litre mora biti veća od nule.");
+			err.reject("Cena litre mora biti ve\u0107a od nule.");
 		}
 		if (Boolean.TRUE.equals(dto.getVozilo())) {
 			try {
@@ -53,7 +53,7 @@ public class TankovanjeValidator implements Validator {
 					throw new NumberFormatException();
 				}
 			} catch (Exception e) {
-				err.reject("Kilometraža mora biti ceo pozitivan broj.");
+				err.reject("Kilometra\u017Ea mora biti ceo pozitivan broj.");
 			}
 		}
 	}

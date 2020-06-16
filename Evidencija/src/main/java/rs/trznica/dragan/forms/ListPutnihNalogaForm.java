@@ -1,11 +1,21 @@
 package rs.trznica.dragan.forms;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.io.IOException;
-import java.util.Date;
-import java.util.List;
+import com.toedter.calendar.JDateChooser;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableBeanFactory;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import rs.trznica.dragan.dao.PotrosacDao;
+import rs.trznica.dragan.dao.PutniNalogRepository;
+import rs.trznica.dragan.entities.putninalog.PutniNalogSql;
+import rs.trznica.dragan.entities.tankovanje.Potrosac;
+import rs.trznica.dragan.forms.support.DescriptionLabel;
+import rs.trznica.dragan.forms.support.ModalResult;
+import rs.trznica.dragan.printables.CargoIssuePrintable;
+import rs.trznica.dragan.printables.PassengerIssuePrintable;
 
 import javax.print.DocFlavor;
 import javax.print.DocPrintJob;
@@ -16,40 +26,16 @@ import javax.print.attribute.PrintRequestAttributeSet;
 import javax.print.attribute.standard.MediaPrintableArea;
 import javax.print.attribute.standard.MediaSize;
 import javax.print.attribute.standard.OrientationRequested;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.Box;
-import javax.swing.DefaultListModel;
-import javax.swing.JButton;
-import javax.swing.JComboBox;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.ListSelectionModel;
+import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.context.ApplicationContext;
-import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
-
-import rs.trznica.dragan.dao.PotrosacDao;
-import rs.trznica.dragan.dao.lucene.PutniNalogDao;
-import rs.trznica.dragan.entities.putninalog.PutniNalog;
-import rs.trznica.dragan.entities.tankovanje.Potrosac;
-import rs.trznica.dragan.forms.support.DescriptionLabel;
-import rs.trznica.dragan.forms.support.ModalResult;
-import rs.trznica.dragan.printables.CargoIssuePrintable;
-import rs.trznica.dragan.printables.PassengerIssuePrintable;
-
-import com.toedter.calendar.JDateChooser;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -62,7 +48,7 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 
 	private ApplicationContext ctx;
 	private PotrosacDao potrosacDao;
-	private PutniNalogDao putniNalogDao;
+	private PutniNalogRepository putniNalogRepository;
 	
 	private JComboBox<Potrosac> vozila;
 	private JDateChooser dcStart;
@@ -74,14 +60,14 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 	
 	private JPanel upperPanel;
 	private DescriptionLabel descriptionLabel;
-	private JList<PutniNalog> lista;
+	private JList<PutniNalogSql> lista;
 	
 	@Autowired
 	public ListPutnihNalogaForm(ApplicationContext ctx) {
 		// Autowire fields
 		this.ctx = ctx;
 		potrosacDao = ctx.getBean(PotrosacDao.class);
-		putniNalogDao = ctx.getBean(PutniNalogDao.class);
+		putniNalogRepository = ctx.getBean(PutniNalogRepository.class);
 		// Setup dialog
 		setResizable(true);
 		setMaximizable(true);
@@ -110,7 +96,7 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 		upperPanel.add(searchBox, BorderLayout.EAST);
 		getContentPane().add(upperPanel, BorderLayout.NORTH);
 		// Setup center components
-		lista = new JList<>(new DefaultListModel<PutniNalog>());
+		lista = new JList<>(new DefaultListModel<PutniNalogSql>());
 		lista.setFont(defaultFont);
 		lista.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		lista.getSelectionModel().addListSelectionListener(new MySelectionHandler());
@@ -133,10 +119,10 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 		disableBottomButtons();
 	}
 	
-	private void populateList(List<PutniNalog> nalozi) {
-		DefaultListModel<PutniNalog> model = (DefaultListModel<PutniNalog>) lista.getModel();
+	private void populateList(List<PutniNalogSql> nalozi) {
+		DefaultListModel<PutniNalogSql> model = (DefaultListModel<PutniNalogSql>) lista.getModel();
 		model.clear();
-		for (PutniNalog nalog : nalozi) {
+		for (PutniNalogSql nalog : nalozi) {
 			model.addElement(nalog);
 		}
 		lista.setSelectedIndex(-1);
@@ -198,19 +184,23 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 				return;
 			}
 			Potrosac vozilo = (Potrosac) vozila.getSelectedItem();
-			List<PutniNalog> nalozi;
+			List<PutniNalogSql> nalozi;
 			if (dcStart.getDate() == null && dcEnd.getDate() == null) {
 				try {
-					nalozi = putniNalogDao.getAll(vozilo.getId());
-				} catch (IOException e1) {
+					nalozi = putniNalogRepository.findByIdVozila(vozilo.getId());
+				} catch (Exception e1) {
 					LOG.error("Greska prilikom citanja!", e1);
 					new ErrorDialog().showError("Gre\u0161ka prilikom \u010Ditanja!");
 					return;
 				}
 			} else {
 				try {
-					nalozi = putniNalogDao.getInInterval(vozilo.getId(), dcStart.getDate(), dcEnd.getDate());
-				} catch (IOException e1) {
+					SimpleDateFormat sdf = new SimpleDateFormat("yyyMMdd");
+					nalozi = putniNalogRepository.findByIdVozilaAndDatumBetween(
+							vozilo.getId(),
+							sdf.format(dcStart.getDate()),
+							sdf.format(dcEnd.getDate()));
+				} catch (Exception e1) {
 					LOG.error("Greska prilikom citanja!", e1);
 					new ErrorDialog().showError("Gre\u0161ka prilikom \u010Ditanja!");
 					return;
@@ -232,11 +222,11 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 	}
 	
 	private void printIssue() throws IOException, PrintException {
-		PutniNalog nalog = lista.getSelectedValue();
+		PutniNalogSql nalog = lista.getSelectedValue();
 		String resourceDir = ctx.getEnvironment().getProperty("xls.blank.table.path");
 		PrinterChooserDialog dlg = new PrinterChooserDialog();
 		dlg.setVisible(true);
-		if (PutniNalog.PUTNICKI.equals(nalog.getNamenaVozila())) {
+		if (PutniNalogSql.PUTNICKI.equals(nalog.getNamenaVozila())) {
 			PrintRequestAttributeSet attrs = new HashPrintRequestAttributeSet();
 			attrs.add(new MediaPrintableArea(1f, 0.5f, 
 					MediaSize.ISO.A4.getX(MediaSize.INCH)-0.5f, 
@@ -298,7 +288,7 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 				new ErrorDialog().showError("Nijedan putni nalog nije izabran!");
 				return;
 			}
-			PutniNalog nalog = lista.getSelectedValue();
+			PutniNalogSql nalog = lista.getSelectedValue();
 			NoviPutniNalogForm dlg = ctx.getBean(NoviPutniNalogForm.class);
 			dlg.editObject(nalog);
 			dlg.setVisible(true);
@@ -323,15 +313,15 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 				new ErrorDialog().showError("Nijedan putni nalog nije izabran!");
 				return;
 			}
-			PutniNalog nalog = lista.getSelectedValue();
+			PutniNalogSql nalog = lista.getSelectedValue();
 			try {
-				putniNalogDao.delete(nalog.getId());
-			} catch (IOException e1) {
+				putniNalogRepository.delete(nalog.getId());
+			} catch (Exception e1) {
 				LOG.error("Greska prilikom brisanja!", e1);
 				new ErrorDialog().showError("Gre\u0161ka prilikom brisanja!<br/>Brisanje nije uspelo.");
 				return;
 			}
-			DefaultListModel<PutniNalog> model = (DefaultListModel<PutniNalog>) lista.getModel();
+			DefaultListModel<PutniNalogSql> model = (DefaultListModel<PutniNalogSql>) lista.getModel();
 			model.removeElementAt(lista.getSelectedIndex());
 			lista.setSelectedIndex(-1);
 			lista.repaint();
@@ -362,7 +352,7 @@ public class ListPutnihNalogaForm extends JInternalFrame {
 				if (lista.getSelectedIndex() == -1) {
 					disableBottomButtons();
 				} else {
-					PutniNalog nalog = lista.getSelectedValue();
+					PutniNalogSql nalog = lista.getSelectedValue();
 					descriptionLabel.showText(nalog);
 					enableBottomButtons();
 				}

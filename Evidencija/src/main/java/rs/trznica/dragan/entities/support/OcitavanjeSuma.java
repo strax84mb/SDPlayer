@@ -1,6 +1,7 @@
 package rs.trznica.dragan.entities.support;
 
 import rs.trznica.dragan.entities.struja.Ocitavanje;
+import rs.trznica.dragan.entities.struja.OcitavanjeSql;
 import rs.trznica.dragan.entities.struja.VrstaBrojila;
 
 public class OcitavanjeSuma {
@@ -65,7 +66,7 @@ public class OcitavanjeSuma {
 		return cenaReaktivna;
 	}
 
-	public void addReading(Ocitavanje object) {
+	public void addReading(OcitavanjeSql object) {
 		if (VrstaBrojila.SIR_POT_JED.equals(object.getBrojiloVrsta())) {
 			kwST += object.getKwNT();
 			cenaST += object.getCenaNT();

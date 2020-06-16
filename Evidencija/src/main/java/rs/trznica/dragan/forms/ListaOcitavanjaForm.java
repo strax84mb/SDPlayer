@@ -1,51 +1,37 @@
 package rs.trznica.dragan.forms;
 
-import java.awt.BorderLayout;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
-import java.awt.print.PrinterException;
-import java.awt.print.PrinterJob;
-import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
-import javax.print.PrintService;
-import javax.swing.Box;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JInternalFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTable;
-import javax.swing.JTextField;
-import javax.swing.ListSelectionModel;
-import javax.swing.ScrollPaneConstants;
-import javax.swing.border.EmptyBorder;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableColumnModel;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
-
-import rs.trznica.dragan.dao.lucene.BrojiloDao;
-import rs.trznica.dragan.dao.lucene.OcitavanjeDao;
-import rs.trznica.dragan.entities.struja.Brojilo;
-import rs.trznica.dragan.entities.struja.Ocitavanje;
+import rs.trznica.dragan.dao.BrojiloRepository;
+import rs.trznica.dragan.dao.OcitavanjeRepository;
+import rs.trznica.dragan.entities.struja.BrojiloSql;
+import rs.trznica.dragan.entities.struja.OcitavanjeSql;
 import rs.trznica.dragan.entities.support.BrojiloComparator;
+import rs.trznica.dragan.entities.support.OcitavanjeComparator;
 import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.forms.support.ReadingsTableModel;
 import rs.trznica.dragan.printables.ReadingsSumPrintable;
+
+import javax.print.PrintService;
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableColumnModel;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
+import java.awt.print.PrinterException;
+import java.awt.print.PrinterJob;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
@@ -54,8 +40,8 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 	private static final long serialVersionUID = -6025767172110906309L;
 	
 	private ApplicationContext ctx;
-	private BrojiloDao brojiloDao;
-	private OcitavanjeDao ocitavanjeDao;
+	private BrojiloRepository brojiloRepository;
+	private OcitavanjeRepository ocitavanjeRepository;
 	
 	protected Font defaultFont = new Font("Times New Roman", Font.PLAIN, 18);
 	
@@ -72,8 +58,8 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 	@Autowired
 	public ListaOcitavanjaForm(ApplicationContext ctx) {
 		this.ctx = ctx;
-		brojiloDao = this.ctx.getBean(BrojiloDao.class);
-		ocitavanjeDao = this.ctx.getBean(OcitavanjeDao.class);
+		brojiloRepository = this.ctx.getBean(BrojiloRepository.class);
+		ocitavanjeRepository = this.ctx.getBean(OcitavanjeRepository.class);
 		setResizable(true);
 		setMaximizable(true);
 		setIconifiable(true);
@@ -197,16 +183,16 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 			Box countersBox = Box.createVerticalBox();
 			sPane.setViewportView(countersBox);
 			brojila.clear();
-			brojiloDao.findAll().stream()
+			brojiloRepository.findAll().stream()
 					.sorted(new BrojiloComparator())
 					.map(x -> new BrojiloCheckBox(x))
 					.forEach(x -> {
 						brojila.add(x);
-						x.setVisible(x.getBrojilo().getuFunkciji());
+						x.setVisible(x.getBrojilo().getUFunkciji());
 						x.addActionListener(listener);
 						countersBox.add(x);
 					});
-		} catch (IOException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			ErrorDialog dlg = new ErrorDialog();
 			dlg.showError("Desila se gre\u0161ka prilikom \u010Ditanja svih brojila.");
@@ -237,20 +223,20 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 				.filter(BrojiloCheckBox::isVisible)
 				.filter(BrojiloCheckBox::isSelected)
 				.map(BrojiloCheckBox::getBrojilo)
-				.map(Brojilo::getId)
+				.map(BrojiloSql::getId)
 				.collect(Collectors.toList());
 	}
 	
 	private class BrojiloCheckBox extends JCheckBox {
 		private static final long serialVersionUID = -1235223700673710858L;
-		private Brojilo brojilo;
-		private BrojiloCheckBox(Brojilo brojilo) {
+		private BrojiloSql brojilo;
+		private BrojiloCheckBox(BrojiloSql brojilo) {
 			super(brojilo.toString());
 			setFont(defaultFont);
 			setAlignmentX(LEFT_ALIGNMENT);
 			this.brojilo = brojilo;
 		}
-		public Brojilo getBrojilo() {
+		public BrojiloSql getBrojilo() {
 			return brojilo;
 		}
 	}
@@ -258,9 +244,9 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 		@Override
 		public void itemStateChanged(ItemEvent ev) {
 			if (ev.getStateChange() == ItemEvent.SELECTED) {
-				brojila.stream().filter(x -> !x.getBrojilo().getuFunkciji()).forEach(x -> x.setVisible(false));
+				brojila.stream().filter(x -> !x.getBrojilo().getUFunkciji()).forEach(x -> x.setVisible(false));
 			} else if (ev.getStateChange() == ItemEvent.DESELECTED) {
-				brojila.stream().filter(x -> !x.getBrojilo().getuFunkciji()).forEach(x -> x.setVisible(true));
+				brojila.stream().filter(x -> !x.getBrojilo().getUFunkciji()).forEach(x -> x.setVisible(true));
 			}
 		}
 	}
@@ -303,7 +289,8 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 				return;
 			}
 			try {
-				List<Ocitavanje> result = ocitavanjeDao.findInInterval(selectedCounterIds, fromMonth, toMonth);
+				List<OcitavanjeSql> result = ocitavanjeRepository.findByBrojiloIdInAndMesecBetween(selectedCounterIds, fromMonth, toMonth);
+				result.sort(new OcitavanjeComparator());
 				ReadingsTableModel tableModel = (ReadingsTableModel) table.getModel();
 				tableModel.clearAll();
 				tableModel.addReadings(result);
@@ -325,9 +312,9 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 					new ErrorDialog().showError("Ne mo\u017Eete menjati sumu svih prikazanih o\u010Ditavanja.");
 				} else {
 					Long id = ((ReadingsTableModel) table.getModel()).getRowId(rows[0]);
-					Ocitavanje ocitavanje = null;
+					OcitavanjeSql ocitavanje = null;
 					try {
-						ocitavanje = ocitavanjeDao.find(id);
+						ocitavanje = ocitavanjeRepository.findOne(id);
 					} catch (Exception e) {
 						new ErrorDialog().showError("Desila se gre\u0161ka prilikom u\u010Ditavanja podataka za menjanje.");
 						return;
@@ -366,7 +353,7 @@ public class ListaOcitavanjaForm extends JInternalFrame {
 			try {
 				for (int i : rows) {
 					id = model.getRowId(i);
-					ocitavanjeDao.delete(id);
+					ocitavanjeRepository.delete(id);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

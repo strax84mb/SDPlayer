@@ -1,20 +1,5 @@
 package rs.trznica.dragan.forms;
 
-import java.awt.BorderLayout;
-import java.awt.Font;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JTextField;
-import javax.swing.border.EmptyBorder;
-
 import org.eclipse.wb.swing.FocusTraversalOnArray;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -23,23 +8,28 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.DataBinder;
-
-import rs.trznica.dragan.dao.lucene.BrojiloDao;
-import rs.trznica.dragan.entities.struja.Brojilo;
+import rs.trznica.dragan.dao.BrojiloRepository;
+import rs.trznica.dragan.entities.struja.BrojiloSql;
 import rs.trznica.dragan.entities.struja.VrstaBrojila;
 import rs.trznica.dragan.forms.support.ModalResult;
 import rs.trznica.dragan.validator.exceptions.ChangeNotAcceptedException;
 import rs.trznica.dragan.validator.struja.BrojiloValidator;
 
+import javax.swing.*;
+import javax.swing.border.EmptyBorder;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class BrojiloForm extends GenericDialog<Brojilo> {
+public class BrojiloForm extends GenericDialog<BrojiloSql> {
 
 	private static final long serialVersionUID = -5269728175774257655L;
 
 	private ApplicationContext ctx;
-	private BrojiloDao brojiloDao;
-	
+	private BrojiloRepository brojiloRepository;
+
 	private JTextField tfBroj;
 	private JTextField tfED;
 	private JTextField tfOpis;
@@ -49,12 +39,12 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 	private Long entityId = null;
 
 	private ModalResult modalResult = ModalResult.CANCEL;
-	private Brojilo returnValue = null;
+	private BrojiloSql returnValue = null;
 
 	@Autowired
 	public BrojiloForm(ApplicationContext ctx) {
 		this.ctx = ctx;
-		brojiloDao = this.ctx.getBean(BrojiloDao.class);
+		brojiloRepository = this.ctx.getBean(BrojiloRepository.class);
 		setModal(true);
 		setTitle("Merno mesto");
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
@@ -106,12 +96,12 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 	}
 
 	@Override
-	public void editObject(Brojilo object) {
+	public void editObject(BrojiloSql object) {
 		entityId = object.getId();
 		tfBroj.setText(object.getBroj());
 		tfED.setText(object.getEd());
 		tfOpis.setText(object.getOpis());
-		chckbxUFunkciji.setSelected(object.getuFunkciji());
+		chckbxUFunkciji.setSelected(object.getUFunkciji());
 		for (int i = 0; i < cbVrstaBrojila.getItemCount(); i++) {
 			if (cbVrstaBrojila.getItemAt(i).equals(object.getVrstaBrojila())) {
 				cbVrstaBrojila.setSelectedIndex(i);
@@ -125,18 +115,20 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 		return modalResult;
 	}
 	
-	public Brojilo getReturnValue() {
+	public BrojiloSql getReturnValue() {
 		return returnValue;
 	}
 	
 	private class BtnOkActionListener implements ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Brojilo brojilo = new Brojilo();
-			brojilo.setBroj(tfBroj.getText());
-			brojilo.setEd(tfED.getText());
-			brojilo.setOpis(tfOpis.getText());
-			brojilo.setuFunkciji(chckbxUFunkciji.isSelected());
+			BrojiloSql brojilo = BrojiloSql.builder()
+					.broj(tfBroj.getText())
+					.ed(tfED.getText())
+					.opis(tfOpis.getText())
+					.uFunkciji(chckbxUFunkciji.isSelected())
+					.vrstaBrojila((VrstaBrojila) cbVrstaBrojila.getSelectedItem())
+					.build();
 			brojilo.setVrstaBrojila((VrstaBrojila) cbVrstaBrojila.getSelectedItem());
 			
 			BindingResult result = new DataBinder(brojilo).getBindingResult();
@@ -147,7 +139,7 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 			} else {
 				try {
 					if (entityId == null) {
-						brojilo = brojiloDao.save(brojilo);
+						brojilo = brojiloRepository.save(brojilo);
 						System.out.println(brojilo.getId());
 					} else {
 						YesNoDialog dlg = new YesNoDialog("Sigurno \u017Eelite snimiti une\u0161ene izmene?");
@@ -156,7 +148,7 @@ public class BrojiloForm extends GenericDialog<Brojilo> {
 							throw new ChangeNotAcceptedException();
 						}
 						brojilo.setId(entityId);
-						brojiloDao.update(brojilo);
+						brojiloRepository.save(brojilo);
 					}
 					returnValue = brojilo;
 					modalResult = ModalResult.OK;

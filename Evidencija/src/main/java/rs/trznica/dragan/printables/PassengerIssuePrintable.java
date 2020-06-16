@@ -1,10 +1,10 @@
 package rs.trznica.dragan.printables;
 
-import java.awt.Color;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
+import rs.trznica.dragan.entities.putninalog.PutniNalogSql;
+import rs.trznica.dragan.forms.support.DateUtils;
+
+import javax.imageio.ImageIO;
+import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.print.PageFormat;
 import java.awt.print.Printable;
@@ -13,17 +13,12 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Calendar;
 
-import javax.imageio.ImageIO;
-
-import rs.trznica.dragan.entities.putninalog.PutniNalog;
-import rs.trznica.dragan.forms.support.DateUtils;
-
 public class PassengerIssuePrintable implements Printable {
 
-	private PutniNalog putniNalog;
+	private PutniNalogSql putniNalog;
 	private BufferedImage img;
 	
-	public PassengerIssuePrintable(PutniNalog putniNalog, String resourceDir) throws IOException {
+	public PassengerIssuePrintable(PutniNalogSql putniNalog, String resourceDir) throws IOException {
 		this.putniNalog = putniNalog;
 		this.img = ImageIO.read(new File(resourceDir + "/Putnicki1.bmp"));
 	}

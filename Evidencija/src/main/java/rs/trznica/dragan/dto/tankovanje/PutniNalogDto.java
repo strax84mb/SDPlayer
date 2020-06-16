@@ -1,12 +1,13 @@
 package rs.trznica.dragan.dto.tankovanje;
 
-import java.util.Date;
-
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
+import rs.trznica.dragan.entities.putninalog.PutniNalogSql;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.forms.support.DateUtils;
 
-public class PutniNalogDto extends BaseDto<PutniNalog> {
+import java.util.Date;
+
+public class PutniNalogDto extends BaseDto<PutniNalogSql> {
 
 	private String redniBroj;
 
@@ -92,31 +93,31 @@ public class PutniNalogDto extends BaseDto<PutniNalog> {
 	}
 
 	@Override
-	public PutniNalog createEntityFromData() {
-		PutniNalog nalog = new PutniNalog();
-		nalog.setRedniBroj(Long.valueOf(redniBroj));
-		nalog.setIdVozila(vozilo.getId());
-		nalog.setNamenaVozila(vozilo.getTeretnjak() ? PutniNalog.TERETNI : PutniNalog.PUTNICKI);
-		nalog.setTipVozila(vozilo.getTip());
-		nalog.setMarkaVozila(vozilo.getMarka());
-		nalog.setRegOznaka(vozilo.getRegOznaka());
+	public PutniNalogSql createEntityFromData() {
+		PutniNalogSql.PutniNalogSqlBuilder builder = PutniNalogSql.builder();
+		builder.redniBroj(Long.valueOf(redniBroj))
+				.idVozila(vozilo.getId())
+				.namenaVozila(vozilo.getTeretnjak() ? PutniNalog.TERETNI : PutniNalog.PUTNICKI)
+				.tipVozila(vozilo.getTip())
+				.markaVozila(vozilo.getMarka())
+				.regOznaka(vozilo.getRegOznaka());
 		if (vozilo.getTeretnjak()) {
-			nalog.setTezina(vozilo.getTezina());
-			nalog.setNosivost(vozilo.getNosivost());
-			nalog.setPosada(posada);
+			builder.tezina(vozilo.getTezina())
+					.nosivost(vozilo.getNosivost())
+					.posada(posada);
 		} else {
-			nalog.setSnagaMotora(vozilo.getSnagaMotora());
-			nalog.setBrojSedista(vozilo.getBrojSedista());
-			nalog.setKorisnik(korisnik);
+			builder.snagaMotora(vozilo.getSnagaMotora())
+					.brojSedista(vozilo.getBrojSedista())
+					.korisnik(korisnik);
 		}
-		nalog.setVozac(vozac);
-		nalog.setRelacija(relacija);
-		nalog.setDatum(DateUtils.toTimestamp(datum));
-		nalog.setVrstaPrevoza(vrstaPrevoza);
-		nalog.setRadnaOrganizacija(radnaOrganizacija);
-		nalog.setAdresaGaraze(adresaGaraze);
-		nalog.setMesto(mesto);
-		return nalog;
+		builder.vozac(vozac)
+				.relacija(relacija)
+				.datum(DateUtils.toTimestamp(datum))
+				.vrstaPrevoza(vrstaPrevoza)
+				.radnaOrganizacija(radnaOrganizacija)
+				.adresaGaraze(adresaGaraze)
+				.mesto(mesto);
+		return builder.build();
 	}
 
 }

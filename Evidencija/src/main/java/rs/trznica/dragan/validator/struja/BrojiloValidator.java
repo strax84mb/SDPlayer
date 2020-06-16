@@ -16,7 +16,7 @@ public class BrojiloValidator implements Validator {
 	@Override
 	public void validate(Object obj, Errors errors) {
 		if (!supports(obj.getClass())) {
-			errors.reject("Pogrešan objekat u kodu!");
+			errors.reject("Pogre\u0161an objekat u kodu!");
 			return;
 		}
 		Brojilo brojilo = (Brojilo) obj;

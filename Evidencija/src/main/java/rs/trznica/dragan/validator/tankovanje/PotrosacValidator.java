@@ -14,25 +14,25 @@ public class PotrosacValidator implements Validator {
 
 	public void validate(Object obj, Errors errors) {
 		if (!supports(obj.getClass())) {
-			errors.reject("Pogrešan objekat u kodu!");
+			errors.reject("Pogre\u0161an objekat u kodu!");
 			return;
 		}
 		PotrosacDto dto = (PotrosacDto)obj;
 		if (StringUtils.isEmpty(dto.getTip())) {
 			errors.reject("Tip / naziv je obavezan za vozilo.");
 		} else if (dto.getTip().length() > 15) {
-			errors.reject("Tip / naziv ne može imati više od 15 karaktera.");
+			errors.reject("Tip / naziv ne moï¿½e imati vi\u0161e od 15 karaktera.");
 		}
 		if (dto.getVozilo()) {
 			if (StringUtils.isEmpty(dto.getMarka())) {
 				errors.reject("Marka je obavezna za vozilo.");
 			} else if (dto.getMarka().length() > 15) {
-				errors.reject("Marka ne može imati više od 15 karaktera.");
+				errors.reject("Marka ne mo\u017Ee imati vi\u0161e od 15 karaktera.");
 			}
 			if (StringUtils.isEmpty(dto.getRegOznaka())) {
 				errors.reject("Registracija je obavezna za vozilo.");
 			} else if (dto.getRegOznaka().length() > 11) {
-				errors.reject("Registracija ne može imati više od 11 karaktera.");
+				errors.reject("Registracija ne mo\u017Ee imati vi\u0161e od 11 karaktera.");
 			}
 		}
 	}

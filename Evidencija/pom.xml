@@ -8,9 +8,18 @@
 		<!-- maven-compiler-plugin configuration -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
+		<lucene.version>5.4.0</lucene.version>
+		<!--<lucene.version>8.5.2</lucene.version>-->
+		<lombok.version>1.18.12</lombok.version>
 	</properties>
 
 	<dependencies>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+			<version>${lombok.version}</version>
+			<scope>provided</scope>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context</artifactId>
@@ -31,13 +40,18 @@
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-core</artifactId>
-			<version>5.4.0</version>
+			<version>${lucene.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.lucene</groupId>
 			<artifactId>lucene-analyzers-common</artifactId>
-			<version>5.4.0</version>
+			<version>${lucene.version}</version>
 		</dependency>
+		<!-- <dependency>
+			<groupId>org.apache.lucene</groupId>
+			<artifactId>lucene-backward-codecs</artifactId>
+			<version>${lucene.version}</version>
+		</dependency> -->
 		<dependency>
 			<groupId>org.springframework.data</groupId>
 			<artifactId>spring-data-jpa</artifactId>

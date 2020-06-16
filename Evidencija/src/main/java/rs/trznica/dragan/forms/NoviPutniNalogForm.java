@@ -35,10 +35,12 @@ import org.springframework.validation.DataBinder;
 import org.springframework.validation.Validator;
 
 import rs.trznica.dragan.dao.PotrosacDao;
+import rs.trznica.dragan.dao.PutniNalogRepository;
 import rs.trznica.dragan.dao.lucene.PutniNalogDao;
 import rs.trznica.dragan.dto.tankovanje.BaseDto;
 import rs.trznica.dragan.dto.tankovanje.PutniNalogDto;
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
+import rs.trznica.dragan.entities.putninalog.PutniNalogSql;
 import rs.trznica.dragan.entities.tankovanje.Potrosac;
 import rs.trznica.dragan.forms.support.DateUtils;
 import rs.trznica.dragan.forms.support.ModalResult;
@@ -51,13 +53,13 @@ import com.toedter.calendar.JDateChooser;
 
 @Component
 @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
+public class NoviPutniNalogForm extends GenericDialogV2<PutniNalogSql> {
 	
 	private static final Logger LOG = LoggerFactory.getLogger(NoviPutniNalogForm.class);
 
 	private static final long serialVersionUID = -6515551917024945896L;
 	
-	private PutniNalogDao putniNalogDao;
+	private PutniNalogRepository putniNalogRepository;
 	private PotrosacDao potrosacDao;
 	private String resourceDir;
 	
@@ -123,13 +125,13 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 
 	@Override
 	protected void autowireFields(ApplicationContext ctx) {
-		putniNalogDao = getContext().getBean(PutniNalogDao.class);
+		putniNalogRepository = getContext().getBean(PutniNalogRepository.class);
 		potrosacDao = getContext().getBean(PotrosacDao.class);
 		resourceDir = ctx.getEnvironment().getProperty("xls.blank.table.path");
 	}
 
 	@Override
-	protected BaseDto<PutniNalog> makeDto() {
+	protected BaseDto<PutniNalogSql> makeDto() {
 		return new PutniNalogDto(tfRedniBroj.getText(), 
 				(Potrosac) cbVozila.getSelectedItem(), 
 				(String) cbVozac.getSelectedItem(), 
@@ -144,12 +146,12 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 	}
 
 	@Override
-	protected void saveNewEntity(PutniNalog newEntity) {
+	protected void saveNewEntity(PutniNalogSql newEntity) {
 		if (getEntityId() != null) {
 			newEntity.setId(getEntityId());
 		}
 		try {
-			PutniNalog nalog = putniNalogDao.save(newEntity);
+			PutniNalogSql nalog = putniNalogRepository.save(newEntity);
 			setReturnValue(nalog);
 			modalResult = ModalResult.OK;
 		} catch (Exception e) {
@@ -158,7 +160,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 	}
 
 	@Override
-	public void editObject(PutniNalog nalog) {
+	public void editObject(PutniNalogSql nalog) {
 		setEntityId(nalog.getId());
 		setReturnValue(nalog);
 		for (int i = 0; i < cbVozila.getItemCount(); i++) {
@@ -209,7 +211,7 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 		cbVozac.setSelectedItem(null);
 	}
 	
-	private void printIssue(PutniNalog nalog) throws IOException, PrintException {
+	private void printIssue(PutniNalogSql nalog) throws IOException, PrintException {
 		if (nalog == null) {
 			PutniNalogDto dto = (PutniNalogDto) makeDto();
 			BindingResult result = new DataBinder(dto).getBindingResult();
@@ -286,12 +288,12 @@ public class NoviPutniNalogForm extends GenericDialogV2<PutniNalog> {
 						tfKorisnik.setEnabled(true);
 					}
 					try {
-						Integer lastRb = putniNalogDao.getLastRB(vozilo.getId());
+						Long lastRb = putniNalogRepository.getMaxRB(vozilo.getId());
 						if (lastRb == 0) {
-							lastRb = vozilo.getId().intValue() * 10000;
+							lastRb = vozilo.getId().longValue() * 10000;
 						}
 						tfRedniBroj.setText(String.valueOf(lastRb + 1));
-					} catch (IOException e) {
+					} catch (Exception e) {
 						LOG.error("Greska prilikom citanja najveceg rednog broja za vozilo!", e);
 						tfRedniBroj.setText("");
 						new ErrorDialog().showError("Gre\u0161ka prilikom \u010Ditanja najve\u0107eg rednog broja za vozilo!");

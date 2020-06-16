@@ -4,6 +4,7 @@ import javax.swing.JLabel;
 import javax.swing.border.EmptyBorder;
 
 import rs.trznica.dragan.entities.putninalog.PutniNalog;
+import rs.trznica.dragan.entities.putninalog.PutniNalogSql;
 
 public class DescriptionLabel extends JLabel {
 
@@ -24,7 +25,7 @@ public class DescriptionLabel extends JLabel {
 		setVisible(false);
 	}
 	
-	public void showText(PutniNalog nalog) {
+	public void showText(PutniNalogSql nalog) {
 		StringBuilder builder = new StringBuilder(4096);
 		builder.append("<html><table border=\"0\" cellpadding=\"2\" cellspacing=\"0\">");
 		builder.append("<tr><td>").append("<b>ID  naloga:</b>").append("</td><td>").append(nalog.getId()).append("</td></tr>");
