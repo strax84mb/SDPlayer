@@ -8,7 +8,7 @@
 		<!-- maven-compiler-plugin configuration -->
 		<maven.compiler.source>1.8</maven.compiler.source>
 		<maven.compiler.target>1.8</maven.compiler.target>
-		<lucene.version>5.4.0</lucene.version>
+		<lucene.version>8.5.1</lucene.version>
 		<!--<lucene.version>8.5.2</lucene.version>-->
 		<lombok.version>1.18.12</lombok.version>
 	</properties>
